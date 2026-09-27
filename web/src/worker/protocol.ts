@@ -1,0 +1,48 @@
+// Messages between the page and the search worker. Both sides import these types, so a
+// mismatched field is a compile error instead of a silent bug in a visitor's browser.
+import type { UnitKind } from "../engine/types.ts";
+
+export interface RepoInfo {
+  repo: string;
+  branch: string;
+  via: string;
+  sha: string | null;
+  files: number;
+  units: number;
+  notes: string[];
+  fromCache: boolean;
+  timings: { loadMs: number; indexMs: number };
+}
+
+/** A search hit, flattened for postMessage (structured clone). */
+export interface WireHit {
+  id: string;
+  path: string;
+  qualname: string;
+  kind: UnitKind;
+  line: number;
+  text: string;
+  score: number;
+  bm25: number;
+  semantic: number | null;
+  /** What the issue explicitly named that points here (traceback, quoted name, module). */
+  reasons: string[];
+}
+
+export type Backend = "webgpu" | "wasm";
+
+export type ToWorker =
+  | { type: "load"; input: string; includeTests: boolean }
+  | { type: "cancel" }
+  | { type: "search"; id: number; query: string; semantic: boolean; k: number };
+
+export type FromWorker =
+  | { type: "progress"; phase: string; done: number; total: number }
+  | { type: "loaded"; info: RepoInfo }
+  | { type: "error"; message: string; cancelled: boolean }
+  | { type: "results"; id: number; stage: "keyword" | "semantic"; hits: WireHit[]; terms: string[]; ms: number; computed?: number; stored?: number }
+  | { type: "semantic-start"; id: number }
+  | { type: "embedding"; id: number; done: number; total: number }
+  | { type: "model"; pct: number; backend: Backend }
+  | { type: "model-ready"; backend: Backend }
+  | { type: "semantic-error"; id: number; message: string };

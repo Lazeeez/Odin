@@ -1,0 +1,62 @@
+[project]
+name = "odin"
+version = "0.1.0"
+description = "AST-aware hybrid + graph retrieval for code search, evaluated on SWE-bench"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [
+    { name = "Lajat" }
+]
+requires-python = ">=3.11"
+dependencies = [
+    "huggingface-hub>=1.3",
+    "lightgbm>=4.5",
+    "numpy>=2.4.6",
+    "pyarrow>=25.0.1",
+    "scipy>=1.17.1",
+    "tree-sitter>=0.26.0",
+    "tree-sitter-python>=0.25.0",
+    "unidiff>=1.0.1",
+]
+
+[project.optional-dependencies]
+# Dense retrieval. Kept optional: it pulls in PyTorch, which the lexical engine does not need.
+dense = [
+    "torch>=2.14",
+    "sentence-transformers>=5.0",
+    "einops>=0.8",
+    "peft>=0.17",
+]
+
+[project.scripts]
+odin = "odin.cli:main"
+
+[build-system]
+requires = ["uv_build>=0.8.17,<0.9.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+    "ruff>=0.16.9",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM"]
+ignore = ["E501"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.uv.sources]
+torch = [{ index = "pytorch-cu130", marker = "sys_platform == 'win32' or sys_platform == 'linux'" }]
+
+[[tool.uv.index]]
+name = "pytorch-cu130"
+url = "https://download.pytorch.org/whl/cu130"
+explicit = true

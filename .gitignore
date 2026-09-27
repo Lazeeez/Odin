@@ -1,0 +1,13 @@
+.venv/
+__pycache__/
+*.pyc
+.cache/
+results/
+.pytest_cache/
+.ruff_cache/
+dist/
+
+# Reranker adapter weights (~39 MB each): rebuild with `make reranker`; recipes are kept.
+models/*/*.safetensors
+web/node_modules/
+web/dist/
