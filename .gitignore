@@ -11,3 +11,4 @@ dist/
 models/*/*.safetensors
 web/node_modules/
 web/dist/
+*.tsbuildinfo
