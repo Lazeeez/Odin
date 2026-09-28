@@ -15,9 +15,14 @@ URL = "http://localhost:4173/"
 def main() -> None:
     with sync_playwright() as p:
         browser = p.chromium.launch()
-        page = browser.new_page(viewport={"width": 1200, "height": 630}, color_scheme="light")
+        # Reduced motion renders the finished frame: the ring drawn, the title and results in place.
+        page = browser.new_page(
+            viewport={"width": 1200, "height": 630}, color_scheme="light", reduced_motion="reduce"
+        )
         page.goto(URL)
         page.wait_for_selector(".hero h1")
+        page.evaluate("document.fonts.ready")
+        page.wait_for_timeout(500)
         # The card: headline, pitch and the product window, without the page chrome.
         page.add_style_tag(
             content=".nav,.quickstart{display:none} .hero{padding-top:44px!important}"
