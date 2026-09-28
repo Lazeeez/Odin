@@ -1,7 +1,9 @@
 import { render } from "preact";
 import { App } from "./App.tsx";
+import { upgradeLegacyUrl } from "./lib/router.ts";
 import "./styles.css";
 
+upgradeLegacyUrl();
 render(<App />, document.getElementById("app")!);
 
 // Production only: cross-origin isolation (multi-threaded ML, ~2.5x faster rerank) and offline
