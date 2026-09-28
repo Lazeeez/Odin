@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import math
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from pathlib import Path
@@ -313,17 +314,38 @@ class RerankedLTRRetriever(LTRRetriever):
         self.function_weight = float(choice["function_weight"])
         self.file_weight = float(choice["file_weight"])
         self.ce = CrossEncoderEnsemble([Path(a) for a in choice["adapters"]])
+        # Confident queries skip the reranker (chosen on validation, see ce_tune.SKIP_MARGINS).
+        self.skip_margin = float(choice.get("skip_margin") or math.inf)
+        self._scored: tuple[tuple, tuple] | None = None
+        self.skipped = 0
+
+    def _score(self, query: Query) -> tuple:
+        """Candidates, LTR scores and reranker scores for a query, computed once for both
+        levels: asking for functions and then files costs one reranker pass, not two."""
+        from odin.rank.ce_train import ltr_margin
+
+        key = (query.repo, query.base_commit, query.text)
+        if self._scored is None or self._scored[0] != key:
+            cs = self.extractor.extract(query)
+            p = self.models["function"].predict(cs.X)
+            order = np.argsort(-p, kind="stable")
+            top = order[: self.depth]
+            if ltr_margin(p[top]) > self.skip_margin:
+                self.skipped += 1
+                ce = None  # LTR is confident: keep its order
+            else:
+                ce = self.ce.score(query.text, self.indexer.unit_texts(cs.index, cs.rows[top]))
+            self._scored = (key, (cs, p, order, top, ce))
+        return self._scored[1]
 
     def retrieve(self, query: Query, level: str, k: int) -> list[str]:
         import math
 
         from odin.rank.ce_train import rerank
 
-        cs = self.extractor.extract(query)
-        p = self.models["function"].predict(cs.X)
-        order = np.argsort(-p, kind="stable")
-        top = order[: self.depth]
-        ce = self.ce.score(query.text, self.indexer.unit_texts(cs.index, cs.rows[top]))
+        cs, p, order, top, ce = self._score(query)
+        if ce is None:
+            return super().retrieve(query, level, k)
         if level == "function":
             new = np.argsort(-rerank(p[top], ce, self.function_weight), kind="stable")
             ranked = [cs.ids[i] for i in top[new]] + [cs.ids[i] for i in order[self.depth :]]
