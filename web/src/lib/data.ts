@@ -52,11 +52,28 @@ export interface IssueSummary {
 }
 
 /** The in-browser pipeline on SWE-bench Lite, held out (scripts/browser_ltr.py). */
+type Metrics = Record<string, number>;
+
+/** One held-out set, as the in-browser pipeline scores it (scripts/browser_ltr.py). */
+export interface BrowserEval {
+  keyword: Metrics;
+  instant: Metrics;
+  semantic: Metrics;
+  rerank?: Metrics;
+  files: Metrics;
+  files_best_function: Metrics;
+}
+
+/** The in-browser pipeline, measured on SWE-bench Lite and on 30 projects it never saw. */
 export interface Lite {
   embedder: string;
+  static: string;
   depth: number;
-  lite: { keyword: Record<string, number>; stage1: Record<string, number>; stage2?: Record<string, number> };
+  held_out: { lite: BrowserEval; unseen: BrowserEval };
 }
+
+/** The best function-level result the site runs by default: rerank if shipped, else semantic. */
+export const bestBrowserStage = (e: BrowserEval): Metrics => e.rerank ?? e.semantic;
 
 export type Metric = "hit@1" | "hit@5" | "hit@10" | "recall@10" | "mrr";
 
