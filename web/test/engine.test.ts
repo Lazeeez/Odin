@@ -1,8 +1,9 @@
 import { fileURLToPath } from "node:url";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { BM25 } from "../src/engine/bm25.ts";
 import { chunkFile, createParser } from "../src/engine/chunk.ts";
 import { isTestPath, parseRepo } from "../src/engine/github.ts";
+import { listFiles, refCandidates, selectFiles } from "../src/engine/repo.ts";
 import { predict, type RankerModel, rankStage1, rankStage2, type Tree } from "../src/engine/rank.ts";
 import { expand, tokenize } from "../src/engine/tokenize.ts";
 import type { Unit } from "../src/engine/types.ts";
@@ -122,5 +123,105 @@ describe("repository input", () => {
   it("recognises test files", () => {
     expect(["tests/test_x.py", "pkg/conftest.py", "a_test.py", "src/testing/util.py"].every(isTestPath)).toBe(true);
     expect(isTestPath("src/contest.py")).toBe(false);
+  });
+});
+
+describe("listing a repository when GitHub's API fails", () => {
+  const repo = { owner: "o", name: "r", ref: null };
+  const mirror = { files: [{ name: "/pkg/a.py", size: 10 }] };
+  const respond = (routes: Record<string, () => Response>) =>
+    vi.fn(async (url: string) => {
+      const key = Object.keys(routes).find((k) => url.includes(k));
+      if (!key) throw new TypeError("Failed to fetch");
+      return routes[key]();
+    });
+  afterEach(() => vi.unstubAllGlobals());
+
+  it("uses the tree API once, at HEAD, when it works", async () => {
+    const fetch = respond({ "api.github.com": () => Response.json({ sha: "t1", truncated: false, tree: [{ type: "blob", path: "a.py", size: 3 }] }) });
+    vi.stubGlobal("fetch", fetch);
+    const listing = await listFiles(repo);
+    expect(listing).toMatchObject({ branch: "HEAD", sha: "t1", via: "GitHub API" });
+    expect(fetch).toHaveBeenCalledTimes(1);
+  });
+
+  it("falls back to jsDelivr when the API can't be reached at all", async () => {
+    vi.stubGlobal("fetch", respond({ "@main": () => Response.json(mirror) })); // api.github.com throws
+    const listing = await listFiles(repo);
+    expect(listing).toMatchObject({ branch: "main", via: "jsDelivr" });
+    expect(listing.files).toEqual([{ path: "pkg/a.py", size: 10 }]);
+  });
+
+  it("falls back to jsDelivr when rate-limited, trying master after main", async () => {
+    vi.stubGlobal("fetch", respond({
+      "api.github.com": () => new Response("", { status: 403 }),
+      "@main": () => new Response("", { status: 404 }),
+      "@master": () => Response.json(mirror),
+    }));
+    expect(await listFiles(repo)).toMatchObject({ branch: "master", via: "jsDelivr" });
+  });
+
+  it("explains what to do when both are unavailable", async () => {
+    vi.stubGlobal("fetch", respond({}));
+    await expect(listFiles(repo)).rejects.toThrow(/Couldn't reach api\.github\.com.*jsDelivr.*blocker/);
+  });
+});
+
+describe("loading any repository", () => {
+  it("accepts the ways people paste a repository", () => {
+    const cases: [string, string, string | null][] = [
+      ["git@github.com:psf/requests.git", "psf/requests", null],
+      ["https://www.github.com/psf/requests/", "psf/requests", null],
+      ["https://github.com/psf/requests/issues/6710", "psf/requests", null],
+      ["https://github.com/psf/requests/pull/12#discussion_r1", "psf/requests", null],
+      ["https://github.com/AtsushiSakai/PythonRobotics?tab=readme-ov-file", "AtsushiSakai/PythonRobotics", null],
+      ["https://github.com/pallets/flask/tree/main/src/flask", "pallets/flask", "main/src/flask"],
+      ["https://github.com/psf/requests/blob/main/src/requests/api.py#L12", "psf/requests", "main"],
+      ["psf/requests@v2.31.0", "psf/requests", "v2.31.0"],
+    ];
+    for (const [input, repo, ref] of cases) {
+      const r = parseRepo(input);
+      expect(`${r.owner}/${r.name}`, input).toBe(repo);
+      expect(r.ref, input).toBe(ref);
+    }
+    expect(() => parseRepo("https://gitlab.com/a/b")).toThrow();
+  });
+
+  it("tries the shortest branch prefix first, the rest is a folder", () => {
+    expect(refCandidates(null)).toEqual([["HEAD", null]]);
+    expect(refCandidates("main/src/flask")).toEqual([["main", "src/flask"], ["main/src", "flask"], ["main/src/flask", null]]);
+  });
+
+  it("keeps the project's own code first when over budget, and skips virtualenvs", () => {
+    const f = (path: string, size = 10) => ({ path, size });
+    const notes: string[] = [];
+    const kept = selectFiles({ scope: null, files: [
+      f("docs/conf.py"), f("pkg/core.py"), f(".venv/lib/python3.12/site-packages/six.py"), f("tests/test_core.py"),
+      f("pkg/huge_pb2.py", 5e6), f("README.md"), f("pkg/sub/util.PY"),
+    ] }, false, notes);
+    expect(kept.map((x) => x.path)).toEqual(["pkg/core.py", "pkg/sub/util.PY", "docs/conf.py"]);
+    expect(notes.join(" ")).toMatch(/over 1 MB/);
+  });
+
+  it("limits a /tree/<branch>/<folder> link to that folder", () => {
+    const kept = selectFiles({ scope: "src/flask", files: [{ path: "src/flask/app.py", size: 1 }, { path: "src/other.py", size: 1 }] }, false, []);
+    expect(kept.map((x) => x.path)).toEqual(["src/flask/app.py"]);
+  });
+
+  it("includes tests when tests are all there is", () => {
+    const notes: string[] = [];
+    expect(selectFiles({ scope: null, files: [{ path: "tests/test_a.py", size: 1 }] }, false, notes)).toHaveLength(1);
+    expect(notes[0]).toMatch(/all tests/);
+  });
+
+  it("follows renames: raw files come from the canonical owner/name", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => Response.json({
+      sha: "t", truncated: false, url: "https://api.github.com/repos/NewOwner/new-name/git/trees/t",
+      tree: [{ type: "blob", mode: "100644", path: "a.py", size: 1 }, { type: "blob", mode: "120000", path: "link.py", size: 1 }],
+    })));
+    const l = await listFiles({ owner: "old", name: "name", ref: null });
+    expect([l.owner, l.name]).toEqual(["NewOwner", "new-name"]);
+    expect(l.files.map((x) => x.path)).toEqual(["a.py"]); // the symlink is left out
+    vi.unstubAllGlobals();
   });
 });
