@@ -17,6 +17,21 @@ self.addEventListener("activate", (event) => {
   })());
 });
 
+// Vite names build files <name>-<8-character hash>.<ext>. A new deploy brings new hashes, so
+// caching a file also drops older builds of the same file: otherwise every release would leave
+// its predecessors behind, the 16 MB embedding model included.
+const HASHED = /^(.*)-[\w-]{8}(\.\w+)$/;
+async function putAsset(cache, request, response) {
+  await cache.put(request, response);
+  const m = new URL(request.url).pathname.match(HASHED);
+  if (!m) return;
+  for (const old of await cache.keys()) {
+    const path = new URL(old.url).pathname;
+    const o = path.match(HASHED);
+    if (o && o[1] === m[1] && o[2] === m[2] && path !== new URL(request.url).pathname) await cache.delete(old);
+  }
+}
+
 function isolated(response) {
   if (!response || response.type === "opaque" || response.status === 0) return response;
   const headers = new Headers(response.headers);
@@ -36,7 +51,7 @@ self.addEventListener("fetch", (event) => {
       const hit = await cache.match(request);
       if (hit) return isolated(hit);
       const fresh = await fetch(request);
-      if (fresh.ok) cache.put(request, fresh.clone());
+      if (fresh.ok) event.waitUntil(putAsset(cache, request, fresh.clone()));
       return isolated(fresh);
     }
     try {
