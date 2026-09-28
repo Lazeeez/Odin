@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useRef, useState } from "preact/hooks";
-import { useInView } from "../hooks/useInView.ts";
+import { useEffect, useMemo, useState } from "preact/hooks";
 import { type Issue, type IssueSummary, type Summary, getJSON, stagesAt } from "../lib/data.ts";
+import { href, replaceHash } from "../lib/router.ts";
 
 type Outcome = "" | "rescued" | "first" | "missed";
 
@@ -65,10 +65,7 @@ function IssueView({ issue, summary }: { issue: Issue; summary: Summary }) {
   );
 }
 
-export function Explorer({ summary }: { summary: Summary }) {
-  const section = useRef<HTMLElement>(null);
-  const deepLinked = location.hash.startsWith("#issue=");
-  const inView = useInView(section, "600px", !deepLinked);
+export function Explorer({ summary, linked }: { summary: Summary; linked: string | null }) {
   const [index, setIndex] = useState<IssueSummary[] | null>(null);
   const [error, setError] = useState(false);
   const [selected, setSelected] = useState<string | null>(null);
@@ -78,8 +75,8 @@ export function Explorer({ summary }: { summary: Summary }) {
   const [outcome, setOutcome] = useState<Outcome>("");
 
   useEffect(() => {
-    if ((inView || deepLinked) && !index) getJSON<IssueSummary[]>("data/issues/index.json").then(setIndex, () => setError(true));
-  }, [inView]);
+    getJSON<IssueSummary[]>("data/issues/index.json").then(setIndex, () => setError(true));
+  }, []);
 
   const shown = useMemo(() => {
     if (!index) return [];
@@ -87,22 +84,17 @@ export function Explorer({ summary }: { summary: Summary }) {
     return index.filter((it) => (!repo || it.repo === repo) && (!f || it.id.includes(f) || it.title.toLowerCase().includes(f)) && (!outcome || it[outcome]));
   }, [index, filter, repo, outcome]);
 
-  const select = (id: string, push = true) => {
+  const select = (id: string) => {
     setSelected(id);
-    if (push) history.replaceState(null, "", `${location.pathname}${location.search}#issue=${id}`);
+    replaceHash(href("explore", id));
   };
 
-  // First open: a deep-linked issue, or one that shows the pipeline at work.
+  // A linked issue (#/explore/<id>), else one that shows the pipeline at work.
   useEffect(() => {
-    if (!index || selected) return;
-    const linked = deepLinked ? decodeURIComponent(location.hash.slice(7)) : null;
-    if (linked && index.some((i) => i.id === linked)) {
-      select(linked, false);
-      section.current?.scrollIntoView();
-      return;
-    }
-    select((index.find((i) => i.rescued && i.first) ?? index[0]).id, false);
-  }, [index]);
+    if (!index) return;
+    if (linked && index.some((i) => i.id === linked)) setSelected(linked);
+    else if (!selected) setSelected((index.find((i) => i.rescued && i.first) ?? index[0]).id);
+  }, [index, linked]);
 
   useEffect(() => {
     if (!selected) return;
@@ -116,10 +108,7 @@ export function Explorer({ summary }: { summary: Summary }) {
   const repos = useMemo(() => [...new Set((index ?? []).map((i) => i.repo))].sort(), [index]);
 
   return (
-    <section id="explorer" ref={section}>
-      <h2>Explorer: 300 real bugs, every stage's answer</h2>
-      <p class="sub">Pick an issue. Gold marks what the maintainers' actual fix changed. Watch it climb as the pipeline gets smarter.</p>
-      <div class="explorer">
+    <div class="explorer" id="explorer">
         <aside class="issue-list">
           <input type="search" placeholder="Filter by id or title…" aria-label="Filter issues" value={filter} onInput={(e) => setFilter(e.currentTarget.value)} />
           <div class="filter-row">
@@ -154,7 +143,6 @@ export function Explorer({ summary }: { summary: Summary }) {
           {!issue && !error && <p class="muted">Loading issues…</p>}
           {issue && <IssueView issue={issue} summary={summary} />}
         </div>
-      </div>
-    </section>
+    </div>
   );
 }
