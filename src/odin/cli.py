@@ -9,6 +9,7 @@ from pathlib import Path
 
 DEFAULT_CACHE = Path(".cache/repos")
 DEFAULT_GOLD_DIR = Path("data/gold")
+DATASET_NAMES = ["lite", "verified", "full", "rebench"]
 
 
 def _gold_path(dataset: str, split: str) -> Path:
@@ -208,7 +209,29 @@ def cmd_ce_train(args: argparse.Namespace) -> None:
     if args.limit:
         train_records = train_records[: args.limit]
     print(f"{len(train_records)} training issues, {len(val)} held out for validation")
-    train_cross_encoder(train_records, args.out, epochs=args.epochs, group=args.group, lr=args.lr)
+    if args.distill_from:
+        # Soft labels from the current ensemble, cached next to the training data.
+        from odin.rank.ce_train import score_teacher
+        from odin.rank.cross_encoder import CrossEncoderEnsemble
+
+        cache = args.data.with_name(args.data.stem + "_teacher.jsonl")
+        if cache.exists():
+            scored = {r["qid"]: r["teacher"] for r in map(json.loads, cache.open(encoding="utf-8"))}
+            for r in train_records:
+                if r["qid"] in scored:
+                    r["teacher"] = scored[r["qid"]]
+        if any("teacher" not in r for r in train_records):
+            recipe = json.loads(args.distill_from.read_text(encoding="utf-8"))
+            teacher = CrossEncoderEnsemble([Path(a) for a in recipe["adapters"]])
+            score_teacher(train_records, teacher)
+            del teacher
+            with cache.open("w", encoding="utf-8", newline="\n") as fh:
+                for r in train_records:
+                    fh.write(json.dumps({"qid": r["qid"], "teacher": r["teacher"]}) + "\n")
+    train_cross_encoder(
+        train_records, args.out, epochs=args.epochs, group=args.group, lr=args.lr,
+        distill=args.distill if args.distill_from else 0.0,
+    )  # fmt: skip
     print(f"wrote {args.out}")
 
 
@@ -320,7 +343,7 @@ def main(argv: list[str] | None = None) -> None:
     sub = parser.add_subparsers(dest="command", required=True)
 
     gold = sub.add_parser("gold", help="build ground truth from SWE-bench gold patches")
-    gold.add_argument("--dataset", default="lite", choices=["lite", "verified", "full"])
+    gold.add_argument("--dataset", default="lite", choices=DATASET_NAMES)
     gold.add_argument("--split", default="test")
     gold.add_argument("--repo")
     gold.add_argument("--limit", type=int)
@@ -332,19 +355,19 @@ def main(argv: list[str] | None = None) -> None:
     ev = sub.add_parser("eval", help="score a retriever against ground truth")
     ev.add_argument("--retriever", required=True)
     ev.add_argument("--level", default="file", choices=["file", "function"])
-    ev.add_argument("--dataset", default="lite", choices=["lite", "verified", "full"])
+    ev.add_argument("--dataset", default="lite", choices=DATASET_NAMES)
     ev.add_argument("--split", default="test")
     ev.add_argument("--repo", help="only evaluate issues from this repository")
-    ev.add_argument("--exclude", nargs="+", choices=["lite", "verified", "full"], help="hold out")
+    ev.add_argument("--exclude", nargs="+", choices=DATASET_NAMES, help="hold out")
     ev.add_argument("--gold", type=Path)
     ev.add_argument("--k", type=int, nargs="+", default=[1, 5, 10])
     ev.add_argument("--out", type=Path)
     ev.set_defaults(func=cmd_eval)
 
     tu = sub.add_parser("tune", help="grid-search call-graph expansion on a dev set")
-    tu.add_argument("--dataset", default="verified", choices=["lite", "verified", "full"])
+    tu.add_argument("--dataset", default="verified", choices=DATASET_NAMES)
     tu.add_argument("--split", default="test")
-    tu.add_argument("--exclude", nargs="+", default=["lite"], choices=["lite", "verified", "full"])
+    tu.add_argument("--exclude", nargs="+", default=["lite"], choices=DATASET_NAMES)
     tu.add_argument("--repo")
     tu.add_argument("--gold", type=Path)
     tu.add_argument("--tokenizer", default="code", choices=["naive", "code"])
@@ -354,22 +377,27 @@ def main(argv: list[str] | None = None) -> None:
     tu.set_defaults(func=cmd_tune)
 
     lt = sub.add_parser("ltr", help="train the learning-to-rank model on the dev set")
-    lt.add_argument("--dataset", default="full", choices=["lite", "verified", "full"])
+    lt.add_argument("--dataset", default="full", choices=DATASET_NAMES)
     lt.add_argument("--split", default="test")
-    lt.add_argument("--exclude", nargs="+", default=["lite"], choices=["lite", "verified", "full"])
+    lt.add_argument("--exclude", nargs="+", default=["lite"], choices=DATASET_NAMES)
     lt.add_argument("--repo")
     lt.add_argument("--gold", type=Path)
     lt.add_argument("--folds", type=int, default=5)
     lt.set_defaults(func=cmd_ltr)
 
     ct = sub.add_parser("ce-train", help="fine-tune the cross-encoder reranker")
-    ct.add_argument("--dataset", default="full", choices=["lite", "verified", "full"])
+    ct.add_argument("--dataset", default="full", choices=DATASET_NAMES)
     ct.add_argument("--split", default="test")
     ct.add_argument("--exclude", nargs="+", default=["lite"], choices=["lite", "verified"])
     ct.add_argument("--repo")
     ct.add_argument("--gold", type=Path)
     ct.add_argument("--data", type=Path, default=Path("results/ce_train_ltr_negatives.jsonl"))
     ct.add_argument("--out", type=Path, default=Path("models/ce_adapter"))
+    ct.add_argument(
+        "--distill-from", type=Path, default=None,
+        help="a reranker recipe (e.g. models/reranker.json) whose ensemble to distill into one model",
+    )  # fmt: skip
+    ct.add_argument("--distill", type=float, default=0.5, help="weight of the soft-label loss")
     ct.add_argument("--epochs", type=int, default=1)
     ct.add_argument("--group", type=int, default=4)
     ct.add_argument("--lr", type=float, default=1e-4)
@@ -381,7 +409,7 @@ def main(argv: list[str] | None = None) -> None:
     ct.set_defaults(func=cmd_ce_train)
 
     cu = sub.add_parser("ce-tune", help="choose reranking depth and weights on validation")
-    cu.add_argument("--dataset", default="full", choices=["lite", "verified", "full"])
+    cu.add_argument("--dataset", default="full", choices=DATASET_NAMES)
     cu.add_argument("--split", default="test")
     cu.add_argument("--exclude", nargs="+", default=["lite"], choices=["lite", "verified"])
     cu.add_argument("--repo")
