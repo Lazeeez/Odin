@@ -1,51 +1,81 @@
-import { Highlights, Lessons } from "../components/Engineering.tsx";
+import { useRef } from "preact/hooks";
+import { Highlights, Lessons, Worked } from "../components/Engineering.tsx";
+import { ICONS, Icon } from "../components/Myth.tsx";
+import { PageHero } from "../components/PageHero.tsx";
 import { Pipeline } from "../components/Pipeline.tsx";
 import type { Summary } from "../lib/data.ts";
+import { useReveal } from "../lib/reveal.ts";
 import { href } from "../lib/router.ts";
 
-const BROWSER_STEPS: [string, string][] = [
-  ["Download", "The file list comes from GitHub's API (one request), the Python files from GitHub's file server, sixteen at a time. If GitHub's API is unavailable, the jsDelivr mirror stands in."],
-  ["Parse", "Tree-sitter, compiled to WebAssembly, splits every file into functions, methods and classes, exactly like the Python engine does."],
-  ["Index", "A code-aware BM25 index: snake_case and camelCase names are split into words and also kept whole, so both prose and exact names match."],
-  ["Rank", "A learned ranker (LambdaMART, 491 trees shipped as JSON) weighs 33 signals: keyword scores for the issue, its title and its quoted code, whether a traceback or the issue names the function, file-level evidence and the shape of the code."],
-  ["Refine", "A small language model (MiniLM) reads the top 20 candidates and the issue, and a second ranker blends that in. It runs on your GPU when WebGPU is available."],
-  ["Remember", "Parsed repositories are cached by git tree hash and embeddings by content hash, so a second visit is instant. All of this happens in a background thread: the page never freezes."],
+/** The browser's journey, each step in plain words first, then the detail for engineers. */
+const JOURNEY: [keyof typeof ICONS, string, string, string][] = [
+  ["raven", "Fetch", "Odin's ravens fly to GitHub and bring back the project's Python files.",
+    "The file list comes from GitHub's API (one request), the files from GitHub's file server sixteen at a time, or the whole repository as one archive through an optional relay. jsDelivr stands in if GitHub's API is down."],
+  ["tree", "Read", "Every file is split into its functions, methods and classes.",
+    "Tree-sitter, compiled to WebAssembly, parses on up to four threads, exactly like the Python engine. Big repositories are searchable while they are still loading."],
+  ["ansuz", "Index", "A word index is built, so any word in the report can be looked up instantly.",
+    "A code-aware BM25 index: snake_case and camelCase names are split into words and also kept whole, so both prose and exact names match."],
+  ["shield", "Rank", "A model trained on thousands of real bugs weighs the clues and answers in milliseconds.",
+    "LambdaMART, shipped as JSON trees, over 33 signals: keyword scores for the issue, its title and quoted code, whether a traceback or the issue names the function, file-level evidence and the shape of the code."],
+  ["eye", "Understand", "In the background, Odin learns what every function means, to find code the report never names.",
+    "A static code-embedding model (15 MB, downloaded once) embeds every function in seconds; a second ranker adds how close each function is in meaning to the issue."],
+  ["raven", "Remember", "The next visit to the same repository is instant.",
+    "Parsed repositories are cached by git tree hash in IndexedDB. Everything runs in background threads, so the page never freezes."],
 ];
 
 export function HowItWorks({ summary }: { summary: Summary | null }) {
+  const root = useRef<HTMLDivElement>(null);
+  useReveal(root);
   return (
-    <div class="container">
-      <header class="page-head">
-        <p class="kicker">How it works</p>
-        <h1>From bug report to the right function</h1>
+    <div class="container" ref={root}>
+      <PageHero kicker="How it works" title="From bug report to the right function">
         <p>
-          Odin is a ranking cascade: cheap signals over every function first, then progressively more expensive models over fewer and
-          fewer candidates. The full pipeline runs on a GPU; a lighter version runs entirely in your browser.
+          A ranking cascade: cheap lexical scoring over every function, then learned and neural models over progressively smaller
+          candidate pools. The full pipeline runs on a GPU; a lighter version, with its own rankers, runs in your browser.
         </p>
-      </header>
+      </PageHero>
 
-      <section class="card block">
-        <h2>The full pipeline</h2>
-        <p class="card-lede">Five stages, each measured on 300 real bugs. Pick a stage to see what it adds.</p>
-        {summary ? <Pipeline summary={summary} /> : <p class="muted">Loading…</p>}
-      </section>
-
-      <section class="card block">
-        <h2>What happens in your browser</h2>
-        <p class="card-lede">When you <a href={href("search")}>search a repository</a>, nothing is sent to a server of ours. Your browser does all of this:</p>
-        <ol class="flow">
-          {BROWSER_STEPS.map(([title, text]) => <li key={title}><b>{title}</b><span>{text}</span></li>)}
+      <section class="block reveal">
+        <p class="kicker">In your browser</p>
+        <h2>What happens when you press Search</h2>
+        <p class="section-lede">When you <a href={href("search")}>search a repository</a>, everything below runs in Web Workers in your tab; no server of ours is involved.</p>
+        <ol class="journey">
+          {JOURNEY.map(([icon, title, plain, detail], i) => (
+            <li key={title} class="reveal" style={{ "--d": `${i * 0.08}s` }}>
+              <span class="journey-node"><Icon name={icon} /></span>
+              <div>
+                <h3>{title} <span class="journey-sub">{plain}</span></h3>
+                <p class="tech">{detail}</p>
+              </div>
+            </li>
+          ))}
         </ol>
       </section>
 
-      <section class="block">
-        <h2>Engineering highlights</h2>
+      <section class="card frame block reveal">
+        <p class="kicker">The full pipeline</p>
+        <h2>Five stages, each one smarter</h2>
+        <p class="card-lede">Evaluated on the 291 SWE-bench Lite issues with a function-level gold label. Select a stage for its candidate pool, model, metrics and latency.</p>
+        {summary ? <Pipeline summary={summary} /> : <p class="muted">Loading…</p>}
+      </section>
+
+      <section class="block reveal">
+        <p class="kicker">Engineering</p>
+        <h2>What makes it fast</h2>
         <Highlights />
       </section>
 
-      <section class="card block">
+      <section class="block reveal">
+        <p class="kicker">Things we tried</p>
+        <h2>What worked</h2>
+        <p class="section-lede">Every change was measured on held-out bugs with a paired bootstrap before it shipped. These made the cut.</p>
+        <Worked summary={summary} />
+      </section>
+
+      <section class="block reveal">
+        <p class="kicker">Things we tried</p>
         <h2>What didn't work</h2>
-        <p class="card-lede">Negative results, kept because they explain the design.</p>
+        <p class="section-lede">Negative results, kept because they explain the design as much as the wins do.</p>
         <Lessons />
       </section>
     </div>
