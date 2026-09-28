@@ -4,7 +4,8 @@ import { BM25 } from "../src/engine/bm25.ts";
 import { chunkFile, createParser } from "../src/engine/chunk.ts";
 import { isTestPath, parseRepo } from "../src/engine/github.ts";
 import { listFiles, refCandidates, selectFiles } from "../src/engine/repo.ts";
-import { predict, type RankerModel, rankStage1, rankStage2, type Tree } from "../src/engine/rank.ts";
+import { untar } from "../src/engine/tarball.ts";
+import { predict, type RankerModel, rankFiles, rankUnits, rerankStage, signals, type Tree } from "../src/engine/rank.ts";
 import { expand, tokenize } from "../src/engine/tokenize.ts";
 import type { Unit } from "../src/engine/types.ts";
 import { highlightPython, matchedTerms } from "../src/lib/highlight.ts";
@@ -45,12 +46,13 @@ describe("BM25", () => {
 
 describe("learned ranker", () => {
   const FEATURES = ["bm25_rel", "frame_both", "name_in_code"];
+  const SEM = [...FEATURES, "sem", "sem_gap", "sem_logrank", "title_sem_gap", "title_sem_logrank", "file_sem_gap", "file_sem_logrank"];
   // Hand-written trees in the exported format: node 0 splits, ~0 / ~1 are leaves.
   const split = (f: number, t: number, lo: number, hi: number) => ({ f: [f], t: [t], l: [~0], r: [~1], v: [lo, hi] });
-  const model = (trees: Tree[], stage2?: Tree[]): RankerModel => ({
-    meta: { pool: { bm25: 100, title: 20, code: 20, files: 5 }, depth: 50 },
-    stage1: { features: FEATURES, trees },
-    ...(stage2 && { stage2: { features: [...FEATURES, "s1_logrank", "dense_gap", "dense_logrank", "title_dense_gap", "title_dense_logrank"], trees: stage2 } }),
+  const model = (instant: Tree[], extra: Partial<RankerModel> = {}): RankerModel => ({
+    meta: { pool: { bm25: 100, title: 20, code: 20, files: 5, sem: 50, title_sem: 20 }, depth: 20 },
+    instant: { features: FEATURES, trees: instant },
+    ...extra,
   });
   const units = [
     unit("pkg/views.py", "render", "def render(request):\n    return template(request)"),
@@ -61,26 +63,44 @@ describe("learned ranker", () => {
 
   it("evaluates trees like LightGBM (x <= threshold goes left)", () => {
     const m = model([split(0, 0.5, -1, 1), { v: [0.25] }]);
-    expect(predict(m.stage1, [0.5, 0, 0])).toBe(-0.75);
-    expect(predict(m.stage1, [0.6, 0, 0])).toBe(1.25);
+    expect(predict(m.instant, [0.5, 0, 0])).toBe(-0.75);
+    expect(predict(m.instant, [0.6, 0, 0])).toBe(1.25);
   });
 
   it("ranks the function a traceback names above a keyword match", () => {
     const issue = 'render is slow\n\nTraceback (most recent call last):\n  File "/srv/app/pkg/cache.py", line 2, in evict\nKeyError';
-    const { candidates } = rankStage1(index, model([split(1, 0.5, 0, 10)]), issue);
+    const m = model([split(1, 0.5, 0, 10)]);
+    const { candidates } = rankUnits(index, m, m.instant, signals(index, issue));
     expect(candidates[0].unit.qualname).toBe("evict"); // no word overlap, but it is in the traceback
     expect(candidates[0].reasons).toContain("where the traceback ends");
     expect(candidates.map((c) => c.unit.qualname)).toContain("render");
   });
 
-  it("stage 2 reorders the top candidates by embedding similarity", async () => {
-    const m = model([split(0, 0.5, 0, 1)], [split(FEATURES.length + 1, -0.5, 0, 10)]); // dense_gap
-    const ranked = rankStage1(index, m, "render connect evict");
+  it("the semantic stage finds a function that shares no words with the issue", () => {
+    const m = model([], { semantic: { features: SEM, trees: [split(SEM.indexOf("sem"), 0.5, 0, 10)] } });
+    const sim = { issue: Float32Array.from([0.1, 0.9, 0.2]), title: Float32Array.from([0.1, 0.8, 0.2]) };
+    const { candidates } = rankUnits(index, m, m.semantic!, signals(index, "the database handshake hangs", sim));
+    expect(candidates[0].unit.qualname).toBe("connect");
+    expect(candidates[0].semantic).toBeCloseTo(0.9);
+  });
+
+  it("the rerank stage reorders the top candidates by MiniLM similarity", async () => {
+    const m = model([split(0, 0.5, 0, 1)], { rerank: { features: [...FEATURES, "s1_logrank", "dense_gap"], trees: [split(FEATURES.length + 1, -0.5, 0, 10)] } });
+    const ranked = rankUnits(index, m, m.instant, signals(index, "render connect evict"));
     // Toy embedder: similar to the issue only when the text mentions "pool".
     const embed = async (texts: string[]) => texts.map((t) => Float32Array.from(t.includes("pool") || t.startsWith("render connect") ? [1, 0] : [0, 1]));
-    const out = await rankStage2(m, "render connect evict", ranked, embed, (u) => `${u.qualname}\n${u.text}`);
+    const out = await rerankStage(m, ranked, embed, (u) => `${u.qualname}\n${u.text}`, "render connect evict");
     expect(out[0].unit.qualname).toBe("connect");
     expect(out[0].semantic).toBeCloseTo(1);
+  });
+
+  it("the file stage ranks files, with their functions", () => {
+    const m = model([split(0, 0.5, 0, 1)], { file: { features: ["frame_file", "best_score_gap"], trees: [split(0, 0.5, 0, 10)] } });
+    const issue = 'Traceback (most recent call last):\n  File "/srv/app/pkg/db.py", line 2, in connect\nOSError';
+    const sig = signals(index, issue);
+    const files = rankFiles(index, m.file!, m.instant, sig, rankUnits(index, m, m.instant, sig));
+    expect(files[0].path).toBe("pkg/db.py");
+    expect(files[0].units.map((c) => c.unit.qualname)).toEqual(["connect"]);
   });
 });
 
@@ -223,5 +243,51 @@ describe("loading any repository", () => {
     expect([l.owner, l.name]).toEqual(["NewOwner", "new-name"]);
     expect(l.files.map((x) => x.path)).toEqual(["a.py"]); // the symlink is left out
     vi.unstubAllGlobals();
+  });
+});
+
+describe("repository archives", () => {
+  // A tar entry: 512-byte header (name, size, type, ustar prefix) then the padded body.
+  const entry = (name: string, body: string, type = "0", prefix = "") => {
+    const data = new TextEncoder().encode(body);
+    const h = new Uint8Array(512);
+    const put = (s: string, at: number) => h.set(new TextEncoder().encode(s), at);
+    put(name, 0);
+    put(data.length.toString(8).padStart(11, "0"), 124);
+    put(type, 156);
+    put("ustar\u000000", 257);
+    put(prefix, 345);
+    const out = new Uint8Array(512 + Math.ceil(data.length / 512) * 512);
+    out.set(h);
+    out.set(data, 512);
+    return out;
+  };
+  const gzip = async (parts: Uint8Array[]) => {
+    const all = new Uint8Array(parts.reduce((n, p) => n + p.length, 0) + 1024);
+    let at = 0;
+    for (const p of parts) {
+      all.set(p, at);
+      at += p.length;
+    }
+    return new Blob([all]).stream().pipeThrough(new CompressionStream("gzip"));
+  };
+
+  it("streams the wanted files, with long and prefixed names, skipping the rest", async () => {
+    const long = `pkg/${"deep/".repeat(30)}mod.py`;
+    const pax = `${(` path=repo-abc/${long}\n`.length + 3)} path=repo-abc/${long}\n`;
+    const stream = await gzip([
+      entry("repo-abc/", "", "5"),
+      entry("repo-abc/pkg/a.py", "def a():\n    return 1\n"),
+      entry("repo-abc/README.md", "# hi"),
+      entry("pax", pax, "x"),
+      entry("ignored-short-name", "def deep():\n    pass\n"),
+      entry("b.py", "def b():\n    pass\n", "0", "repo-abc/pkg"),
+      entry("repo-abc/pkg/link.py", "", "2"),
+    ]);
+    const got: Record<string, string> = {};
+    for await (const f of untar(stream, (p) => p.endsWith(".py"))) got[f.path] = new TextDecoder().decode(f.data);
+    expect(Object.keys(got).sort()).toEqual([long, "pkg/a.py", "pkg/b.py"].sort());
+    expect(got["pkg/a.py"]).toContain("def a()");
+    expect(got[long]).toContain("def deep()");
   });
 });
