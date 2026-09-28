@@ -12,7 +12,7 @@ Hand-tuning more fusion weights would not scale to the number of signals availab
 
 **Training data.** All of SWE-bench test minus Lite: 1,941 issues with a function target (1,992 with a file target), 5x the 393-issue dev set used earlier. The issues come from the same 12 repositories and share nothing with Lite.
 
-**Features (42 per unit, 31 per file).**
+**Features (52 per unit, 31 per file).**
 - Retrieval: BM25 and dense scores, ranks and gaps to the best hit, and the fused score, each also for the unit's file.
 - Query fields: the issue title and its code spans scored on their own, since a title is denser than the whole report.
 - Structure: rank within its file, file size, call-graph proximity to the top hits, unit kind, length, privacy, name ambiguity in the repository.
