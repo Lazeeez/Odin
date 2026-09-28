@@ -5,6 +5,8 @@ import type { UnitKind } from "../engine/types.ts";
 export interface RepoInfo {
   repo: string;
   branch: string;
+  /** The folder the search is limited to, if the link named one. */
+  scope: string | null;
   via: string;
   sha: string | null;
   files: number;
