@@ -24,6 +24,17 @@ export function useSearchWorker() {
   const worker = useRef<Worker | null>(null);
   const seq = useRef(0);
   const loadingRef = useRef(false);
+  /** A repository asked for while another was loading: it starts once that load is cancelled. */
+  const pending = useRef<{ input: string; includeTests: boolean } | null>(null);
+  const start = useRef<(input: string, includeTests: boolean) => void>(() => {});
+  /** Starts the queued request, if any; true when it did. */
+  const startPending = () => {
+    const next = pending.current;
+    if (!next) return false;
+    pending.current = null;
+    start.current(next.input, next.includeTests);
+    return true;
+  };
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<LoadStatus | null>(null);
   const [info, setInfo] = useState<RepoInfo | null>(null);
@@ -52,6 +63,8 @@ export function useSearchWorker() {
       }
       case "loaded":
         setLoadingBoth(false);
+        // The cancel came too late to stop that load (it was nearly done): start the newer one now.
+        if (startPending()) return;
         setStatus(null);
         setInfo(msg.info);
         return;
@@ -67,6 +80,7 @@ export function useSearchWorker() {
         return;
       case "error":
         setLoadingBoth(false);
+        if (msg.cancelled && startPending()) return;
         setInfo((prev) => (prev?.partial ? null : prev)); // never leave a half-loaded repository on screen
         setStatus({ text: msg.message, fraction: null, error: !msg.cancelled });
         return;
@@ -115,7 +129,13 @@ export function useSearchWorker() {
   useEffect(() => () => worker.current?.terminate(), []);
 
   const load = useCallback((input: string, includeTests: boolean) => {
-    if (loadingRef.current) return;
+    if (loadingRef.current) {
+      // A newer request wins: cancel the load in progress, then start this one.
+      pending.current = { input, includeTests };
+      send({ type: "cancel" });
+      return;
+    }
+    pending.current = null;
     setLoadingBoth(true);
     setResults(null);
     setSemantic("");
@@ -125,7 +145,11 @@ export function useSearchWorker() {
     send({ type: "load", input, includeTests });
   }, [send]);
 
-  const cancel = useCallback(() => send({ type: "cancel" }), [send]);
+  start.current = load;
+  const cancel = useCallback(() => {
+    pending.current = null;
+    send({ type: "cancel" });
+  }, [send]);
   const requestMap = useCallback(() => send({ type: "map" }), [send]);
 
   const search = useCallback((query: string, useSemantic: boolean) => {
