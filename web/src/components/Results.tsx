@@ -1,6 +1,7 @@
 import { useState } from "preact/hooks";
 import { type Metric, type Stage, type Summary, stagesAt } from "../lib/data.ts";
 import { metricLabel } from "../lib/format.ts";
+import { plainName } from "../lib/stages.ts";
 import { Bars } from "./Bars.tsx";
 import { Seg } from "./Seg.tsx";
 
@@ -30,8 +31,8 @@ export function StageChart({ summary }: { summary: Summary }) {
         label={`${metric} by pipeline stage, ${level} level`}
         format={(v) => metricLabel(metric, v)}
         rows={rows.map((r, i) => ({
-          label: r.label, value: r[metric], ci: r.ci95?.[metric], emphasis: i === rows.length - 1,
-          detail: `${r.n} issues${r.latency_ms_p50 != null ? ` · ${r.latency_ms_p50 < 10 ? r.latency_ms_p50.toFixed(1) : Math.round(r.latency_ms_p50)} ms per query (p50)` : ""}`,
+          label: plainName(r.id, r.label), value: r[metric], ci: r.ci95?.[metric], emphasis: i === rows.length - 1,
+          detail: `${r.label} · ${r.n} issues${r.latency_ms_p50 != null ? ` · ${r.latency_ms_p50 < 10 ? r.latency_ms_p50.toFixed(1) : Math.round(r.latency_ms_p50)} ms per query (p50)` : ""}`,
         }))}
       />
       <p class="note">{NOTES[metric]}</p>
@@ -58,7 +59,7 @@ export function SignificanceTable({ summary }: { summary: Summary }) {
                 const sig = r.p < 0.05 && r.delta > 0;
                 return (
                   <tr key={`${to.id}-${m}`}>
-                    {j === 0 && <td rowSpan={2}><span class="muted">{from.label} →</span><br /><b>{to.label}</b></td>}
+                    {j === 0 && <td rowSpan={2}><span class="muted">{plainName(from.id, from.label)} →</span><br /><b>{plainName(to.id, to.label)}</b></td>}
                     <td>{m === "mrr" ? "MRR" : "Recall@10"}</td>
                     <td class={`num${sig ? " sig" : ""}`}>{r.delta >= 0 ? "+" : ""}{r.delta.toFixed(3)}</td>
                     <td class="num">[{r.ci95[0].toFixed(3)}, {r.ci95[1].toFixed(3)}]</td>
@@ -83,11 +84,11 @@ export function RepoTable({ summary }: { summary: Summary }) {
   return (
     <div class="table-wrap">
       <table class="heat">
-        <thead><tr><th>Repository</th><th>Issues</th>{rows.map((r) => <th key={r.id}>{r.label}</th>)}</tr></thead>
+        <thead><tr><th>Project</th><th>Issues</th>{rows.map((r) => <th key={r.id} title={r.label}>{plainName(r.id, r.label)}</th>)}</tr></thead>
         <tbody>
           {repos.map((repo) => (
             <tr key={repo}>
-              <td>{repo}</td>
+              <td title={repo}>{repo.split("/")[1] ?? repo}</td>
               <td class="num">{last.by_repo[repo].n}</td>
               {rows.map((r) => {
                 const v = r.by_repo[repo]?.["recall@10"];
