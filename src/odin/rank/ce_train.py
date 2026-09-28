@@ -98,6 +98,16 @@ def build_ce_data_from_ltr(
     return records
 
 
+def score_teacher(records: list[dict], teacher, log: Callable[[str], None] = print) -> None:
+    """Add each record's teacher scores (for pos + neg, in order) as `teacher`, for distillation."""
+    t0 = time.perf_counter()
+    for n, rec in enumerate(records, start=1):
+        if "teacher" not in rec:
+            rec["teacher"] = teacher.score(rec["query"], rec["pos"] + rec["neg"]).tolist()
+        if n % 100 == 0:
+            log(f"teacher {n}/{len(records)} ({time.perf_counter() - t0:.0f}s)")
+
+
 def train_cross_encoder(
     records: list[dict],
     out_dir: Path,
@@ -106,8 +116,15 @@ def train_cross_encoder(
     lr: float = 1e-4,
     seed: int = 0,
     log: Callable[[str], None] = print,
+    distill: float = 0.0,
+    temperature: float = 1.0,
 ) -> None:
-    """LoRA fine-tuning with a listwise loss: gold vs its hardest negatives, same issue."""
+    """LoRA fine-tuning with a listwise loss: gold vs its hardest negatives, same issue.
+
+    With `distill` > 0 and records carrying `teacher` scores (see `score_teacher`), the loss
+    also pulls the model's distribution over the group towards the teacher's (soft labels):
+    one model learns what an ensemble of several agrees on, at the cost of one.
+    """
     import torch
     from peft import LoraConfig, get_peft_model
 
@@ -144,15 +161,23 @@ def train_cross_encoder(
     for _ in range(epochs):
         random.shuffle(usable)
         for rec in usable:
-            docs = [random.choice(rec["pos"])] + random.sample(
-                rec["neg"], min(group - 1, len(rec["neg"]))
-            )
+            pi = random.randrange(len(rec["pos"]))
+            ni = random.sample(range(len(rec["neg"])), min(group - 1, len(rec["neg"])))
+            docs = [rec["pos"][pi]] + [rec["neg"][i] for i in ni]
             prefix = ce.prefix_ids(rec["query"])
             with torch.autocast("cuda", dtype=torch.bfloat16):
                 s = ce.forward_last([prefix + ce.doc_ids(d) for d in docs]).float()
             loss = torch.nn.functional.cross_entropy(
                 s[None], torch.zeros(1, dtype=torch.long, device=s.device)
             )
+            if distill > 0 and "teacher" in rec:
+                t = rec["teacher"]
+                tz = torch.tensor([t[pi]] + [t[len(rec["pos"]) + i] for i in ni], device=s.device)
+                soft = torch.nn.functional.softmax(tz / temperature, dim=0)
+                kl = torch.nn.functional.kl_div(
+                    torch.nn.functional.log_softmax(s / temperature, dim=0), soft, reduction="sum"
+                )
+                loss = (1 - distill) * loss + distill * temperature**2 * kl
             loss.backward()
             torch.nn.utils.clip_grad_norm_(params, 1.0)
             opt.step()
@@ -169,9 +194,18 @@ def train_cross_encoder(
         p.data = p.data.half()
     model.save_pretrained(str(out_dir))
     (out_dir / "training.json").write_text(
-        json.dumps({"records": len(usable), "epochs": epochs, "group": group, "lr": lr}),
+        json.dumps(
+            {"records": len(usable), "epochs": epochs, "group": group, "lr": lr, "distill": distill}
+        ),
         encoding="utf-8",
     )
+
+
+def ltr_margin(p_top: np.ndarray) -> float:
+    """How far LTR's best candidate leads the next, in standard deviations of the top K."""
+    if len(p_top) < 2 or p_top.std() == 0:
+        return math.inf
+    return float((p_top[0] - p_top[1]) / p_top.std())
 
 
 def rerank(base: np.ndarray, ce_scores: np.ndarray, weight: float) -> np.ndarray:
