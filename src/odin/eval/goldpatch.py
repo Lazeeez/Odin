@@ -49,6 +49,8 @@ def parse_patch(patch: str) -> list[FileEdit]:
                     if ind is not None:
                         pending = ind if pending is None else min(pending, ind)
                     continue
+                if line.source_line_no is None:
+                    continue  # "\ No newline at end of file" markers carry no line
                 if pending is not None:
                     edit.insertions.add(Insertion(prev, line.source_line_no, pending))
                     pending = None
