@@ -36,7 +36,10 @@ export function replaceHash(hash: string): void {
 export function useRoute(): Route {
   const [hash, setHash] = useState(location.hash);
   useEffect(() => {
-    const onChange = () => setHash(location.hash);
+    const onChange = () => {
+      upgradeLegacyUrl(); // an old-style link can also arrive as a hash change in an open tab
+      setHash(location.hash);
+    };
     addEventListener("hashchange", onChange);
     return () => removeEventListener("hashchange", onChange);
   }, []);
