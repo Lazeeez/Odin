@@ -135,9 +135,19 @@ test("the tools: why-bars, recent change, map, bookmarklet, issue links, palette
   await page.locator("button", { hasText: "Show the map" }).click();
   await expect(page.locator(".repo-map canvas")).toBeVisible();
 
-  // The bookmarklet is a real javascript: link pointing at this site.
+  // The bookmarklet, run as a saved bookmark runs it, on a GitHub issue page opens this site
+  // with that repository and issue.
   await page.goto("./");
-  expect(await page.locator("a.bookmarklet-btn").getAttribute("href")).toMatch(/^javascript:.*#\/search\?repo=/);
+  const bookmark = (await page.locator("a.bookmarklet-btn").getAttribute("href"))!;
+  expect(bookmark).toMatch(/^javascript:[^#]+$/); // no raw "#": a bookmark would end there
+  await page.context().route("https://github.com/**", (route) => route.fulfill({ body: "<p>issue</p>", contentType: "text/html" }));
+  const github = await page.context().newPage();
+  await github.goto("https://github.com/odin-e2e/fixture/issues/7");
+  await github.evaluate((h) => { const a = document.createElement("a"); a.href = h; a.id = "bm"; a.textContent = "Odin this"; document.body.append(a); }, bookmark);
+  const [opened] = await Promise.all([page.context().waitForEvent("page"), github.click("#bm")]);
+  expect(opened.url()).toMatch(/#\/search\?repo=odin-e2e\/fixture&issue=7$/);
+  await github.close();
+  await opened.close();
 
   // Ctrl+K opens the palette; typing narrows it; Enter runs the command.
   await page.keyboard.press("Control+k");
