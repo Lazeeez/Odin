@@ -173,12 +173,16 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: var(--a
 .seg.small button { padding: 5px 11px; font-size: 12.5px; }
 
 /* ---------- navigation and footer ---------- */
-.nav { position: sticky; top: 0; z-index: 30; overflow-x: clip; background: color-mix(in srgb, var(--bg) 82%, transparent); backdrop-filter: saturate(1.5) blur(12px); border-bottom: 1px solid transparent; border-image: var(--gilt-fade) 1; }
+.nav { position: sticky; top: 0; z-index: 30; background: color-mix(in srgb, var(--bg) 82%, transparent); -webkit-backdrop-filter: saturate(1.5) blur(12px); backdrop-filter: saturate(1.5) blur(12px); border-bottom: 1px solid transparent; border-image: var(--gilt-fade) 1; }
+/* A glint gliding along the gold line. The line spans the nav and the highlight moves inside it
+   (background-position), so nothing overflows and the nav needs no overflow clipping: Safari
+   16.0-16.3 clipped both axes for overflow-x: clip, hiding the phone menu that hangs below. */
 .nav::after {
-  content: ""; position: absolute; left: 0; bottom: -1px; width: 22%; height: 1px; pointer-events: none;
-  background: linear-gradient(90deg, transparent, var(--glint), transparent); animation: glide 9s ease-in-out 1.5s infinite;
+  content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 1px; pointer-events: none;
+  background: linear-gradient(90deg, transparent, var(--glint), transparent) no-repeat -30% 0 / 22% 100%;
+  animation: glide 9s ease-in-out 1.5s infinite;
 }
-@keyframes glide { from { transform: translateX(-100%); } 55%, to { transform: translateX(460%); } }
+@keyframes glide { from { background-position: -30% 0; } 55%, to { background-position: 130% 0; } }
 .nav-inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; height: 64px; display: flex; align-items: center; gap: 24px; }
 .brand { display: inline-flex; align-items: center; gap: 10px; font: 700 20px var(--display); letter-spacing: .08em; color: var(--ink); }
 .brand:hover { color: var(--ink); }
@@ -447,7 +451,7 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: var(--a
 .cta-band .btn { margin-top: 20px; }
 
 /* ---------- inner pages ---------- */
-main { overflow-x: clip; }
+main { overflow-x: hidden; overflow-x: clip; } /* hidden where clip is unsupported (Safari < 16) */
 main[class^="page-"]:not(.page-home) { padding: 8px 0 64px; }
 .page-head { margin-bottom: 32px; max-width: 780px; }
 .page-head p { color: var(--ink-2); font-size: 17px; margin: 0; }
@@ -853,6 +857,11 @@ details > summary { cursor: pointer; color: var(--accent); font-size: 13.5px; fo
   .whybox li { grid-template-columns: minmax(0, 1fr) 70px 46px; }
   .hit-actions { margin-left: 0; }
   .preview { margin-top: 40px; }
+}
+/* the smallest phones: the logo and three buttons, no palette button (it is mostly a keyboard tool) */
+@media (max-width: 359px) {
+  .palette-btn { display: none; }
+  .nav-actions { gap: 2px; }
 }
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; }
