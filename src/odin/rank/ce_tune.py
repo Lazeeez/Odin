@@ -8,7 +8,7 @@ from pathlib import Path
 import numpy as np
 
 from odin.eval.ground_truth import GoldEntry
-from odin.rank.ce_train import rerank, validation_split
+from odin.rank.ce_train import ltr_margin, rerank, validation_split
 from odin.rank.cross_encoder import CrossEncoder
 from odin.rank.features import FeatureExtractor
 from odin.rank.ltr import LEVELS, LGBM_PARAMS, RankingData, issue_memory
@@ -17,6 +17,10 @@ from odin.search.retriever import HybridRetriever, Query
 
 DEPTHS = (10, 20, 30)
 WEIGHTS = (0.0, 0.25, 0.5, 1.0, 2.0, 4.0, math.inf)
+# Skip the reranker when LTR's first candidate leads its second by this many standard
+# deviations (of the reranked candidates' LTR scores): confident queries cost no GPU time.
+SKIP_MARGINS = (0.5, 0.75, 1.0, 1.5, 2.0, 3.0, math.inf)
+SKIP_TOLERANCE = 0.003  # declared before looking: validation MRR a skip rule may give up
 
 
 def _metrics(ranked: list[str], gold: set[str]) -> np.ndarray:
@@ -56,6 +60,7 @@ def tune_cross_encoder(
     extractor = FeatureExtractor(retriever, fusion, memory=issue_memory(retriever))
     todo = [g for g in gold if g.instance_id in val]
     fn_scores = {(k, w): [] for k in DEPTHS for w in WEIGHTS}
+    ltr_only, margins = [], []
     file_scores = {w: [] for w in WEIGHTS}
     for n, g in enumerate(todo, start=1):
         cs = extractor.extract(Query(g.instance_id, g.repo, g.base_commit, queries[g.instance_id]))
@@ -65,6 +70,8 @@ def tune_cross_encoder(
         texts = retriever.indexer.unit_texts(cs.index, cs.rows[top])
         ce_all = ce.score(queries[g.instance_id], texts)
         targets = set(g.functions + g.classes)
+        ltr_only.append(_metrics([cs.ids[i] for i in order], targets))
+        margins.append({k: ltr_margin(p[top[:k]]) for k in DEPTHS})
         for k in DEPTHS:
             for w in WEIGHTS:
                 new = np.argsort(-rerank(p[top[:k]], ce_all[:k], w), kind="stable")
@@ -101,12 +108,29 @@ def tune_cross_encoder(
     fn_rows, file_rows = table(fn_scores), table(file_scores)
     # Declared before looking: a reranker exists to fix the top, so choose by MRR.
     pick = lambda rows: max(rows, key=lambda r: (round(r["mrr"], 4), r["recall@10"]))  # noqa: E731
+    chosen = pick(fn_rows)["setting"]
+    k, _ = chosen
+    full = np.mean(fn_scores[chosen], axis=0)
+    skip_rows = []
+    for tau in SKIP_MARGINS:
+        skipped = np.array([m[k] > tau for m in margins])
+        mixed = [
+            lo if s else hi for lo, hi, s in zip(ltr_only, fn_scores[chosen], skipped, strict=True)
+        ]
+        m = np.mean(mixed, axis=0)
+        skip_rows.append(
+            {"margin": tau, "skipped": float(skipped.mean()), "mrr": m[3], "recall@10": m[2]}
+        )
+    ok = [r for r in skip_rows if r["mrr"] >= full[3] - SKIP_TOLERANCE]
+    skip = max(ok, key=lambda r: (r["skipped"], -r["margin"])) if ok else skip_rows[-1]
     return {
         "validation_issues": len(todo),
         "function": fn_rows,
         "file": file_rows,
-        "chosen_function": pick(fn_rows)["setting"],
+        "chosen_function": chosen,
         "chosen_file": pick(file_rows)["setting"],
+        "skip": skip_rows,
+        "chosen_skip": skip["margin"],
     }
 
 
@@ -118,6 +142,7 @@ def save_choice(result: dict, path: Path, adapters: list[Path]) -> None:
         "depth": k,
         "function_weight": w,
         "file_weight": result["chosen_file"],
+        "skip_margin": result.get("chosen_skip", math.inf),
         "validation": {
             "function": next(r for r in result["function"] if r["setting"] == (k, w)),
             "file": next(r for r in result["file"] if r["setting"] == result["chosen_file"]),
