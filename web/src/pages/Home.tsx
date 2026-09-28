@@ -4,7 +4,9 @@ import { Seer } from "../components/Emblem.tsx";
 import { Divider, HeroSky, ICONS, Icon, RuneRing } from "../components/Myth.tsx";
 import { Tile } from "../components/Tile.tsx";
 import { bestBrowserStage, type Lite, type Summary, stagesAt } from "../lib/data.ts";
+import showcase from "../assets/showcase.json";
 import { useReveal } from "../lib/reveal.ts";
+import { load, save } from "../lib/storage.ts";
 import { href } from "../lib/router.ts";
 
 const EXAMPLES = ["pallets/flask", "psf/requests", "AtsushiSakai/PythonRobotics"];
@@ -31,39 +33,46 @@ function QuickStart() {
   );
 }
 
+type Example = { id: string; repo: string; title: string; code: string; top: [name: string, path: string, fixed: boolean][] };
+const EXAMPLES_RUN = showcase as Example[];
+
 /**
- * What a search looks like: real output for a real Flask bug, drawn as a product window. When it
- * scrolls into view it plays the search: the eye scans, then the results land one by one.
+ * What a search looks like: a real SWE-bench Lite bug, a different one on every visit
+ * (scripts/export_showcase.py picks them), with the full pipeline's actual top results from the
+ * evaluation run and the functions the maintainers' fix changed marked.
  */
 function Preview() {
-  const rows: [string, string, string][] = [
-    ["Flask.url_for", "src/flask/app.py", "name appears in the issue"],
-    ["url_for", "src/flask/helpers.py", "name appears in the issue"],
-    ["App.handle_url_build_error", "src/flask/sansio/app.py", ""],
-    ["Request.blueprint", "src/flask/wrappers.py", ""],
-  ];
+  // Each visit shows the next example, from a random starting point: no bug twice in a row, and
+  // every one of them before any repeats. The position lives in this browser only.
+  const [ex] = useState(() => {
+    const n = EXAMPLES_RUN.length;
+    const last = load<number>("showcase", -1);
+    const next = last >= 0 && last < n ? (last + 1) % n : Math.floor(Math.random() * n);
+    save("showcase", next);
+    return EXAMPLES_RUN[next];
+  });
   return (
-    <div class="preview reveal" aria-label="Example: searching pallets/flask for a bug report" role="img">
+    <div class="preview reveal" aria-label={`Example: searching ${ex.repo} for a real bug report`} role="img">
       <div class="preview-bar">
-        <i /><i /><i /><span>pallets/flask · 440 functions</span>
+        <i /><i /><i /><span>{ex.repo} · SWE-bench Lite</span>
         <span class="preview-state">
           <span class="scan"><Seer size="sm" /> searching</span>
-          <span class="done">4 found in 38 ms</span>
+          <span class="done">the real fix, ranked first</span>
         </span>
       </div>
       <div class="preview-body">
         <div class="preview-issue">
           <span class="preview-label">Bug report</span>
-          <p>url_for fails to build a URL for a blueprint endpoint</p>
-          <code>werkzeug.routing.BuildError: Could not build url for endpoint 'admin.index'</code>
+          <p>{ex.title}</p>
+          <code>{ex.code}</code>
         </div>
         <ol class="preview-results">
-          {rows.map(([name, path, why], i) => (
-            <li key={name} style={{ "--i": i }}>
+          {ex.top.map(([name, path, fixed], i) => (
+            <li key={`${path}::${name}`} style={{ "--i": i }} class={fixed ? "fixed" : ""}>
               <span class="rank">{i + 1}</span>
               <span class="qual">{name}</span>
               <span class="path">{path}</span>
-              {why && <span class="reason">{why}</span>}
+              {fixed && <span class="reason">changed by the real fix</span>}
             </li>
           ))}
         </ol>
