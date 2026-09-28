@@ -1,4 +1,4 @@
-// Shapes of the JSON written by scripts/export_site.py and scripts/eval_lite_browser.py.
+// Shapes of the JSON written by scripts/export_site.py and scripts/browser_ltr.py.
 
 export interface Stage {
   level: "function" | "file";
