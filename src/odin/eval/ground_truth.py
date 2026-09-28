@@ -107,8 +107,27 @@ def build_gold(instances: list[Instance], cache: RepoCache, workers: int = 8) ->
         by_repo[inst.repo].append(inst)
 
     def run(group: list[Instance]) -> list[GoldEntry]:
-        _prefetch(group, cache)
-        return [gold_for_instance(inst, cache) for inst in group]
+        # A deleted or renamed repository, or one malformed patch, must not sink the rest.
+        try:
+            _prefetch(group, cache)
+        except GitError as exc:
+            return [
+                GoldEntry(i.instance_id, i.repo, i.base_commit, errors=[str(exc)]) for i in group
+            ]
+        out = []
+        for inst in group:
+            try:
+                out.append(gold_for_instance(inst, cache))
+            except Exception as exc:  # noqa: BLE001 - recorded on the entry, never silent
+                out.append(
+                    GoldEntry(
+                        inst.instance_id,
+                        inst.repo,
+                        inst.base_commit,
+                        errors=[f"{type(exc).__name__}: {exc}"],
+                    )
+                )
+        return out
 
     with ThreadPoolExecutor(max_workers=workers) as pool:
         results = [e for group in pool.map(run, by_repo.values()) for e in group]
