@@ -3,8 +3,6 @@ import { type Page, href } from "../lib/router.ts";
 import { save } from "../lib/storage.ts";
 import { Emblem } from "./Emblem.tsx";
 
-export const REPO_URL = "https://github.com/Lazeeez/Odin";
-
 type Theme = "light" | "dark";
 
 /** The theme index.html applied before first paint (a saved choice, else light). */
@@ -52,9 +50,6 @@ export function Nav({ page }: { page: Page }) {
             <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6" /><path d="m15 15 5 5" /></svg>
           </button>
           <ThemeToggle />
-          <a class="icon-btn" href={REPO_URL} target="_blank" rel="noopener" aria-label="Source code on GitHub" title="Source code on GitHub">
-            <svg viewBox="0 0 24 24" aria-hidden="true" class="fill"><path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.61.07-.61 1 .07 1.53 1.03 1.53 1.03.9 1.52 2.34 1.08 2.91.83.09-.65.35-1.08.63-1.33-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02a9.5 9.5 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10 10 0 0 0 12 2Z" /></svg>
-          </a>
           <a class="btn primary small nav-cta" href={href("search")}>Try Odin</a>
           <button class="icon-btn menu-btn" type="button" aria-expanded={open} aria-controls="site-menu" aria-label="Menu" onClick={() => setOpen(!open)}>
             <svg viewBox="0 0 24 24" aria-hidden="true">{open ? <path d="M6 6l12 12M18 6 6 18" /> : <path d="M4 7h16M4 12h16M4 17h16" />}</svg>
@@ -72,7 +67,6 @@ export function Footer() {
         <a class="brand" href={href("home")}><Logo />Odin</a>
         <nav aria-label="Footer">
           {LINKS.map(([p, label]) => <a key={p} href={href(p)}>{label}</a>)}
-          <a href={REPO_URL} target="_blank" rel="noopener">GitHub</a>
         </nav>
       </div>
       <p class="footer-note muted small">
