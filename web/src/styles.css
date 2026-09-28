@@ -275,7 +275,6 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: var(--a
 @keyframes sheen { 0% { transform: translateX(-160%) skewX(-20deg); } 35%, 100% { transform: translateX(360%) skewX(-20deg); } }
 @keyframes land { from { opacity: 0; transform: translateX(-12px); } to { opacity: 1; transform: none; } }
 @keyframes crown { 0% { box-shadow: 0 0 0 0 var(--hero-glow); } 60% { box-shadow: 0 0 0 8px transparent; } 100% { box-shadow: none; } }
-@keyframes sweep { 0% { opacity: 0; transform: translateY(0); } 15% { opacity: 1; } 85% { opacity: 1; } 100% { opacity: 0; transform: translateY(var(--h, 180px)); } }
 
 .intro { animation: rise .9s cubic-bezier(.2, .7, .2, 1) var(--d, 0s) both; }
 /* the lede is the largest paint: it slides but never starts invisible, so it counts as painted at once */
@@ -347,12 +346,6 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: var(--a
 .preview-state .done { opacity: 0; color: var(--accent); }
 .preview.in .preview-state .scan { animation: fadeout .35s ease 1.5s forwards; }
 .preview.in .preview-state .done { animation: fadein .5s ease 1.7s forwards; }
-.preview-issue { position: relative; }
-.preview-issue::after {
-  content: ""; position: absolute; left: 12px; right: 12px; top: 18px; height: 2px; opacity: 0; pointer-events: none;
-  background: linear-gradient(90deg, transparent, var(--gold-line), transparent); box-shadow: 0 0 12px var(--gold-line);
-}
-.preview.in .preview-issue::after { animation: sweep 1.3s ease-in-out .25s; }
 .preview-results li { opacity: 0; }
 .preview.in .preview-results li { animation: land .6s cubic-bezier(.2, .7, .2, 1) calc(1.6s + var(--i) * .14s) forwards; }
 .preview.in .preview-results li:first-child { animation: land .6s cubic-bezier(.2, .7, .2, 1) 1.6s forwards, crown 1.6s ease-out 2.3s; }
@@ -858,17 +851,12 @@ details > summary { cursor: pointer; color: var(--accent); font-size: 13.5px; fo
   .hit-actions { margin-left: 0; }
   .preview { margin-top: 40px; }
 }
-/* the smallest phones: the logo and three buttons, no palette button (it is mostly a keyboard tool) */
-@media (max-width: 359px) {
-  .palette-btn { display: none; }
-  .nav-actions { gap: 2px; }
-}
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; }
   .skeleton span { animation: none; }
   .ring-outer, .ring-inner, .intro, .hero h1 .word, .page-hero h1 .word, .ladder i.hit, .hits > li, .bug-browser, .rune-ring .draw, .rune-ring .rune, .rune-ring .sep, .hero-sky .rays,
   .stars, .hero::before, .sheen::after, .emblem.live *, .seer-halo, .preview-results li, .preview-state span,
-  .preview-issue::after, .nav::after, .wtrack i, .rune-progress.busy .rp-arc, .repo-map, .palette, .palette-backdrop, .choice.right { animation: none !important; }
+  .nav::after, .wtrack i, .rune-progress.busy .rp-arc, .repo-map, .palette, .palette-backdrop, .choice.right { animation: none !important; }
   .rune-ring .draw { stroke-dashoffset: 0; }
   .rune-ring .rune, .rune-ring .sep, .preview-results li { opacity: 1; }
   .hero-sky .ember, .preview-state .scan { display: none; }
