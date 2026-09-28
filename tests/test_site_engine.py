@@ -141,41 +141,15 @@ RANK_QUERIES = [
 ]
 
 
-@pytest.mark.skipif(NODE is None, reason="needs Node 24 and `npm ci` in web/")
-def test_js_rank_features_match_python():
-    """The browser ranker must see the same candidates with the same features as training."""
+def _python_index(units):
+    """The Python side of the parity tests: a BM25 index over `units`, shaped like a snapshot."""
     from collections import Counter
     from types import SimpleNamespace
 
     import numpy as np
 
-    from odin.rank.browser import FEATURES, extract, predict
-    from odin.rank.features import issue_fields
-    from odin.rank.mentions import Mentions
     from odin.search.bm25 import BM25Index, Vocab
     from odin.search.tokenize import code_counts
-
-    units = [
-        {"path": str(p.relative_to(ROOT)).replace("\\", "/"), **u}
-        for p in sorted((ROOT / "src").rglob("*.py"))
-        for u in python_units(p)
-        if u["text"].strip()
-    ]
-    trees = ROOT / "web/src/assets/ranker.json"
-    model = json.loads(trees.read_text()) if trees.exists() else {
-        "meta": {"pool": {"bm25": 100, "title": 20, "code": 20, "files": 5}, "depth": 50},
-        "stage1": {"features": FEATURES, "trees": []},
-    }  # fmt: skip
-    assert model["stage1"]["features"] == FEATURES
-    out = subprocess.run(
-        [NODE, str(ROOT / "tests/js/rank_features.mjs")],
-        input=json.dumps({"units": units, "queries": RANK_QUERIES, "model": model}),
-        capture_output=True,
-        check=True,
-        text=True,
-        encoding="utf-8",
-    ).stdout
-    js = json.loads(out)
 
     vocab = Vocab()
     paths = [u["path"] for u in units]
@@ -200,17 +174,84 @@ def test_js_rank_features_match_python():
     def scores(text: str) -> np.ndarray:
         return index.scores(vocab.lookup(code_counts(text)))
 
+    return fn, names, scores
+
+
+def _src_units():
+    return [
+        {"path": str(p.relative_to(ROOT)).replace("\\", "/"), **u}
+        for p in sorted((ROOT / "src").rglob("*.py"))
+        for u in python_units(p)
+        if u["text"].strip()
+    ]
+
+
+@pytest.mark.skipif(NODE is None, reason="needs Node 24 and `npm ci` in web/")
+def test_js_rank_features_match_python():
+    """Every ranking stage must see the same candidates, features and scores as training."""
+    from collections import Counter
+
+    import numpy as np
+
+    from odin.rank.browser import FEATURES, FILE_FEATURES, SEMANTIC, extract, file_features, predict
+    from odin.rank.features import issue_fields
+    from odin.rank.mentions import Mentions
+
+    units = _src_units()
+    trees = ROOT / "web/src/assets/ranker.json"
+    model = json.loads(trees.read_text()) if trees.exists() else {}
+    if "semantic" not in model:  # before the first training run: features only
+        model = {
+            "meta": {"pool": {"bm25": 100, "title": 20, "code": 20, "files": 5, "sem": 50, "title_sem": 20}, "depth": 20},
+            "instant": {"features": FEATURES, "trees": []},
+            "semantic": {"features": FEATURES + SEMANTIC, "trees": []},
+            "file": {"features": FILE_FEATURES, "trees": []},
+        }  # fmt: skip
+    assert model["instant"]["features"] == FEATURES
+    assert model["semantic"]["features"] == FEATURES + SEMANTIC
+    assert model["file"]["features"] == FILE_FEATURES
+    # Similarities are inputs here (the static encoder has its own test): any fixed values do.
+    rng = np.random.default_rng(0)
+    sims = [rng.uniform(-0.2, 0.9, (2, len(units))).astype(np.float32) for _ in RANK_QUERIES]
+    out = subprocess.run(
+        [NODE, str(ROOT / "tests/js/rank_features.mjs")],
+        input=json.dumps(
+            {
+                "units": units,
+                "queries": RANK_QUERIES,
+                "model": model,
+                "sims": [s.tolist() for s in sims],
+            }
+        ),
+        capture_output=True,
+        check=True,
+        text=True,
+        encoding="utf-8",
+    ).stdout
+    js = json.loads(out)
+    fn, names, scores = _python_index(units)
+
+    def same(got, ids, X, stage):
+        assert [g[0] for g in got] == ids
+        np.testing.assert_allclose(
+            np.array([g[1] for g in got]).reshape(X.shape), X, rtol=1e-5, atol=1e-5
+        )
+        want = [predict(model[stage], x) for x in X]
+        np.testing.assert_allclose([g[2] for g in got], want, rtol=1e-5, atol=1e-5)
+
     covered = Counter()
-    for q, got in zip(RANK_QUERIES, js, strict=True):
+    for q, sim, got in zip(RANK_QUERIES, sims, js, strict=True):
         title, code = issue_fields(q)
         m = Mentions.parse(q)
-        rows, X = extract(
-            fn, scores(q), scores(title), scores(code) if code else np.zeros(len(units)), m, names
-        )
-        assert [g[0] for g in got] == [fn.ids[r] for r in rows], q
-        np.testing.assert_allclose(np.array([g[1] for g in got]), X, rtol=1e-5, atol=1e-6)
-        want = [predict(model["stage1"], x) for x in X]
-        np.testing.assert_allclose([g[2] for g in got], want, rtol=1e-5, atol=1e-6)
+        lex, tlex = scores(q), scores(title)
+        clex = scores(code) if code else np.zeros(len(units))
+        rows, X = extract(fn, lex, tlex, clex, m, names)
+        same(got["instant"], [fn.ids[r] for r in rows], X, "instant")
+        rows_b, XB = extract(fn, lex, tlex, clex, m, names, sim[0], sim[1])
+        same(got["semantic"], [fn.ids[r] for r in rows_b], XB, "semantic")
+        unit_scores = np.array([predict(model["semantic"], x) for x in XB])
+        frows, XF = file_features(fn, lex, tlex, clex, sim[0], sim[1], m, rows_b, XB, unit_scores)
+        same(got["files"], [fn.files[f] for f in frows], XF, "file")
         covered.update(f for i, f in enumerate(FEATURES) if X[:, i].any())
     # the queries exercise the mention features, not just the lexical ones
     for f in (
@@ -222,3 +263,59 @@ def test_js_rank_features_match_python():
         "path_mentioned",
     ):
         assert covered[f], f
+
+
+@pytest.mark.skipif(NODE is None, reason="needs Node 24 and `npm ci` in web/")
+def test_js_static_embeddings_match_python(tmp_path):
+    """The browser's static encoder (tokenizer, int8 model file, mean, normalize) matches Python."""
+    import numpy as np
+
+    from odin.search.static import StaticEncoder, export_browser_model
+
+    enc = StaticEncoder(quantize=True)
+    model = tmp_path / "static.bin"
+    export_browser_model(enc, model)
+    texts = [f"{u['qualname']}\n{u['text']}" for u in _src_units()]
+    texts += [
+        "Café naïve ÅNGSTRÖM",
+        "中文 code_x = 1",
+        "emoji 🚀 ​ \x07\ttab\r\n",
+        "a" * 150,
+        "[UNK] raw",
+        "",
+    ]
+    # special tokens in raw text: [UNK] anywhere, [PAD] as a whole word in any case
+    texts += [
+        "the [PAD] vectors",
+        "x[PAD]y",
+        "_[PAD]_",
+        "[pad]",
+        "a [Pad] b",
+        "([PAD])",
+        "é[PAD]",
+        "[PAD][PAD]",
+        "x[UNK]y",
+    ]
+    vocab = enc.tokenizer.get_vocab()
+    inv = [""] * len(vocab)
+    for t, i in vocab.items():
+        inv[i] = t
+    pad = enc.tokenizer.token_to_id("[PAD]")
+    ids = json.loads(
+        subprocess.run(
+            [NODE, str(ROOT / "tests/js/static_ids.mjs")],
+            input=json.dumps({"vocab": inv, "unk": enc.unk, "pad": pad, "max": enc.max_tokens, "texts": texts}),
+            capture_output=True, check=True, text=True, encoding="utf-8",
+        ).stdout
+    )  # fmt: skip
+    assert ids == [enc.token_ids(t) for t in texts]
+    got = np.array(
+        json.loads(
+            subprocess.run(
+                [NODE, str(ROOT / "tests/js/static_embed.mjs"), str(model)],
+                input=json.dumps(texts), capture_output=True, check=True, text=True, encoding="utf-8",
+            ).stdout
+        ),
+        np.float32,
+    )  # fmt: skip
+    np.testing.assert_allclose(got, enc.encode(texts), atol=1e-5)
