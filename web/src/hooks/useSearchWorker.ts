@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "preact/hooks";
 import { RESULTS, SEMANTIC } from "../engine/semantic.ts";
-import type { Backend, FromWorker, RepoInfo, ToWorker, WireHit } from "../worker/protocol.ts";
+import type { Backend, FromWorker, RankStage, RepoInfo, ToWorker, WireFile, WireHit } from "../worker/protocol.ts";
 
 export interface LoadStatus {
   text: string;
@@ -9,8 +9,10 @@ export interface LoadStatus {
 }
 
 export interface Results {
-  stage: "keyword" | "semantic";
+  stage: RankStage;
   hits: WireHit[];
+  /** From the file ranker, once the semantic index is ready. */
+  files?: WireFile[];
   terms: string[];
   ms: number;
   computed?: number;
@@ -28,6 +30,12 @@ export function useSearchWorker() {
   const [results, setResults] = useState<Results | null>(null);
   const [semantic, setSemantic] = useState("");
   const [backend, setBackend] = useState<Backend | null>(null);
+  /** The background semantic index of the loaded repository. */
+  const [semanticIndex, setSemanticIndex] = useState<{ state: "building" | "ready" | "failed"; units: number; ms: number } | null>(null);
+  /** Which optional stages the ranker ships (it is trained and exported by scripts/browser_ltr.py). */
+  const [stages, setStages] = useState<{ rerank: boolean; file: boolean } | null>(null);
+  /** Files and their unit counts, fetched on demand for the repository map. */
+  const [map, setMap] = useState<[string, number][] | null>(null);
 
   const setLoadingBoth = (v: boolean) => {
     loadingRef.current = v;
@@ -47,34 +55,48 @@ export function useSearchWorker() {
         setStatus(null);
         setInfo(msg.info);
         return;
+      case "semantic-index":
+        setSemanticIndex({ state: msg.state, units: msg.units, ms: msg.ms });
+        return;
+      case "stages":
+        setStages({ rerank: msg.rerank, file: msg.file });
+        return;
+      case "partial":
+        // Searchable while the rest loads; the status line keeps reporting progress.
+        if (loadingRef.current) setInfo(msg.info);
+        return;
       case "error":
         setLoadingBoth(false);
+        setInfo((prev) => (prev?.partial ? null : prev)); // never leave a half-loaded repository on screen
         setStatus({ text: msg.message, fraction: null, error: !msg.cancelled });
         return;
       case "results":
         if (msg.id !== seq.current) return;
         setResults(msg);
-        if (msg.stage === "semantic") {
+        if (msg.stage === "rerank") {
           const parts = [];
           if (msg.computed) parts.push(`embedded ${msg.computed} new functions`);
           if (msg.stored) parts.push(`${msg.stored} from your browser's cache`);
-          setSemantic(`semantic rerank of the top ${SEMANTIC.depth}: ${msg.ms.toFixed(0)} ms${parts.length ? ` (${parts.join(", ")})` : " (already embedded this session)"}`);
+          setSemantic(`language-model rerank of the top ${SEMANTIC.depth}: ${msg.ms.toFixed(0)} ms${parts.length ? ` (${parts.join(", ")})` : " (already embedded this session)"}`);
         }
         return;
       case "semantic-start":
-        if (msg.id === seq.current) setSemantic("Reranking the top candidates semantically…");
+        if (msg.id === seq.current) setSemantic("Reranking the top candidates with a language model…");
         return;
       case "embedding":
         if (msg.id === seq.current) setSemantic(`Embedding candidates… ${msg.done} / ${msg.total}`);
         return;
       case "model":
-        setSemantic(`Downloading the semantic model (${msg.backend === "webgpu" ? "GPU" : "CPU"} build, once)… ${msg.pct}%`);
+        setSemantic(`Downloading the language model (${msg.backend === "webgpu" ? "GPU" : "CPU"} build, once)… ${msg.pct}%`);
         return;
       case "model-ready":
         setBackend(msg.backend);
         return;
+      case "map":
+        setMap(msg.files);
+        return;
       case "semantic-error":
-        if (msg.id === seq.current) setSemantic(`Semantic rerank unavailable (${msg.message}); showing the instant ranking.`);
+        if (msg.id === seq.current) setSemantic(`Language-model rerank unavailable (${msg.message}); showing the ranking without it.`);
     }
   }, []);
 
@@ -97,11 +119,14 @@ export function useSearchWorker() {
     setLoadingBoth(true);
     setResults(null);
     setSemantic("");
+    setSemanticIndex(null);
+    setMap(null);
     setStatus({ text: "Starting…", fraction: 0, error: false });
     send({ type: "load", input, includeTests });
   }, [send]);
 
   const cancel = useCallback(() => send({ type: "cancel" }), [send]);
+  const requestMap = useCallback(() => send({ type: "map" }), [send]);
 
   const search = useCallback((query: string, useSemantic: boolean) => {
     const id = ++seq.current;
@@ -113,5 +138,5 @@ export function useSearchWorker() {
     send({ type: "search", id, query, semantic: useSemantic, k: RESULTS });
   }, [send]);
 
-  return { loading, status, info, results, semantic, backend, load, cancel, search };
+  return { loading, status, info, results, semantic, backend, semanticIndex, stages, map, load, cancel, search, requestMap };
 }
