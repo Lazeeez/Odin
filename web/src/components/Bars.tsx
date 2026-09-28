@@ -20,7 +20,7 @@ export function Bars({ rows, format, label }: { rows: Bar[]; format: (v: number)
   return (
     <div class="bars" role="group" aria-label={label}>
       {rows.map((r, i) => (
-        <div class={`bar-row${r.emphasis ? " emph" : ""}${hover === i ? " hot" : ""}`} key={r.label} tabIndex={0}
+        <div class={`bar-row${r.emphasis ? " emph" : ""}${hover === i ? " hot" : ""}`} key={r.label} tabIndex={0} role="img"
           onPointerEnter={() => setHover(i)} onPointerLeave={() => setHover(null)} onFocus={() => setHover(i)} onBlur={() => setHover(null)}
           aria-label={`${r.label}: ${format(r.value)}${r.ci ? `, 95% interval ${format(r.ci[0])} to ${format(r.ci[1])}` : ""}`}>
           <span class="bar-label">{r.label}</span>
