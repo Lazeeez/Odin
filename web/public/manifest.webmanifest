@@ -1,0 +1,15 @@
+{
+  "name": "Odin: find the code behind any bug report",
+  "short_name": "Odin",
+  "description": "Paste a bug report, get the functions most likely to need the fix. Searches any public Python repository in your browser.",
+  "start_url": "./#/search",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0f1424",
+  "theme_color": "#0f1424",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
