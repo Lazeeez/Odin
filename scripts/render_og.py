@@ -17,9 +17,11 @@ def main() -> None:
         browser = p.chromium.launch()
         page = browser.new_page(viewport={"width": 1200, "height": 630}, color_scheme="light")
         page.goto(URL)
-        page.wait_for_function("document.querySelector('.stat .num')?.textContent.endsWith('%')")
+        page.wait_for_selector(".hero h1")
+        # The card: headline, pitch and the product window, without the page chrome.
         page.add_style_tag(
-            content=".nav{display:none} .hero{padding-top:56px!important} .cta{display:none}"
+            content=".nav,.quickstart{display:none} .hero{padding-top:44px!important}"
+            " .preview{margin-top:36px!important}"
         )
         page.screenshot(
             path="web/public/og.png", clip={"x": 0, "y": 0, "width": 1200, "height": 630}
