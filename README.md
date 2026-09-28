@@ -58,7 +58,7 @@ The cross-encoder's main job is the top of the list: function MRR +0.063 and rec
 - **Code-aware tokenization** splits `get_queryset` and `HTTPServerError` into parts and keeps the whole identifier too, so both prose ("query set") and exact mentions match. It helps most at depth. At recall@1 the gain (+0.012) is not significant.
 - **Excluding tests** is the largest single win at recall@1. Test methods reuse every identifier in the issue, so they crowd out the source.
 - **Call-graph expansion does not pay for itself.** It was tuned on a held-out dev set and confirmed on test. [ADR 0004](docs/decisions/0004-call-graph-expansion.md) shows why: only 15% of misses are one call away from a top hit, so the ceiling is low. It ships as opt-in.
-- **Learning to rank turns many weak signals into one ordering** ([ADR 0006](docs/decisions/0006-learning-to-rank.md)). The candidate pool already held a gold unit for 97% of issues, so the remaining errors were about order. LambdaMART learns it from 42 features: retrieval scores, the issue title and code spans scored separately, traceback frames and names mentioned in the issue, file structure, git history from strict ancestors of the base commit (BugLocator-style churn and similar past commits), and fixes of similar earlier issues.
+- **Learning to rank turns many weak signals into one ordering** ([ADR 0006](docs/decisions/0006-learning-to-rank.md)). The candidate pool already held a gold unit for 97% of issues, so the remaining errors were about order. LambdaMART learns it from 52 features: retrieval scores, the issue title and code spans scored separately, traceback frames and names mentioned in the issue, file structure, git history from strict ancestors of the base commit (BugLocator-style churn and similar past commits), and fixes of similar earlier issues.
 - **A fine-tuned LLM reranker reads the issue and the code together** ([ADR 0007](docs/decisions/0007-fine-tuned-cross-encoder.md)). Zero-shot it added nothing, but after one LoRA epoch on in-domain hard negatives it lifts the top ranks. It runs only on the top 20, with a shared-prefix KV cache so the issue is encoded once per query rather than once per candidate.
 - **Hybrid is the big win, because the two retrievers fail differently.** Dense alone is only marginally better than BM25 (p = 0.045), but fusing them beats both. Recall@10 is +12.7 points at file level too, with 42 wins to 4 losses. The largest gains are where issues aren't written in identifiers: sympy recall@10 went from 0.37 to 0.59 and pytest from 0.30 to 0.56 ([ADR 0005](docs/decisions/0005-dense-hybrid-retrieval.md)).
 
@@ -147,7 +147,7 @@ The ranking cascade on top: each stage is more expensive per candidate and sees 
 ```mermaid
 flowchart LR
     A["BM25 + dense<br/>all units (~40k)"] --> B["candidate pool<br/>~450 units, 97% contain a gold unit"]
-    B --> C["LambdaMART<br/>42 features: retrieval, mentions,<br/>tracebacks, git history, past fixes"]
+    B --> C["LambdaMART<br/>52 features: retrieval, mentions,<br/>tracebacks, git history, past fixes"]
     C --> D["fine-tuned cross-encoder<br/>top 20, shared-prefix KV cache"]
     D --> E[ranked functions and files]
 ```
