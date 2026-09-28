@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "preact/hooks";
 import { Footer, Nav } from "./components/Nav.tsx";
 import { type Lite, type Summary, getJSON } from "./lib/data.ts";
+import { useLazy } from "./lib/lazy.ts";
 import { type Page, useRoute } from "./lib/router.ts";
 import { Benchmarks } from "./pages/Benchmarks.tsx";
 import { Explore } from "./pages/Explore.tsx";
@@ -25,6 +26,25 @@ export function App() {
   // survives browsing the other pages.
   const [searchOpened, setSearchOpened] = useState(route.page === "search");
   const first = useRef(true);
+  // The command palette loads on first use: Ctrl+K (or Cmd+K), or the nav's button.
+  const [palette, setPalette] = useState(false);
+  const paletteModule = useLazy(() => import("./components/CommandPalette.tsx"), palette);
+  const Palette = paletteModule?.default;
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setPalette((v) => !v);
+      }
+    };
+    const open = () => setPalette(true);
+    addEventListener("keydown", onKey);
+    addEventListener("odin:palette", open);
+    return () => {
+      removeEventListener("keydown", onKey);
+      removeEventListener("odin:palette", open);
+    };
+  }, []);
 
   useEffect(() => {
     getJSON<Summary>("data/summary.json").then(setSummary, () => setFailed(true));
@@ -51,10 +71,11 @@ export function App() {
           </div>
         )}
         {page === "benchmarks" && <Benchmarks summary={summary} lite={lite} failed={failed} />}
-        {page === "explore" && <Explore summary={summary} linked={route.param} failed={failed} />}
+        {page === "explore" && <Explore summary={summary} linked={route.param} failed={failed} mode={route.query.get("mode")} />}
         {page === "how" && <HowItWorks summary={summary} />}
       </main>
       <Footer />
+      {palette && Palette && <Palette onClose={() => setPalette(false)} />}
     </>
   );
 }
