@@ -102,6 +102,20 @@ def _ltr_ce() -> Retriever:
 RETRIEVERS["ltr-ce-notests"] = _ltr_ce
 
 
+def _ltr_ce_distilled() -> Retriever:
+    """The same pipeline with the single distilled cross-encoder (ce-train --distill-from)."""
+    from odin.rank.ltr import MODEL_DIR, RerankedLTRRetriever
+    from odin.search.dense import SentenceEncoder
+
+    return RerankedLTRRetriever(
+        SentenceEncoder(), DEV_SELECTED_FUSION,
+        recipe=MODEL_DIR / "reranker_distilled.json", name="ltr-ce-distilled-notests",
+    )  # fmt: skip
+
+
+RETRIEVERS["ltr-ce-distilled-notests"] = _ltr_ce_distilled
+
+
 def run_eval(
     retriever: Retriever,
     gold: Sequence[GoldEntry],
