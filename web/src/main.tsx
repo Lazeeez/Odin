@@ -1,6 +1,9 @@
 import { render } from "preact";
 import { App } from "./App.tsx";
 import { upgradeLegacyUrl } from "./lib/router.ts";
+import "@fontsource-variable/cinzel";
+import "@fontsource-variable/inter";
+import "@fontsource-variable/jetbrains-mono";
 import "./styles.css";
 
 upgradeLegacyUrl();
