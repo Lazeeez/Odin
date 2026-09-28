@@ -23,7 +23,7 @@ STAGES = [
     ("bm25-naive", "BM25, naive tokens", "Plain keyword search: `get_queryset` is one opaque word."),
     ("bm25-code-notests", "BM25, code-aware", "Split identifiers (snake_case, camelCase) and skip test files."),
     ("hybrid-notests", "Hybrid", "Fuse BM25 with a code embedding model (jina-code-0.5b)."),
-    ("ltr-notests", "Learning to rank", "LambdaMART over 42 signals: mentions, tracebacks, git history, past fixes."),
+    ("ltr-notests", "Learning to rank", "LambdaMART over 52 signals: mentions, tracebacks, git history, past fixes."),
     ("ltr-ce-notests", "+ LLM reranker", "A fine-tuned Qwen3 cross-encoder reads the issue and code together."),
 ]  # fmt: skip
 
