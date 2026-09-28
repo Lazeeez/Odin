@@ -1,7 +1,8 @@
 // Loading any public GitHub repository into search units, entirely client-side.
 import type { Parser } from "web-tree-sitter";
-import { BM25 } from "./bm25.ts";
+import { BM25, type TermCounts, unitCounts } from "./bm25.ts";
 import { chunkFile } from "./chunk.ts";
+import { untar } from "./tarball.ts";
 import { LoadError, type RepoRef, encodePath, isTestPath, parseRepo } from "./github.ts";
 import type { Unit } from "./types.ts";
 
@@ -12,6 +13,9 @@ export const LIMITS = { maxFiles: 6000, maxBytes: 60e6, maxFileBytes: 1e6, concu
 export interface RepoCache {
   get(key: string): Promise<Unit[] | undefined>;
   put(key: string, units: Unit[]): Promise<unknown>;
+  /** A recent file listing of `ref`, so a reload costs no GitHub API request. */
+  getListing?(ref: string): Promise<Listing | undefined>;
+  putListing?(ref: string, listing: Listing): Promise<unknown>;
 }
 
 export interface LoadedRepo {
@@ -30,13 +34,39 @@ export interface LoadedRepo {
 }
 
 export type Progress = (phase: string, done: number, total: number) => void;
+/** Units parsed so far during a long load (files in path order), to search before it ends. */
+export type Partial = (
+  units: Unit[], counts: TermCounts[], filesDone: number, filesTotal: number,
+  where: { repo: string; branch: string; scope: string | null },
+) => void;
+/** How often a long load offers what it has so far. */
+export const PARTIAL_EVERY_MS = 2500;
+
+/** How files become units: parser threads in the browser, one inline parser elsewhere. */
+export interface Parsing {
+  threads: number;
+  parse(path: string, text: string): Promise<{ units: Unit[]; counts: TermCounts[] }>;
+  count(units: Unit[]): Promise<TermCounts[]>;
+}
+
+export function inlineParsing(parser: Parser): Parsing {
+  return {
+    threads: 1,
+    async parse(path, text) {
+      const units: Unit[] = [];
+      for (const c of chunkFile(parser, text)) if (c.text.trim()) units.push({ ...c, path, id: `${path}::${c.qualname}` });
+      return { units, counts: units.map(unitCounts) };
+    },
+    count: async (units) => units.map(unitCounts),
+  };
+}
 
 interface Entry {
   path: string;
   size: number;
 }
 
-interface Listing {
+export interface Listing {
   owner: string;
   name: string;
   branch: string;
@@ -191,47 +221,141 @@ export function selectFiles(listing: Pick<Listing, "files" | "scope">, includeTe
   return kept;
 }
 
-async function downloadAndParse(
-  parser: Parser, listing: Listing, files: Entry[], progress: Progress, signal: AbortSignal | null, notes: string[],
-): Promise<Unit[]> {
-  const units: Unit[] = [];
-  let done = 0, failed = 0, unparsed = 0, next = 0;
-  async function worker(): Promise<void> {
-    while (next < files.length) {
-      if (signal?.aborted) throw new LoadError("Loading cancelled.", { cancelled: true });
-      const f = files[next++];
-      const text = await fetchText(listing.owner, listing.name, listing.branch, f.path);
-      if (text == null) failed++;
-      else {
-        try {
-          for (const c of chunkFile(parser, text)) if (c.text.trim()) units.push({ ...c, path: f.path, id: `${f.path}::${c.qualname}` });
-        } catch {
-          unparsed++; // one unparseable file should never sink the whole repository
-        }
+type Parsed = { units: Unit[]; counts: TermCounts[] };
+
+/**
+ * Parse results of each selected file, kept in snapshot order (files by path, each file's units
+ * in source order, as in Odin's Python index, so ties break the same way), with a partial
+ * snapshot offered every few seconds of a long load.
+ */
+class Collector {
+  readonly files: Entry[];
+  readonly signal: AbortSignal | null;
+  readonly perFile: (Parsed | undefined)[];
+  private readonly listing: Listing;
+  private readonly progress: Progress;
+  private readonly partial?: Partial;
+  private readonly byPath: number[];
+  private lastPartial = performance.now();
+  done = 0;
+  failed = 0;
+  unparsed = 0;
+
+  constructor(files: Entry[], listing: Listing, progress: Progress, signal: AbortSignal | null, partial?: Partial) {
+    this.files = files;
+    this.listing = listing;
+    this.progress = progress;
+    this.signal = signal;
+    this.partial = partial;
+    this.perFile = new Array(files.length);
+    this.byPath = files.map((f, i) => [f.path, i] as const).sort((a, b) => (a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0)).map(([, i]) => i);
+  }
+
+  gather(): Parsed {
+    const units: Unit[] = [];
+    const counts: TermCounts[] = [];
+    for (const i of this.byPath) {
+      const r = this.perFile[i];
+      if (r) {
+        units.push(...r.units);
+        counts.push(...r.counts);
       }
-      done++;
-      if (signal?.aborted) continue; // no progress reports after a cancel
-      if (done % 10 === 0 || done === files.length) progress("Downloading and parsing", done, files.length);
+    }
+    return { units, counts };
+  }
+
+  /** Parse one file's text; `null` means it could not be downloaded. */
+  async add(i: number, text: string | null, parsing: Parsing): Promise<void> {
+    if (text == null) this.failed++;
+    else {
+      try {
+        this.perFile[i] = await parsing.parse(this.files[i].path, text);
+      } catch {
+        this.unparsed++; // one unparseable file should never sink the whole repository
+      }
+    }
+    this.done++;
+    if (this.signal?.aborted) return; // no progress reports after a cancel
+    const n = this.files.length;
+    if (this.done % 10 === 0 || this.done === n) this.progress("Downloading and parsing", this.done, n);
+    if (this.partial && this.done < n && performance.now() - this.lastPartial > PARTIAL_EVERY_MS) {
+      this.lastPartial = performance.now();
+      const so = this.gather();
+      const where = { repo: `${this.listing.owner}/${this.listing.name}`, branch: this.listing.branch, scope: this.listing.scope };
+      if (so.units.length) this.partial(so.units, so.counts, this.done, n, where);
     }
   }
-  await Promise.all(Array.from({ length: Math.min(LIMITS.concurrency, files.length) }, worker));
-  if (failed) notes.push(`${failed} file${failed > 1 ? "s" : ""} could not be downloaded.`);
-  if (unparsed) notes.push(`${unparsed} file${unparsed > 1 ? "s" : ""} could not be parsed.`);
-  // Files in path order, each file's units in source order: Odin's snapshot order, so ties
-  // break the same way as in the evaluation. (A stable sort keeps each file's chunk order.)
-  units.sort((a, b) => (a.path < b.path ? -1 : a.path > b.path ? 1 : 0));
-  return units;
+
+  notes(notes: string[]): void {
+    if (this.failed) notes.push(`${this.failed} file${this.failed > 1 ? "s" : ""} could not be downloaded.`);
+    if (this.unparsed) notes.push(`${this.unparsed} file${this.unparsed > 1 ? "s" : ""} could not be parsed.`);
+  }
+}
+
+/** One request per file, sixteen at a time. `only` limits it to some files (after an archive). */
+async function downloadFiles(c: Collector, parsing: Parsing, listing: Listing, only?: number[]): Promise<void> {
+  const todo = only ?? c.files.map((_, i) => i);
+  let next = 0;
+  async function worker(): Promise<void> {
+    while (next < todo.length) {
+      if (c.signal?.aborted) throw new LoadError("Loading cancelled.", { cancelled: true });
+      const i = todo[next++];
+      await c.add(i, await fetchText(listing.owner, listing.name, listing.branch, c.files[i].path), parsing);
+    }
+  }
+  await Promise.all(Array.from({ length: Math.min(LIMITS.concurrency, todo.length) }, worker));
+}
+
+/**
+ * The whole repository as one .tar.gz through a CORS relay: seconds instead of a request per
+ * file. Files are parsed on the parser threads while the archive is still streaming. Returns
+ * the files it did not deliver, so the caller can fetch those one by one.
+ */
+async function downloadArchive(c: Collector, parsing: Parsing, url: string): Promise<number[]> {
+  const index = new Map(c.files.map((f, i) => [f.path, i]));
+  const seen = new Set<number>();
+  let inFlight: Promise<void>[] = [];
+  try {
+    const r = await fetch(url);
+    if (!r.ok || !r.body) throw new Error(`archive: HTTP ${r.status}`);
+    const decoder = new TextDecoder();
+    for await (const f of untar(r.body, (p) => index.has(p))) {
+      if (c.signal?.aborted) throw new LoadError("Loading cancelled.", { cancelled: true });
+      const i = index.get(f.path)!;
+      seen.add(i);
+      inFlight.push(c.add(i, decoder.decode(f.data), parsing));
+      if (inFlight.length >= 8 * parsing.threads) {
+        await Promise.all(inFlight);
+        inFlight = [];
+      }
+    }
+    await Promise.all(inFlight);
+  } catch (err) {
+    await Promise.allSettled(inFlight); // parses already started finish before anything is gathered
+    if (err instanceof LoadError) throw err;
+    // Relay down or archive cut short: whatever is missing comes the slow way.
+  }
+  return c.files.map((_, i) => i).filter((i) => !seen.has(i));
 }
 
 /** Download, parse and index a repository; a revisit of the same snapshot hits `cache`. */
 export async function loadRepo(
-  parser: Parser, input: string,
-  { includeTests = false, progress = () => {}, cache = null, signal = null }:
-    { includeTests?: boolean; progress?: Progress; cache?: RepoCache | null; signal?: AbortSignal | null } = {},
+  parsing: Parsing, input: string,
+  { includeTests = false, progress = () => {}, cache = null, signal = null, partial, archive }:
+    {
+      includeTests?: boolean; progress?: Progress; cache?: RepoCache | null; signal?: AbortSignal | null; partial?: Partial;
+      /** URL of the repository's .tar.gz through a CORS relay, if one is configured. */
+      archive?: (owner: string, name: string, ref: string) => string;
+    } = {},
 ): Promise<LoadedRepo> {
   const ref = parseRepo(input);
   progress("Listing files", 0, 1);
-  const listing = await listFiles(ref);
+  const refKey = `${ref.owner}/${ref.name}@${ref.ref ?? ""}`.toLowerCase();
+  let listing = await cache?.getListing?.(refKey);
+  if (!listing) {
+    listing = await listFiles(ref);
+    void cache?.putListing?.(refKey, listing);
+  }
   const notes: string[] = [];
   if (listing.truncated) notes.push("GitHub truncated the file list for this very large repository; some files are missing.");
   const kept = selectFiles(listing, includeTests, notes);
@@ -241,14 +365,22 @@ export async function loadRepo(
   const t0 = performance.now();
   let loaded = key && cache ? await cache.get(key) : undefined;
   const fromCache = !!loaded;
-  if (!loaded) {
-    loaded = await downloadAndParse(parser, listing, kept, progress, signal, notes);
+  let counts: TermCounts[];
+  if (loaded) {
+    progress("Building the index", 0, 1);
+    counts = await parsing.count(loaded);
+  } else {
+    const c = new Collector(kept, listing, progress, signal, partial);
+    const rest = archive ? await downloadArchive(c, parsing, archive(listing.owner, listing.name, listing.branch)) : undefined;
+    if (!rest || rest.length) await downloadFiles(c, parsing, listing, rest);
+    c.notes(notes);
+    ({ units: loaded, counts } = c.gather());
     if (!loaded.length) throw new LoadError("These Python files contain no functions or classes to search.");
     if (key && cache) await cache.put(key, loaded);
+    progress("Building the index", 0, 1);
   }
-  progress("Building the index", 0, 1);
   const t1 = performance.now();
-  const index = new BM25(loaded);
+  const index = new BM25(loaded, { counts });
   return {
     repo, branch: listing.branch, scope: listing.scope, via: listing.via, sha: listing.sha,
     files: kept.length, units: loaded, index, notes, fromCache,
