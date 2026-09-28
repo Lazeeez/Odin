@@ -5,25 +5,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Odin: find the code behind any bug report</title>
   <meta name="description" content="Paste a bug report, get the functions most likely to need the fix. Odin searches any public Python repository, right in your browser.">
-  <meta name="theme-color" content="#ffffff">
+  <meta name="theme-color" content="#faf6ee">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Odin: find the code behind any bug report">
   <meta property="og:description" content="Paste a bug report, get the functions most likely to need the fix. Works on any public Python repository, right in your browser.">
   <meta property="og:url" content="https://lazeeez.github.io/Odin/">
   <meta property="og:image" content="https://lazeeez.github.io/Odin/og.png">
   <meta name="twitter:card" content="summary_large_image">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%235b5bd6'/><circle cx='14' cy='14' r='6.5' fill='none' stroke='white' stroke-width='3'/><path d='M18.8 18.8 24 24' stroke='white' stroke-width='3' stroke-linecap='round'/></svg>">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
   <link rel="preconnect" href="https://api.github.com" crossorigin>
   <link rel="preconnect" href="https://raw.githubusercontent.com" crossorigin>
   <script>
     // Light or dark before first paint, so the page never flashes the wrong colours: the
-    // visitor's choice from the toggle, or the operating system's setting on a first visit.
+    // visitor's choice from the toggle, else light.
     (function () {
       var t = null;
       try { t = JSON.parse(localStorage.getItem("theme")); } catch (e) {}
-      if (t !== "light" && t !== "dark") t = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      if (t !== "light" && t !== "dark") t = "light";
       document.documentElement.dataset.theme = t;
-      if (t === "dark") document.querySelector('meta[name="theme-color"]').setAttribute("content", "#0b0c10");
+      if (t === "dark") document.querySelector('meta[name="theme-color"]').setAttribute("content", "#0f1424");
     })();
   </script>
 </head>
