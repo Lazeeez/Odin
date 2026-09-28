@@ -1,49 +1,60 @@
-import { useEffect, useState } from "preact/hooks";
-import { Engineering } from "./components/Engineering.tsx";
-import { Explorer } from "./components/Explorer.tsx";
-import { LiveSearch } from "./components/LiveSearch.tsx";
-import { Nav, REPO_URL } from "./components/Nav.tsx";
-import { Hero, Pipeline } from "./components/Overview.tsx";
-import { Results } from "./components/Results.tsx";
-import { type Lite, type Summary, getJSON, stagesAt } from "./lib/data.ts";
+import { useEffect, useRef, useState } from "preact/hooks";
+import { Footer, Nav } from "./components/Nav.tsx";
+import { type Lite, type Summary, getJSON } from "./lib/data.ts";
+import { type Page, useRoute } from "./lib/router.ts";
+import { Benchmarks } from "./pages/Benchmarks.tsx";
+import { Explore } from "./pages/Explore.tsx";
+import { Home } from "./pages/Home.tsx";
+import { HowItWorks } from "./pages/HowItWorks.tsx";
+import { Search } from "./pages/Search.tsx";
+
+const TITLES: Record<Page, string> = {
+  home: "Odin: find the code behind any bug report",
+  search: "Search a repository · Odin",
+  benchmarks: "Benchmarks · Odin",
+  explore: "Explore real bugs · Odin",
+  how: "How it works · Odin",
+};
 
 export function App() {
+  const route = useRoute();
   const [summary, setSummary] = useState<Summary | null>(null);
   const [lite, setLite] = useState<Lite | null>(null);
   const [failed, setFailed] = useState(false);
+  // The search app is created on first visit and then kept (hidden) so a loaded repository
+  // survives browsing the other pages.
+  const [searchOpened, setSearchOpened] = useState(route.page === "search");
+  const first = useRef(true);
+
   useEffect(() => {
     getJSON<Summary>("data/summary.json").then(setSummary, () => setFailed(true));
     getJSON<Lite>("data/lite.json").then(setLite, () => {});
   }, []);
-  const fullHit10 = summary ? stagesAt(summary, "function").at(-1)!["hit@10"] : null;
+
+  useEffect(() => {
+    document.title = TITLES[route.page];
+    if (route.page === "search") setSearchOpened(true);
+    if (!first.current) window.scrollTo({ top: 0 });
+    first.current = false;
+  }, [route.page]);
+
+  const page = route.page;
   return (
     <>
-      <a class="skip" href="#try">Skip to the search</a>
-      <Nav />
-      <main id="top">
-        <Hero summary={summary} />
-        <section id="pipeline" class="band">
-          <h2>How it works</h2>
-          <p class="sub">A ranking cascade: each stage is more expensive per candidate and sees fewer of them. Click a stage.</p>
-          {summary ? <Pipeline summary={summary} /> : <div class="stage-detail muted">Loading…</div>}
-        </section>
-        <section id="results">
-          <h2>Results, stage by stage</h2>
-          <p class="sub">SWE-bench Lite test set. Bars show the mean; whiskers are 95% bootstrap intervals where available.</p>
-          {failed && <p class="error-text">Could not load the results data.</p>}
-          {summary && <Results summary={summary} />}
-        </section>
-        <LiveSearch lite={lite} fullHit10={fullHit10} />
-        {summary && <Explorer summary={summary} />}
-        <Engineering />
+      <a class="skip" href="#main" onClick={(e) => { e.preventDefault(); document.getElementById("main")?.focus(); }}>Skip to content</a>
+      <Nav page={page} />
+      <main id="main" tabIndex={-1} class={`page-${page}`}>
+        {page === "home" && <Home summary={summary} lite={lite} />}
+        {searchOpened && (
+          <div hidden={page !== "search"}>
+            <Search active={page === "search"} request={route.query} />
+          </div>
+        )}
+        {page === "benchmarks" && <Benchmarks summary={summary} lite={lite} failed={failed} />}
+        {page === "explore" && <Explore summary={summary} linked={route.param} failed={failed} />}
+        {page === "how" && <HowItWorks summary={summary} />}
       </main>
-      <footer>
-        <p>
-          Built with Python, Tree-sitter, SciPy, LightGBM, PyTorch, TypeScript and Preact. Data:{" "}
-          <a href="https://www.swebench.com" target="_blank" rel="noopener">SWE-bench</a>.{" "}
-          <a href={REPO_URL} target="_blank" rel="noopener">Source on GitHub</a>.
-        </p>
-      </footer>
+      <Footer />
     </>
   );
 }
