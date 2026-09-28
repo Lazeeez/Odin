@@ -90,3 +90,14 @@ def test_appending_to_function_end_stays_in_function():
     owners, module_level = locate(edit, extract_symbols(base, "m.py"))
     assert {o.qualname for o in owners} == {"f"}
     assert not module_level
+
+
+def test_no_newline_marker_after_insertion():
+    """A hunk ending in an addition plus "\ No newline at end of file" (seen in SWE-rebench)."""
+    patch = (
+        "diff --git a/m.py b/m.py\n--- a/m.py\n+++ b/m.py\n@@ -1,2 +1,3 @@\n"
+        " def f():\n-    return 1\n\ No newline at end of file\n+    return 2\n+    # done\n"
+        "\ No newline at end of file\n"
+    )
+    (edit,) = parse_patch(patch)
+    assert edit.removed_lines == {2}
