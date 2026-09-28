@@ -1,0 +1,7 @@
+name = "odin-archive-relay"
+main = "cloudflare-worker.js"
+compatibility_date = "2026-09-01"
+
+# Origins allowed to use the relay (the Pages site and local previews); empty means any.
+[vars]
+ALLOWED_ORIGINS = "https://lazeeez.github.io,http://localhost:5173,http://localhost:4173,http://127.0.0.1:4173"
