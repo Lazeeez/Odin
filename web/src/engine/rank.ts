@@ -1,7 +1,8 @@
-// Learning to rank in the browser: the features of scripts/browser_ltr.py, computed identically
-// (tests/test_site_engine.py checks), scored by the LambdaMART trees that script exports to
-// data/ranker.json. Stage 1 needs only BM25 and the issue's text; stage 2 adds embedding
-// similarity for stage 1's top candidates.
+// Learning to rank in the browser: the features of odin/rank/browser.py, computed identically
+// (tests/test_site_engine.py checks), scored by the LambdaMART trees scripts/browser_ltr.py
+// exports. Stages: "instant" (keyword and mention signals), "semantic" (plus static-embedding
+// similarity over every function), "rerank" (plus MiniLM similarity for the top candidates),
+// and "file" (a ranker over files).
 import type { BM25 } from "./bm25.ts";
 import { issueFields, type Mentions, moduleName, parseMentions, pathMatches } from "./mentions.ts";
 import type { Embed } from "./semantic.ts";
@@ -20,9 +21,15 @@ export interface Stage {
   trees: Tree[];
 }
 export interface RankerModel {
-  meta: { pool: { bm25: number; title: number; code: number; files: number }; depth: number };
-  stage1: Stage;
-  stage2?: Stage;
+  meta: {
+    pool: { bm25: number; title: number; code: number; files: number; sem?: number; title_sem?: number };
+    depth: number;
+    static?: { model: string; maxTokens: number };
+  };
+  instant: Stage;
+  semantic?: Stage;
+  rerank?: Stage;
+  file?: Stage;
 }
 
 export function predict(stage: Stage, x: ArrayLike<number>): number {
@@ -89,13 +96,56 @@ function rel(xs: ArrayLike<number>): (i: number) => number {
   return (i) => (top > 0 ? xs[i] / top : 0);
 }
 
-function topK(xs: ArrayLike<number>, k: number): number[] {
+function max(xs: ArrayLike<number>): number {
+  let m = -Infinity;
+  for (let i = 0; i < xs.length; i++) if (xs[i] > m) m = xs[i];
+  return m;
+}
+
+/** The k best indices; `positive` keeps only scores above zero (keyword scores). */
+function topK(xs: ArrayLike<number>, k: number, positive = true): number[] {
   const out: number[] = [];
   for (const d of order(xs)) {
-    if (out.length >= k || xs[d] <= 0) break;
+    if (out.length >= k || (positive && xs[d] <= 0)) break;
     out.push(d);
   }
   return out;
+}
+
+/** Per-group maximum (numpy's maximum.at over a group index), starting from `empty`. */
+function byGroup(values: ArrayLike<number>, group: Int32Array, n: number, empty: number): Float64Array {
+  const out = new Float64Array(n).fill(empty);
+  for (let d = 0; d < values.length; d++) if (values[d] > out[group[d]]) out[group[d]] = values[d];
+  return out;
+}
+
+/** Similarity of every unit to the issue and to its title (static embeddings). */
+export interface Similarity {
+  issue: Float32Array;
+  title: Float32Array;
+}
+
+/** What every stage needs about one issue against one repository. */
+export interface Signals {
+  query: string;
+  title: string;
+  terms: string[];
+  lex: Float64Array;
+  titleLex: Float64Array;
+  codeLex: Float64Array;
+  m: Mentions;
+  sim?: Similarity;
+}
+
+export function signals(index: BM25, query: string, sim?: Similarity): Signals {
+  const [title, code] = issueFields(query);
+  const { scores: lex, terms } = index.scores(query);
+  return {
+    query, title, terms, lex, sim,
+    titleLex: index.scores(title).scores,
+    codeLex: code ? index.scores(code).scores : new Float64Array(index.units.length),
+    m: parseMentions(query),
+  };  // prettier-ignore
 }
 
 export interface Candidate {
@@ -105,7 +155,7 @@ export interface Candidate {
   x: Float64Array;
   score: number;
   bm25: number;
-  /** Cosine similarity to the issue, once stage 2 has run. */
+  /** Cosine similarity to the issue (static embedding, or MiniLM after the rerank stage). */
   semantic?: number;
   /** Plain-language evidence for the "why" line: what the issue named. */
   reasons: string[];
@@ -117,16 +167,15 @@ export interface Ranked {
   title: string;
 }
 
-/** Stage 1: the candidate pool, its features and stage-1 scores, best first. */
-export function rankStage1(index: BM25, model: RankerModel, query: string): Ranked {
+/**
+ * The candidate pool, its features and scores under `stage`, best first. With `sig.sim` the
+ * pool also takes the semantic top candidates and the SEMANTIC features are appended.
+ */
+export function rankUnits(index: BM25, model: RankerModel, stage: Stage, sig: Signals): Ranked {
   const { fileOf, files, unitsInFile, names, nameCount } = repoStats(index);
   const n = index.units.length;
-  const { pool: P } = model.meta;
-  const [title, code] = issueFields(query);
-  const { scores: lex, terms } = index.scores(query);
-  const titleLex = index.scores(title).scores;
-  const codeLex = code ? index.scores(code).scores : new Float64Array(n);
-  const m = parseMentions(query);
+  const P = model.meta.pool;
+  const { lex, titleLex, codeLex, m, sim } = sig;
 
   const fileMax = new Float64Array(files.length);
   const fileSum = new Float64Array(files.length);
@@ -137,6 +186,7 @@ export function rankStage1(index: BM25, model: RankerModel, query: string): Rank
   }
 
   const pool = new Set<number>([...topK(lex, P.bm25), ...topK(titleLex, P.title), ...topK(codeLex, P.code)]);
+  if (sim) for (const d of [...topK(sim.issue, P.sem ?? 50, false), ...topK(sim.title, P.title_sem ?? 20, false)]) pool.add(d);
   const topFiles = new Set(topK(fileMax, P.files));
   const mentioned = new Set<number>();
   files.forEach((p, f) => {
@@ -160,10 +210,16 @@ export function rankStage1(index: BM25, model: RankerModel, query: string): Rank
 
   const lr = { lex: logrank(lex), title: logrank(titleLex), code: logrank(codeLex), fmax: logrank(fileMax), fsum: logrank(fileSum) };
   const rl = { lex: rel(lex), title: rel(titleLex), code: rel(codeLex), fmax: rel(fileMax), fsum: rel(fileSum) };
+  const sem = sim && (() => {
+    const best = byGroup(sim.issue, fileOf, files.length, -1);
+    return {
+      max: max(sim.issue), lr: logrank(sim.issue), tmax: max(sim.title), tlr: logrank(sim.title),
+      fbest: best, fmax: max(best), flr: logrank(best),
+    };  // prettier-ignore
+  })();
   const [lastPath, lastName] = m.lastFrame ?? ["", ""];
   const count = (id: string) => m.idents.get(id) ?? 0;
-  const names1 = model.stage1.features;
-  const col = new Map(names1.map((f, i) => [f, i]));
+  const col = new Map(stage.features.map((f, i) => [f, i]));
 
   const candidates = rows.map((d): Candidate => {
     const u = index.units[d];
@@ -197,15 +253,22 @@ export function rankStage1(index: BM25, model: RankerModel, query: string): Rank
       module_mentioned: m.dotted.has(mod) || m.dotted.has(mod.split(".").slice(-2).join(".")),
       stem_count: stem !== "__init__" ? Math.log1p(count(stem)) : 0,
     };  // prettier-ignore
-    const x = new Float64Array(names1.length);
+    if (sim && sem) {
+      Object.assign(v, {
+        sem: sim.issue[d], sem_gap: sim.issue[d] - sem.max, sem_logrank: sem.lr[d],
+        title_sem_gap: sim.title[d] - sem.tmax, title_sem_logrank: sem.tlr[d],
+        file_sem_gap: sem.fbest[f] - sem.fmax, file_sem_logrank: sem.flr[f],
+      });  // prettier-ignore
+    }
+    const x = new Float64Array(stage.features.length);
     for (const [k, val] of Object.entries(v)) {
       const i = col.get(k);
       if (i !== undefined) x[i] = Number(val);
     }
-    return { unit: u, row: d, x, score: predict(model.stage1, x), bm25: lex[d], reasons: reasons(v, m, name) };
+    return { unit: u, row: d, x, score: predict(stage, x), bm25: lex[d], semantic: sim?.issue[d], reasons: reasons(v, m, name) };
   });
   candidates.sort((a, b) => b.score - a.score || a.row - b.row);
-  return { candidates, terms, title };
+  return { candidates, terms: sig.terms, title: sig.title };
 }
 
 function reasons(v: Record<string, number | boolean>, m: Mentions, name: string): string[] {
@@ -220,6 +283,102 @@ function reasons(v: Record<string, number | boolean>, m: Mentions, name: string)
   return out;
 }
 
+export interface FileCandidate {
+  path: string;
+  row: number;
+  x: Float64Array;
+  score: number;
+  /** The file's functions among the ranked candidates, best first. */
+  units: Candidate[];
+}
+
+/**
+ * The file stage (FILE_FEATURES of odin/rank/browser.py): candidate files from the semantic
+ * stage's pool, what the issue names and the strongest keyword and semantic files.
+ */
+export function rankFiles(
+  index: BM25, stage: Stage, unitStage: Stage, sig: Signals, ranked: Ranked, filePool = { lex: 20, sem: 20 },
+): FileCandidate[] {
+  const { fileOf, files, unitsInFile } = repoStats(index);
+  const nf = files.length;
+  const { lex, titleLex, codeLex, m, sim } = sig;
+  const fileMax = byGroup(lex, fileOf, nf, 0);
+  const titleMax = byGroup(titleLex, fileOf, nf, 0);
+  const codeMax = byGroup(codeLex, fileOf, nf, 0);
+  const fileSum = new Float64Array(nf);
+  for (let d = 0; d < lex.length; d++) fileSum[fileOf[d]] += lex[d];
+  const semBest = sim ? byGroup(sim.issue, fileOf, nf, -1) : new Float64Array(nf).fill(-1);
+  const titleSemBest = sim ? byGroup(sim.title, fileOf, nf, -1) : new Float64Array(nf).fill(-1);
+  const best = new Float64Array(nf).fill(-Infinity);
+  const poolUnits = new Float64Array(nf);
+  const pooled = ranked.candidates;
+  // Candidate features were built for the unit stage; read the mention columns by name.
+  const agg = { name_in_code: new Float64Array(nf), name_count: new Float64Array(nf), qual_mentioned: new Float64Array(nf), frame_both: new Float64Array(nf) };
+  const byFileUnits = new Map<number, Candidate[]>();
+  for (const c of pooled) {
+    const f = fileOf[c.row];
+    if (c.score > best[f]) best[f] = c.score;
+    poolUnits[f]++;
+    (byFileUnits.get(f) ?? byFileUnits.set(f, []).get(f)!).push(c);
+  }
+  for (const c of pooled) {
+    const f = fileOf[c.row];
+    for (const k of Object.keys(agg) as (keyof typeof agg)[]) {
+      const i = unitStage.features.indexOf(k);
+      const v = i >= 0 ? c.x[i] : 0;
+      if (v > agg[k][f]) agg[k][f] = v;
+    }
+  }
+  const mentioned = new Set<number>();
+  files.forEach((p, f) => {
+    if ([...m.framePaths, ...m.pyPaths].some((x) => pathMatches(x, p))) mentioned.add(f);
+  });
+  const cand = new Set<number>([...byFileUnits.keys(), ...mentioned, ...topK(fileMax, filePool.lex), ...topK(semBest, filePool.sem, false)]);
+  const frows = [...cand].sort((a, b) => a - b);
+
+  let finiteMin = Infinity;
+  for (const b of best) if (Number.isFinite(b) && b < finiteMin) finiteMin = b;
+  const floor = Number.isFinite(finiteMin) ? finiteMin - 1 : 0;
+  const bestF = Float64Array.from(best, (b) => (Number.isFinite(b) ? b : floor));
+  const inCand = new Float64Array(nf).fill(floor - 1);
+  for (const f of frows) inCand[f] = bestF[f];
+  let bestTop = -Infinity;
+  for (const f of frows) if (bestF[f] > bestTop) bestTop = bestF[f];
+  const lr = { best: logrank(inCand), fmax: logrank(fileMax), fsum: logrank(fileSum), title: logrank(titleMax), sem: logrank(semBest) };
+  const rl = { fmax: rel(fileMax), fsum: rel(fileSum), title: rel(titleMax), code: rel(codeMax) };
+  const semTop = max(semBest);
+  const titleSemTop = max(titleSemBest);
+  const [lastPath] = m.lastFrame ?? [""];
+  const col = new Map(stage.features.map((f, i) => [f, i]));
+  const out = frows.map((f): FileCandidate => {
+    const path = files[f];
+    const mod = moduleName(path);
+    const stem = path.slice(path.lastIndexOf("/") + 1).replace(/\.py$/, "");
+    const v: Record<string, number | boolean> = {
+      best_score_gap: bestF[f] - bestTop, best_score_logrank: lr.best[f], pool_units: Math.log1p(poolUnits[f]),
+      file_max_rel: rl.fmax(f), file_max_logrank: lr.fmax[f], file_sum_rel: rl.fsum(f), file_sum_logrank: lr.fsum[f],
+      title_max_rel: rl.title(f), title_max_logrank: lr.title[f], code_max_rel: rl.code(f),
+      sem_gap: semBest[f] - semTop, sem_logrank: lr.sem[f], title_sem_gap: titleSemBest[f] - titleSemTop,
+      path_mentioned: m.pyPaths.some((p) => pathMatches(p, path)),
+      module_mentioned: m.dotted.has(mod) || m.dotted.has(mod.split(".").slice(-2).join(".")),
+      stem_count: stem !== "__init__" ? Math.log1p(m.idents.get(stem) ?? 0) : 0,
+      frame_file: m.framePaths.some((p) => pathMatches(p, path)),
+      last_frame_file: !!lastPath && pathMatches(lastPath, path),
+      any_name_in_code: agg.name_in_code[f], max_name_count: agg.name_count[f],
+      any_qual_mentioned: agg.qual_mentioned[f], any_frame_both: agg.frame_both[f],
+      units_in_file: Math.log1p(unitsInFile[f]), path_depth: path.split("/").length - 1, is_init_file: stem === "__init__",
+    };  // prettier-ignore
+    const x = new Float64Array(stage.features.length);
+    for (const [k, val] of Object.entries(v)) {
+      const i = col.get(k);
+      if (i !== undefined) x[i] = Number(val);
+    }
+    return { path, row: f, x, score: predict(stage, x), units: byFileUnits.get(f) ?? [] };
+  });
+  out.sort((a, b) => b.score - a.score || a.row - b.row);
+  return out;
+}
+
 const dot = (a: Float32Array, b: Float32Array) => {
   let s = 0;
   for (let i = 0; i < a.length; i++) s += a[i] * b[i];
@@ -227,13 +386,13 @@ const dot = (a: Float32Array, b: Float32Array) => {
 };
 
 /**
- * Stage 2: rescore stage 1's top `depth` with embedding similarity to the issue and its title.
- * The rest keep stage 1's order below them.
+ * The rerank stage: MiniLM similarity to the issue and its title for the top `depth`
+ * candidates, blended in by the stage's trees. The rest keep their order below them.
  */
-export async function rankStage2(
-  model: RankerModel, query: string, ranked: Ranked, embed: Embed, unitText: (u: Unit) => string,
+export async function rerankStage(
+  model: RankerModel, ranked: Ranked, embed: Embed, unitText: (u: Unit) => string, query: string,
 ): Promise<Candidate[]> {
-  const stage = model.stage2;
+  const stage = model.rerank;
   const all = ranked.candidates;
   if (!stage || all.length < 2) return all;
   const top = all.slice(0, model.meta.depth);
@@ -246,7 +405,7 @@ export async function rankStage2(
   const tl = logrank(tdense);
   const dmax = Math.max(...dense);
   const tmax = Math.max(...tdense);
-  const k = model.stage1.features.length;
+  const k = top[0].x.length;
   const rescored = top.map((c, i) => {
     const x = new Float64Array(k + 5);
     x.set(c.x);
@@ -255,4 +414,49 @@ export async function rankStage2(
   });
   rescored.sort((a, b) => b.score - a.score || a.row - b.row);
   return [...rescored, ...all.slice(top.length)];
+}
+
+/** Evidence groups for explanations: each is a set of ranker features one sentence can name. */
+const EVIDENCE: [label: string, features: string[]][] = [
+  ["Words shared with the issue", ["bm25_rel", "bm25_logrank"]],
+  ["Words shared with the title", ["title_bm25_rel", "title_bm25_logrank"]],
+  ["Matches the issue's quoted code", ["code_bm25_rel", "code_bm25_logrank"]],
+  ["Its file matches the issue", ["file_max_rel", "file_max_logrank", "file_sum_rel", "file_sum_logrank", "rank_in_file", "units_in_file"]],
+  ["Named in the issue", ["name_count", "name_in_code", "qual_mentioned", "class_count", "class_in_code", "name_ambiguity"]],
+  ["In the traceback", ["frame_name", "frame_file", "frame_both", "last_frame_file", "last_frame_both"]],
+  ["Module or path mentioned", ["path_mentioned", "module_mentioned", "stem_count"]],
+  ["Close in meaning", ["sem", "sem_gap", "sem_logrank", "title_sem_gap", "title_sem_logrank", "file_sem_gap", "file_sem_logrank",
+    "dense_gap", "dense_logrank", "title_dense_gap", "title_dense_logrank"]],
+  ["Ranked high by the first pass", ["s1_logrank"]],
+  ["Shape of the code", ["is_method", "is_class", "log_len", "is_private", "is_dunder", "is_init", "path_depth"]],
+];
+
+/**
+ * Why each of `top` scored as it did: for every evidence group, how much the score drops when that
+ * group's features are set to the pool's median, i.e. what the evidence adds over a typical
+ * candidate. Occlusion, not TreeSHAP: the exported trees carry leaf values only. About
+ * groups x top tree walks, a few milliseconds.
+ */
+export function explain(stage: Stage, top: Candidate[], pool: Candidate[]): [string, number][][] {
+  const k = stage.features.length;
+  const rows = pool.filter((c) => c.x.length === k);
+  const col = new Map(stage.features.map((f, i) => [f, i]));
+  const median = new Float64Array(k);
+  for (let i = 0; i < k; i++) {
+    const v = rows.map((c) => c.x[i]).sort((a, b) => a - b);
+    median[i] = v.length ? v[v.length >> 1] : 0;
+  }
+  const groups = EVIDENCE.map(([label, fs]) => [label, fs.map((f) => col.get(f)).filter((i): i is number => i !== undefined)] as const)
+    .filter(([, idx]) => idx.length);
+  return top.map((c) => {
+    if (c.x.length !== k) return [];
+    const out: [string, number][] = [];
+    for (const [label, idx] of groups) {
+      const x = Float64Array.from(c.x);
+      for (const i of idx) x[i] = median[i];
+      const delta = c.score - predict(stage, x);
+      if (Math.abs(delta) > 1e-3) out.push([label, delta]);
+    }
+    return out.sort((a, b) => Math.abs(b[1]) - Math.abs(a[1])).slice(0, 5);
+  });
 }
