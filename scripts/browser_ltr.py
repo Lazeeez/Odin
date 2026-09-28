@@ -1,115 +1,207 @@
-"""Train the website's ranker: learning to rank on signals a browser can compute.
+"""Train the website's rankers: learning to rank on signals a browser can compute.
 
-    uv run --extra dense python scripts/browser_ltr.py [--stage2]
+    uv run --extra dense python scripts/browser_ltr.py
 
-The server pipeline's strongest features (fused rank, unit length, title match, identifiers
-and traceback frames named in the issue) need no GPU, no git history and no big model, so
-the browser can compute them over a whole repository in milliseconds. This builds exactly
-those features in Python, trains LambdaMART on SWE-bench minus Lite, picks settings by
-cross-validation, evaluates once on Lite and exports the trees as JSON for web/.
+Training data: SWE-bench minus Lite (12 projects) and the SWE-rebench "train" sample (119
+other projects). Held out and run once at the end: SWE-bench Lite, and SWE-rebench "test",
+30 projects no model ever saw. Cross-validation folds are split by project, so every choice
+is judged on projects the model did not train on, which is what the website faces.
 
-Stage 1 ranks with lexical and mention features alone (instant, no model download).
-Stage 2 (--stage2) adds MiniLM similarity for stage 1's top candidates, the model the site
-already runs in the browser. web/src/engine/rank.ts must compute identical features; the
-parity test (tests/test_site_engine.py) checks that it does.
+The website runs these stages (web/src/engine/rank.ts computes identical features):
+  instant   keyword and mention signals; answers in milliseconds, before anything else is ready
+  semantic  + static-embedding similarity over every function, computed in the background
+  rerank    + MiniLM similarity for the top candidates; shipped only if it earns its download
+  file      a ranker over files, for the Files view
 """
 
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import pickle
 import time
 from collections import Counter
+from dataclasses import dataclass, field
 from pathlib import Path
 
 import numpy as np
 
 from odin.cli import _load_eval_set
 from odin.eval.metrics import aggregate, score
-from odin.eval.runner import gold_targets
-from odin.rank.browser import FEATURES, POOL, STAGE2, extract, predict
+from odin.index.chunker import MODULE, chunk_file
+from odin.index.snapshot import unit_key, unit_text
+from odin.rank.browser import (
+    FEATURES,
+    FILE_FEATURES,
+    POOL,
+    SEMANTIC,
+    STAGE2,
+    extract,
+    file_features,
+    predict,
+)  # fmt: skip
 from odin.rank.features import _logrank, issue_fields
 from odin.rank.ltr import LGBM_PARAMS, RankingData
 from odin.rank.mentions import Mentions
 from odin.search.retriever import BM25Retriever, Query
+from odin.search.static import StaticEncoder, export_browser_model
 
-DEPTH = (
-    20  # stage-2 candidates the browser embeds per query: 50 is +0.4 hit@10 in CV for 2.5x the work
-)
+STATIC_MODEL, STATIC_TOKENS = "minishlab/potion-code-16M", 512  # chosen by CV (ADR 0011)
+EMBEDDER = "sentence-transformers/all-MiniLM-L6-v2"
+DEPTH = 20  # candidates the rerank stage embeds with MiniLM
+RERANK_MIN_GAIN = 0.005  # declared before looking: CV hit@10 the rerank stage must add
 CACHE = Path("results/browser_ltr")
 OUT = Path("web/src/assets/ranker.json")
+STATIC_OUT = Path("web/src/assets/static-model.bin")
 LITE = Path("web/public/data/lite.json")  # the held-out numbers the site quotes
-EMBEDDER = "sentence-transformers/all-MiniLM-L6-v2"
+
+TRAIN = {"swe-bench": ("full", "test", ["lite"]), "rebench": ("rebench", "train", [])}
+TEST = {"lite": ("lite", "test", []), "unseen": ("rebench", "test", [])}
 
 
-def build(dataset: str, exclude: list[str]) -> dict:
-    path = CACHE / f"stage1_{dataset}_minus_{'_'.join(exclude) or 'none'}.pkl"
+@dataclass
+class Item:
+    qid: str
+    repo: str
+    commit: str
+    text: str
+    targets: set[str]
+    files: set[str]
+    ids: list[str] = field(default_factory=list)  # unit id of every unit, by row
+    rows_a: np.ndarray | None = None
+    xa: np.ndarray | None = None
+    rows_b: np.ndarray | None = None
+    xb: np.ndarray | None = None
+    # filled in pass 2
+    sel: np.ndarray | None = None  # positions in rows_b the rerank stage sees
+    xc: np.ndarray | None = None
+    frows: np.ndarray | None = None
+    fpaths: list[str] = field(default_factory=list)
+    xf: np.ndarray | None = None
+
+
+class Snapshots:
+    """Repository snapshots with a static embedding of every unit (kept per repository)."""
+
+    def __init__(self) -> None:
+        self.r = BM25Retriever(tokenizer="code", exclude_tests=True)
+        self.static = StaticEncoder(STATIC_MODEL, STATIC_TOKENS, quantize=True)
+        self._repo: str | None = None
+        self._vecs: dict[bytes, np.ndarray] = {}
+        self._key: tuple[str, str] | None = None
+        self._snap: tuple | None = None
+
+    def get(self, repo: str, commit: str):
+        if self._key == (repo, commit):
+            return self._snap
+        if repo != self._repo:
+            self._vecs.clear()  # bounded memory: one repository's units at a time
+            self._repo = repo
+        fn = self.r._snapshot(Query("", repo, commit, ""), "function")
+        missing = {
+            int(fn.file_of_doc[d]) for d, k in enumerate(fn.unit_keys) if k not in self._vecs
+        }
+        texts: dict[bytes, str] = {}
+        for f in missing:
+            for c in chunk_file(self.r.indexer._reader.read(fn.oids[f]), ""):
+                if c.kind != MODULE:
+                    t = unit_text(c.qualname, c.text)
+                    texts[unit_key(t)] = t
+        keys = [k for k in texts if k not in self._vecs]
+        for k, v in zip(keys, self.static.encode([texts[k] for k in keys]), strict=True):
+            self._vecs[k] = v
+        M = (
+            np.stack([self._vecs[k] for k in fn.unit_keys])
+            if fn.unit_keys
+            else np.zeros((0, self.static.dim), np.float32)
+        )
+        names = Counter(i.rsplit("::", 1)[1].rsplit(".", 1)[-1] for i in fn.ids)
+        self._key, self._snap = (repo, commit), (fn, M, names)
+        return self._snap
+
+    def signals(self, fn, M, text: str):
+        """Everything the extractors need for one issue against one snapshot."""
+        title, code = issue_fields(text)
+        vocab, tok = self.r.indexer.vocab, self.r.tokenize
+        lex = fn.index.scores(vocab.lookup(tok(text)))
+        title_lex = fn.index.scores(vocab.lookup(tok(title)))
+        code_lex = (
+            fn.index.scores(vocab.lookup(tok(code))) if code else np.zeros(len(lex), np.float32)
+        )
+        qv, tv = self.static.encode([text, title])
+        return lex, title_lex, code_lex, M @ qv, M @ tv, Mentions.parse(text), title
+
+    def close(self) -> None:
+        self.r.close()
+
+
+def items_of(dataset: str, split: str, exclude: list[str]) -> list[Item]:
+    gold, queries = _load_eval_set(
+        argparse.Namespace(gold=None, dataset=dataset, split=split, repo=None, exclude=exclude)
+    )
+    out = [
+        Item(g.instance_id, g.repo, g.base_commit, queries[g.instance_id], set(g.functions + g.classes), set(g.files))
+        for g in gold if g.functions or g.classes
+    ]  # fmt: skip
+    return sorted(out, key=lambda it: (it.repo, it.commit))
+
+
+def build(name: str, spec: tuple, snaps: Snapshots) -> list[Item]:
+    """Pass 1: candidate pools and features of the instant and semantic stages."""
+    path = CACHE / f"items_{name}.pkl"
     if path.exists():
         return pickle.loads(path.read_bytes())
-    gold, queries = _load_eval_set(
-        argparse.Namespace(gold=None, dataset=dataset, split="test", repo=None, exclude=exclude)
+    items, kept, t0 = items_of(*spec), [], time.time()
+    snaps.r.warmup([Query(it.qid, it.repo, it.commit, "") for it in items])
+    for n, it in enumerate(items, 1):
+        try:
+            fn, M, names = snaps.get(it.repo, it.commit)
+        except Exception as exc:  # noqa: BLE001 - a snapshot that cannot be read is skipped, and counted
+            print(f"  skip {it.qid}: {type(exc).__name__}: {str(exc)[:100]}", flush=True)
+            continue
+        lex, title_lex, code_lex, sem, tsem, m, _ = snaps.signals(fn, M, it.text)
+        it.ids = fn.ids
+        it.rows_a, it.xa = extract(fn, lex, title_lex, code_lex, m, names)
+        it.rows_b, it.xb = extract(fn, lex, title_lex, code_lex, m, names, sem, tsem)
+        kept.append(it)
+        if n % 250 == 0:
+            print(f"  {name}: {n}/{len(items)} ({time.time() - t0:.0f}s)", flush=True)
+    for it in kept:  # only the pooled ids are needed from here on
+        it.ids = [it.ids[r] for r in it.rows_b] if it.rows_b is not None else []
+    print(
+        f"{name}: {len(kept)} of {len(items)} issues built in {time.time() - t0:.0f}s", flush=True
     )
-    todo = sorted(
-        (g for g in gold if gold_targets(g, "function")), key=lambda g: (g.repo, g.base_commit)
-    )
-    r = BM25Retriever(tokenizer="code", exclude_tests=True)
-    r.warmup([Query(g.instance_id, g.repo, g.base_commit, "") for g in todo])
-    out = {
-        "qids": [],
-        "repo": [],
-        "commit": [],
-        "rows": [],
-        "ids": [],
-        "X": [],
-        "y": [],
-        "n_gold": [],
-        "text": [],
-    }
-    names_key, names = None, Counter()
-    t0 = time.time()
-    for n, g in enumerate(todo, 1):
-        text = queries[g.instance_id]
-        q = Query(g.instance_id, g.repo, g.base_commit, text)
-        fn, lex = r.lexical_scores(q, "function")
-        if names_key != id(fn):
-            names = Counter(i.rsplit("::", 1)[1].rsplit(".", 1)[-1] for i in fn.ids)
-            names_key = id(fn)
-        title, code = issue_fields(text)
-        vocab, tok = r.indexer.vocab, r.tokenize
-        title_lex = fn.index.scores(vocab.lookup(tok(title)))
-        code_lex = fn.index.scores(vocab.lookup(tok(code))) if code else np.zeros(len(lex))
-        rows, X = extract(fn, lex, title_lex, code_lex, Mentions.parse(text), names)
-        targets = set(gold_targets(g, "function"))
-        ids = [fn.ids[i] for i in rows]
-        for k, v in (("qids", g.instance_id), ("repo", g.repo), ("commit", g.base_commit), ("rows", rows),
-                     ("ids", ids), ("X", X), ("y", np.array([i in targets for i in ids], np.float32)),
-                     ("n_gold", len(targets)), ("text", text)):  # fmt: skip
-            out[k].append(v)
-        if n % 100 == 0:
-            print(f"  {n}/{len(todo)} ({time.time() - t0:.0f}s)", flush=True)
-    r.close()
     CACHE.mkdir(parents=True, exist_ok=True)
-    path.write_bytes(pickle.dumps(out))
-    return out
+    path.write_bytes(pickle.dumps(kept))
+    return kept
 
 
-def as_ranking(d: dict, X: list[np.ndarray] | None = None) -> RankingData:
-    return RankingData(
-        np.concatenate(X or d["X"]), np.concatenate(d["y"]),
-        np.array([len(x) for x in (X or d["X"])]), np.array(d["n_gold"]), d["qids"],
-    )  # fmt: skip
+# ---------------------------------------------------------------- ranking data and CV
 
 
-def cv(
-    data: RankingData, folds: int = 5, seed: int = 0, max_rounds: int = 1000
-) -> tuple[int, np.ndarray]:
-    """Round count by mean NDCG@10 across folds, then out-of-fold scores at that count."""
+def unit_ids(it: Item, rows: np.ndarray) -> list[str]:
+    pos = {int(r): i for i, r in enumerate(it.rows_b)}
+    return [it.ids[pos[int(r)]] if int(r) in pos else f"?{int(r)}" for r in rows]
+
+
+def repo_folds(items: list[Item], k: int = 5) -> list[tuple[np.ndarray, np.ndarray]]:
+    """Folds of whole projects, balanced by issue count: CV scores unseen projects."""
+    sizes = Counter(it.repo for it in items)
+    load, fold_of = [0] * k, {}
+    for repo, n in sorted(sizes.items(), key=lambda kv: (-kv[1], kv[0])):
+        f = int(np.argmin(load))
+        fold_of[repo] = f
+        load[f] += n
+    idx = np.arange(len(items))
+    fold = np.array([fold_of[it.repo] for it in items])
+    return [(idx[fold != f], idx[fold == f]) for f in range(k)]
+
+
+def cv(data: RankingData, splits, max_rounds: int = 1500, seed: int = 0) -> tuple[int, np.ndarray]:
+    """Round count by mean NDCG@10 over project folds, then out-of-fold scores at that count."""
     import lightgbm as lgb
 
-    from odin.rank.ltr import _folds
-
-    splits = _folds(len(data.group), folds, seed)
     curves = []
     for tr_q, te_q in splits:
         tr, te = data.split(tr_q), data.split(te_q)
@@ -132,66 +224,115 @@ def cv(
     return best, oof
 
 
-def fit(data: RankingData, rounds: int):
+def cv_items(items: list[Item], X, Y, n_gold, splits) -> tuple[int, list[np.ndarray], RankingData]:
+    """CV over issues. Issues with no candidates are left out of training (LightGBM crashes on
+    an empty query group) and get no scores, so they count as misses in every metric."""
+    keep = [i for i, x in enumerate(X) if len(x)]
+    pos = {i: k for k, i in enumerate(keep)}
+    data = RankingData(
+        np.concatenate([X[i] for i in keep]), np.concatenate([Y[i] for i in keep]),
+        np.array([len(X[i]) for i in keep]), np.array([n_gold[i] for i in keep]),
+        [items[i].qid for i in keep],
+    )  # fmt: skip
+    sub = [
+        (np.array([pos[i] for i in tr if i in pos]), np.array([pos[i] for i in te if i in pos]))
+        for tr, te in splits
+    ]  # fmt: skip
+    rounds, oof = cv(data, sub)
+    per: list[np.ndarray] = [np.zeros(0)] * len(X)
+    at = 0
+    for i in keep:
+        per[i] = oof[at : at + len(X[i])]
+        at += len(X[i])
+    return rounds, per, data
+
+
+def fit(data: RankingData, rounds: int, seed: int = 0):
     import lightgbm as lgb
 
-    model = lgb.LGBMRanker(n_estimators=rounds, random_state=0, **LGBM_PARAMS)
+    model = lgb.LGBMRanker(n_estimators=rounds, random_state=seed, **LGBM_PARAMS)
     model.fit(data.X, data.y, group=data.group)
     return model
-
-
-def per_query(scores: np.ndarray, d: dict) -> list[np.ndarray]:
-    out, at = [], 0
-    for X in d["X"]:
-        out.append(scores[at : at + len(X)])
-        at += len(X)
-    return out
-
-
-def evaluate(d: dict, ranked_rows: list[list[int]], gold_of: dict[str, list[str]]) -> dict:
-    """The eval harness's own metrics (gold outside the pool counts as a miss)."""
-    res = [
-        score([d["ids"][q][i] for i in rr[:10]], gold_of[d["qids"][q]], [1, 5, 10])
-        for q, rr in enumerate(ranked_rows)
-    ]
-    return aggregate(res, [1, 5, 10])
 
 
 def order(s: np.ndarray) -> list[int]:
     return np.argsort(-s, kind="stable").tolist()
 
 
-def stage2_features(
-    d: dict, s1: list[np.ndarray], embed
-) -> tuple[list[np.ndarray], list[np.ndarray]]:
-    """Stage-2 rows (stage 1's top DEPTH per query) with dense similarity appended."""
-    r = BM25Retriever(tokenizer="code", exclude_tests=True)
-    X2, sel_all = [], []
+def metrics(ranked: list[list[str]], gold: list[set[str]]) -> dict:
+    return aggregate(
+        [score(r[:10], sorted(g), [1, 5, 10]) for r, g in zip(ranked, gold, strict=True)],
+        [1, 5, 10],
+    )
+
+
+def fmt(m: dict) -> str:
+    return f"hit@1 {m['hit@1']:.3f}  hit@5 {m['hit@5']:.3f}  hit@10 {m['hit@10']:.3f}  MRR {m['mrr']:.3f}  (n={m['n']})"
+
+
+# ---------------------------------------------------------------- stages
+
+
+def stage_rows(items: list[Item], stage: str):
+    """Feature rows, labels and unit ids per issue, for the instant (a) or semantic (b) stage."""
+    X, Y, ids = [], [], []
+    for it in items:
+        rows, x = (it.rows_a, it.xa) if stage == "a" else (it.rows_b, it.xb)
+        u = unit_ids(it, rows)
+        X.append(x)
+        Y.append(np.array([i in it.targets for i in u], np.float32))
+        ids.append(u)
+    return X, Y, ids
+
+
+def pass2(
+    items: list[Item], unit_scores: list[np.ndarray], snaps: Snapshots, embed, name: str
+) -> None:
+    """Rerank-stage and file-stage features, which need the semantic stage's scores."""
     t0 = time.time()
-    for q in range(len(d["qids"])):
-        sel = np.array(order(s1[q])[:DEPTH], np.int64)
-        fn = r._snapshot(Query(d["qids"][q], d["repo"][q], d["commit"][q], ""), "function")
-        texts = r.indexer.unit_texts(fn, d["rows"][q][sel].tolist())
-        title, _ = issue_fields(d["text"][q])
-        qv, tv, *dv = embed([d["text"][q], title, *texts])
-        dv = np.array(dv)
-        dense, tdense = dv @ qv, dv @ tv
-        extra = np.stack([_logrank(s1[q][sel]), dense - dense.max(), _logrank(dense),
-                          tdense - tdense.max(), _logrank(tdense)], axis=1)  # fmt: skip
-        X2.append(np.hstack([d["X"][q][sel], extra]).astype(np.float32))
-        sel_all.append(sel)
-        if (q + 1) % 200 == 0:
-            print(f"  embedded {q + 1}/{len(d['qids'])} ({time.time() - t0:.0f}s)", flush=True)
-    r.close()
-    return X2, sel_all
+    for n, (it, s) in enumerate(zip(items, unit_scores, strict=True), 1):
+        fn, M, _ = snaps.get(it.repo, it.commit)
+        lex, title_lex, code_lex, sem, tsem, m, title = snaps.signals(fn, M, it.text)
+        it.frows, it.xf = file_features(
+            fn, lex, title_lex, code_lex, sem, tsem, m, it.rows_b, it.xb, s
+        )
+        it.fpaths = [fn.files[f] for f in it.frows]
+        sel = np.array(order(s)[:DEPTH], np.int64)
+        it.sel = sel
+        if len(sel):
+            texts = snaps.r.indexer.unit_texts(fn, it.rows_b[sel].tolist())
+            qv, tv, *dv = embed([it.text, title, *texts])
+            dv = np.array(dv)
+            dense, tdense = dv @ qv, dv @ tv
+            extra = np.stack(
+                [
+                    _logrank(s[sel]),
+                    dense - dense.max(),
+                    _logrank(dense),
+                    tdense - tdense.max(),
+                    _logrank(tdense),
+                ],
+                1,
+            )
+            it.xc = np.hstack([it.xb[sel], extra]).astype(np.float32)
+        else:
+            it.xc = np.zeros((0, len(FEATURES) + len(SEMANTIC) + len(STAGE2)), np.float32)
+        if n % 500 == 0:
+            print(f"  pass 2 {name}: {n}/{len(items)} ({time.time() - t0:.0f}s)", flush=True)
+
+
+def reranked(it: Item, s_b: np.ndarray, s_c: np.ndarray) -> list[str]:
+    """The rerank stage orders its candidates; the rest keep the semantic stage's order."""
+    chosen = set(it.sel.tolist())
+    u = unit_ids(it, it.rows_b)
+    return [u[int(it.sel[i])] for i in order(s_c)] + [u[i] for i in order(s_b) if i not in chosen]
 
 
 def make_embedder():
-    import hashlib
-
+    import torch
     from sentence_transformers import SentenceTransformer
 
-    model = SentenceTransformer(EMBEDDER, device="cuda" if _cuda() else "cpu")
+    model = SentenceTransformer(EMBEDDER, device="cuda" if torch.cuda.is_available() else "cpu")
     model.max_seq_length = 256
     path = CACHE / "minilm.pkl"
     cache: dict[bytes, np.ndarray] = pickle.loads(path.read_bytes()) if path.exists() else {}
@@ -202,28 +343,22 @@ def make_embedder():
         ]
         todo = [i for i, k in enumerate(keys) if k not in cache]
         if todo:
-            vecs = model.encode([texts[i] for i in todo], normalize_embeddings=True, batch_size=64)
+            vecs = model.encode([texts[i] for i in todo], normalize_embeddings=True, batch_size=128)
             for i, v in zip(todo, vecs, strict=True):
                 cache[keys[i]] = v.astype(np.float32)
         return [cache[k] for k in keys]
 
-    def save() -> None:
-        path.write_bytes(pickle.dumps(cache))
-
-    embed.save = save  # type: ignore[attr-defined]
+    embed.save = lambda: path.write_bytes(pickle.dumps(cache))  # type: ignore[attr-defined]
     return embed
 
 
-def _cuda() -> bool:
-    import torch
-
-    return torch.cuda.is_available()
+# ---------------------------------------------------------------- export
 
 
 def f32_threshold(t: float) -> float:
     """The largest float32 <= t: for float32 features, x <= t exactly when x <= this.
 
-    Written in its shortest float32 form, which both evaluators read back with fround.
+    Written in its shortest float32 form, which both evaluators read back as float32.
     """
     f = np.float32(t)
     if float(f) > t:
@@ -259,100 +394,181 @@ def export(models: dict, meta: dict, samples: dict) -> None:
         trees = [flatten(t["tree_structure"]) for t in model.booster_.dump_model()["tree_info"]]
         out[stage] = {"features": names, "trees": trees}
         X = samples[stage]
-        want = model.predict(X)
         got = np.array([predict(out[stage], x) for x in X])
-        np.testing.assert_allclose(got, want, rtol=1e-5, atol=1e-5)
-        print(f"{stage}: {len(trees)} trees, JSON evaluator matches LightGBM on {len(X)} rows")
+        np.testing.assert_allclose(got, model.predict(X), rtol=1e-5, atol=1e-5)
+        print(f"  {stage}: {len(trees)} trees, JSON evaluator matches LightGBM on {len(X)} rows")
     OUT.write_text(json.dumps(out, separators=(",", ":")), encoding="utf-8")
     print(f"wrote {OUT} ({OUT.stat().st_size / 1024:.0f} KB)")
 
 
+# ---------------------------------------------------------------- main
+
+
 def main() -> None:
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--stage2", action="store_true")
-    args = ap.parse_args()
+    t_start = time.time()
+    snaps = Snapshots()
+    train = [it for name, spec in TRAIN.items() for it in build(name, spec, snaps)]
+    tests = {name: build(name, spec, snaps) for name, spec in TEST.items()}
+    print(f"train: {len(train)} issues in {len({it.repo for it in train})} projects", flush=True)
+    splits = repo_folds(train)
+    gold = [it.targets for it in train]
+    n_gold = [len(it.targets) for it in train]
+    report: dict = {"cv": {}, "held_out": {}}
 
-    train = build("full", ["lite"])
-    lite = build("lite", [])
-    gold_of = {}
-    for ds, ex in (("full", ["lite"]), ("lite", [])):
-        gold, _ = _load_eval_set(
-            argparse.Namespace(gold=None, dataset=ds, split="test", repo=None, exclude=ex)
+    # Instant and semantic stages, CV by project.
+    stage_models = {}
+    oof_b = None
+    for stage, names in (("a", FEATURES), ("b", FEATURES + SEMANTIC)):
+        X, Y, ids = stage_rows(train, stage)
+        rounds, per, data = cv_items(train, X, Y, n_gold, splits)
+        m = metrics([[u[i] for i in order(s)] for u, s in zip(ids, per, strict=True)], gold)
+        report["cv"][stage] = m
+        print(
+            f"CV {'instant ' if stage == 'a' else 'semantic'} ({rounds:4} rounds): {fmt(m)}",
+            flush=True,
         )
-        gold_of |= {g.instance_id: gold_targets(g, "function") for g in gold}
-    tr1 = as_ranking(train)
-    pool_recall = sum(y.sum() > 0 for y in train["y"]) / len(train["y"])
+        if stage == "a":
+            base = metrics(
+                [
+                    [u[i] for i in order(x[:, FEATURES.index("bm25_rel")])]
+                    for u, x in zip(ids, X, strict=True)
+                ],
+                gold,
+            )
+            report["cv"]["keyword"] = base
+            print(f"CV keyword only          : {fmt(base)}", flush=True)
+        stage_models[stage] = (fit(data, rounds), names, rounds)
+        if stage == "b":
+            oof_b = per
+
+    # Rerank and file stages need the semantic stage's (out-of-fold) scores.
+    embed = make_embedder()
+    pass2(train, oof_b, snaps, embed, "train")
+    XC = [it.xc for it in train]
+    YC = [
+        np.array(
+            [u in it.targets for u in (unit_ids(it, it.rows_b[it.sel]) if len(it.sel) else [])],
+            np.float32,
+        )
+        for it in train
+    ]
+    rounds_c, per_c, data_c = cv_items(train, XC, YC, n_gold, splits)
+    m_c = metrics(
+        [reranked(it, sb, sc) for it, sb, sc in zip(train, oof_b, per_c, strict=True)],
+        gold,
+    )
+    report["cv"]["c"] = m_c
+    print(f"CV rerank   ({rounds_c:4} rounds): {fmt(m_c)}", flush=True)
+    ship_c = m_c["hit@10"] - report["cv"]["b"]["hit@10"] >= RERANK_MIN_GAIN
     print(
-        f"train: {len(train['qids'])} queries, mean pool {np.mean([len(x) for x in train['X']]):.0f}, pool hit {pool_recall:.3f}"
+        f"  rerank stage {'ships' if ship_c else 'is left out'} (needs +{RERANK_MIN_GAIN:.3f} hit@10 over semantic)",
+        flush=True,
     )
 
-    rounds1, oof1 = cv(tr1)
-    s1_train = per_query(oof1, train)
-    bm25 = [order(x[:, FEATURES.index("bm25_rel")]) for x in train["X"]]
-    print(f"CV, train  BM25 : {fmt(evaluate(train, bm25, gold_of))}")
-    print(
-        f"CV, train  stage1 ({rounds1} rounds): {fmt(evaluate(train, [order(s) for s in s1_train], gold_of))}"
+    XF = [it.xf for it in train]
+    YF = [np.array([p in it.files for p in it.fpaths], np.float32) for it in train]
+    fgold = [it.files for it in train]
+    rounds_f, per_f, data_f = cv_items(train, XF, YF, [len(it.files) for it in train], splits)
+    m_f = metrics(
+        [[it.fpaths[i] for i in order(s)] for it, s in zip(train, per_f, strict=True)],
+        fgold,
     )
-    m1 = fit(tr1, rounds1)
-    s1_lite = [m1.predict(x) if len(x) else np.zeros(0) for x in lite["X"]]
-    lite_bm25 = [order(x[:, FEATURES.index("bm25_rel")]) for x in lite["X"]]
-    held_out = {
-        "keyword": evaluate(lite, lite_bm25, gold_of),
-        "stage1": evaluate(lite, [order(s) for s in s1_lite], gold_of),
+    col = FILE_FEATURES.index("best_score_gap")
+    m_f0 = metrics(
+        [[it.fpaths[i] for i in order(x[:, col])] for it, x in zip(train, XF, strict=True)], fgold
+    )
+    report["cv"]["file"], report["cv"]["file_best_function"] = m_f, m_f0
+    print(f"CV files, best function : {fmt(m_f0)}", flush=True)
+    print(f"CV files, file ranker   ({rounds_f:4} rounds): {fmt(m_f)}", flush=True)
+    embed.save()
+
+    model_a, _, rounds_a = stage_models["a"]
+    model_b, _, rounds_b = stage_models["b"]
+    model_c = fit(data_c, rounds_c) if ship_c else None
+    model_f = fit(data_f, rounds_f)
+
+    # Held out: run once.
+    for name, items in tests.items():
+        g = [it.targets for it in items]
+        Xa, _, ida = stage_rows(items, "a")
+        Xb, _, idb = stage_rows(items, "b")
+        s_b = [model_b.predict(x) if len(x) else np.zeros(0) for x in Xb]
+        res = {
+            "keyword": metrics(
+                [
+                    [u[i] for i in order(x[:, FEATURES.index("bm25_rel")])]
+                    for u, x in zip(ida, Xa, strict=True)
+                ],
+                g,
+            ),
+            "instant": metrics(
+                [
+                    [u[i] for i in order(model_a.predict(x) if len(x) else np.zeros(0))]
+                    for u, x in zip(ida, Xa, strict=True)
+                ],
+                g,
+            ),
+            "semantic": metrics(
+                [[u[i] for i in order(s)] for u, s in zip(idb, s_b, strict=True)], g
+            ),
+        }
+        pass2(items, s_b, snaps, embed, name)
+        if model_c is not None:
+            res["rerank"] = metrics(
+                [
+                    reranked(it, sb, model_c.predict(it.xc) if len(it.sel) else np.zeros(0))
+                    for it, sb in zip(items, s_b, strict=True)
+                ],
+                g,
+            )
+        fg = [it.files for it in items]
+        res["files_best_function"] = metrics(
+            [[it.fpaths[i] for i in order(it.xf[:, col])] for it in items], fg
+        )
+        res["files"] = metrics(
+            [
+                [it.fpaths[i] for i in order(model_f.predict(it.xf) if len(it.xf) else np.zeros(0))]
+                for it in items
+            ],
+            fg,
+        )
+        report["held_out"][name] = res
+        for k, v in res.items():
+            print(f"{name:7} {k:20}: {fmt(v)}", flush=True)
+    embed.save()
+
+    # Export: trees, the static model the browser downloads, and the numbers the site quotes.
+    sample = lambda X: np.concatenate([x for x in X if len(x)][:40])  # noqa: E731
+    models = {
+        "instant": (model_a, FEATURES),
+        "semantic": (model_b, FEATURES + SEMANTIC),
+        "file": (model_f, FILE_FEATURES),
     }
-    print(f"Lite       BM25 : {fmt(held_out['keyword'])}")
-    print(f"Lite       stage1: {fmt(held_out['stage1'])}")
-    gain = sorted(
-        zip(FEATURES, m1.booster_.feature_importance("gain"), strict=True), key=lambda t: -t[1]
-    )
-    print("top features:", ", ".join(f"{n}={g:.0f}" for n, g in gain[:12]))
-    models = {"stage1": (m1, FEATURES)}
-    samples = {"stage1": np.concatenate(lite["X"][:40])}
-    meta = {"pool": POOL, "depth": DEPTH, "embedder": EMBEDDER, "trained_on": "SWE-bench full minus Lite",
-            "rounds": {"stage1": rounds1}}  # fmt: skip
-
-    if args.stage2:
-        embed = make_embedder()
-        X2_train, sel_train = stage2_features(train, s1_train, embed)
-        X2_lite, sel_lite = stage2_features(lite, s1_lite, embed)
-        embed.save()
-        y2 = [train["y"][q][s] for q, s in enumerate(sel_train)]
-        tr2 = RankingData(np.concatenate(X2_train), np.concatenate(y2), np.array([len(x) for x in X2_train]),
-                          np.array(train["n_gold"]), train["qids"])  # fmt: skip
-        rounds2, oof2 = cv(tr2)
-        names2 = FEATURES + STAGE2
-
-        def combined(sel, s2, s1):
-            # stage 2 orders its DEPTH candidates; the rest keep stage 1's order below them
-            rest = [i for i in order(s1) if i not in set(sel.tolist())]
-            return [int(sel[i]) for i in order(s2)] + rest
-
-        at, cv2 = 0, []
-        for q, sel in enumerate(sel_train):
-            cv2.append(combined(sel, oof2[at : at + len(sel)], s1_train[q]))
-            at += len(sel)
-        print(f"CV, train  stage2 ({rounds2} rounds): {fmt(evaluate(train, cv2, gold_of))}")
-        m2 = fit(tr2, rounds2)
-        lite2 = [
-            combined(sel, m2.predict(X2_lite[q]) if len(sel) else np.zeros(0), s1_lite[q])
-            for q, sel in enumerate(sel_lite)
-        ]
-        held_out["stage2"] = evaluate(lite, lite2, gold_of)
-        print(f"Lite       stage2: {fmt(held_out['stage2'])}")
-        models["stage2"] = (m2, names2)
-        samples["stage2"] = np.concatenate(X2_lite[:40])
-        meta["rounds"]["stage2"] = rounds2
+    samples = {
+        "instant": sample([it.xa for it in train]),
+        "semantic": sample([it.xb for it in train]),
+        "file": sample(XF),
+    }
+    if model_c is not None:
+        models["rerank"] = (model_c, FEATURES + SEMANTIC + STAGE2)
+        samples["rerank"] = sample(XC)
+    meta = {
+        "pool": POOL, "depth": DEPTH, "static": {"model": STATIC_MODEL, "maxTokens": STATIC_TOKENS}, "embedder": EMBEDDER,
+        "trained_on": {k: f"{v[0]}:{v[1]}" for k, v in TRAIN.items()},
+        "rounds": {"instant": rounds_a, "semantic": rounds_b, "rerank": rounds_c if ship_c else None, "file": rounds_f},
+    }  # fmt: skip
     export(models, meta, samples)
+    size = export_browser_model(snaps.static, STATIC_OUT)
+    print(f"wrote {STATIC_OUT} ({size / 1e6:.1f} MB)")
     LITE.write_text(
-        json.dumps({"embedder": EMBEDDER, "depth": DEPTH, "lite": held_out}, indent=1),
+        json.dumps(
+            {"embedder": EMBEDDER, "static": STATIC_MODEL, "depth": DEPTH, **report}, indent=1
+        ),
         encoding="utf-8",
     )
-    print(f"wrote {LITE}")
+    print(f"wrote {LITE}; total {time.time() - t_start:.0f}s")
+    snaps.close()
 
 
-def fmt(m: dict) -> str:
-    return f"hit@1={m['hit@1']:.3f} hit@5={m['hit@5']:.3f} hit@10={m['hit@10']:.3f} recall@10={m['recall@10']:.3f} mrr={m['mrr']:.3f} (n={m['n']})"
-
-
-if __name__ == "__main__":
+if __name__ == "__main__":  # parsing fans out to processes: required on Windows
     main()
