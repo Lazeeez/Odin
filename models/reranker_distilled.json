@@ -1,0 +1,28 @@
+{
+  "adapters": [
+    "models/ce_adapter_distilled"
+  ],
+  "depth": 20,
+  "function_weight": 4.0,
+  "file_weight": 0.5,
+  "skip_margin": 3.0,
+  "validation": {
+    "function": {
+      "setting": [
+        20,
+        4.0
+      ],
+      "recall@1": 0.3349314285714287,
+      "recall@5": 0.5789088598402323,
+      "recall@10": 0.6848342276169725,
+      "mrr": 0.6343228483679645
+    },
+    "file": {
+      "setting": 0.5,
+      "recall@1": 0.6581632478632479,
+      "recall@5": 0.8760317088708391,
+      "recall@10": 0.9078262568349524,
+      "mrr": 0.8473314019314019
+    }
+  }
+}
