@@ -170,3 +170,22 @@ test("sections that render after their data arrives still reveal on scroll", asy
   await expect(page.locator("section.reveal", { has: table })).toHaveClass(/\bin\b/);
   await expect(page.locator(".tiles.reveal")).toHaveClass(/\bin\b/);
 });
+
+test("asking for another repository mid-load cancels the first and loads the new one", async ({ page }) => {
+  // Slow the first repository's files down so the second request lands while it is loading.
+  await page.route("https://raw.githubusercontent.com/odin-e2e/fixture/**", async (route) => {
+    await new Promise((r) => setTimeout(r, 1500));
+    await route.fallback();
+  });
+  await page.goto(`./#/search?repo=${encodeURIComponent(REPO)}`);
+  await expect(page.locator(".progress-text")).toBeVisible();
+  await page.evaluate(() => { location.hash = "#/search?repo=odin-e2e/missing"; });
+  await expect(page.locator(".progress-text.error")).toContainText("Couldn't find");
+});
+
+test("the landing page shows a real example bug, with the fix marked", async ({ page }) => {
+  await page.goto("./");
+  await expect(page.locator(".preview-issue p")).not.toBeEmpty();
+  await expect(page.locator(".preview-results li")).toHaveCount(4);
+  await expect(page.locator(".preview-results li").first().locator(".reason")).toHaveText("changed by the real fix");
+});
