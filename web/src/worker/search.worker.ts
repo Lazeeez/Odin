@@ -4,18 +4,26 @@
 import treeSitterWasm from "web-tree-sitter/tree-sitter.wasm?url";
 import type { Parser } from "web-tree-sitter";
 import grammarWasm from "../assets/tree-sitter-python.wasm?url";
+import { BM25 } from "../engine/bm25.ts";
+import { encodePath } from "../engine/github.ts";
 import { createParser } from "../engine/chunk.ts";
-import { type LoadedRepo, LoadError, loadRepo } from "../engine/repo.ts";
-import { type Candidate, type RankerModel, rankStage1, rankStage2 } from "../engine/rank.ts";
+import { type Listing, type LoadedRepo, LoadError, type Parsing, type RepoCache, inlineParsing, loadRepo } from "../engine/repo.ts";
+import { type Candidate, explain, type FileCandidate, type RankerModel, rankFiles, rankUnits, rerankStage, type Similarity, type Stage, signals } from "../engine/rank.ts";
+import { issueFields } from "../engine/mentions.ts";
 import { type Embed, SEMANTIC, unitText } from "../engine/semantic.ts";
+import { embedText, parseStaticModel, type StaticModel } from "../engine/static.ts";
 import type { Unit } from "../engine/types.ts";
 import rankerUrl from "../assets/ranker.json?url";
-import type { Backend, FromWorker, ToWorker, WireHit } from "./protocol.ts";
-import { idbGet, idbGetMany, idbPut, idbPutMany } from "./store.ts";
+import staticUrl from "../assets/static-model.bin?url";
+import type { Backend, FromWorker, ToWorker, WireFile, WireHit } from "./protocol.ts";
+import { createPool, type Pool } from "./pool.ts";
+import { idbGet, idbGetMany, idbPut, idbPutMany, touchRepo, trimVectors } from "./store.ts";
 
 declare const self: DedicatedWorkerGlobalScope;
 const TRANSFORMERS_CDN = "https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.0";
 const post = (msg: FromWorker) => self.postMessage(msg);
+// Set at build time when the archive relay is deployed (see proxy/cloudflare-worker.js).
+const ARCHIVE_PROXY = import.meta.env.VITE_ARCHIVE_PROXY?.replace(/\/+$/, "");
 const BATCH = 16; // texts per embedding call
 
 interface Job {
@@ -27,8 +35,13 @@ interface Job {
 const state = {
   parser: null as Promise<Parser> | null,
   repo: null as LoadedRepo | null,
+  /** What searches run against: the loaded repository, or the part of it parsed so far. */
+  index: null as BM25 | null,
   model: null as Promise<(job: Job) => Embed> | null,
   ranker: null as Promise<RankerModel> | null,
+  static: null as Promise<{ model: StaticModel; buffer: ArrayBuffer }> | null,
+  /** Static embeddings of every unit of `index`, once the background build finishes. */
+  sem: null as { index: BM25; vectors: Float32Array; dim: number } | null,
   controller: null as AbortController | null,
   latest: 0,
 };
@@ -36,6 +49,67 @@ const state = {
 class Superseded extends Error {}
 
 const parser = () => (state.parser ??= createParser(treeSitterWasm, grammarWasm));
+
+// Parser threads when the browser allows workers to start workers, else this thread.
+let pool: Pool | null | undefined;
+let parsing: Promise<Parsing> | null = null;
+const getPool = () => (pool === undefined ? (pool = createPool()) : pool);
+const getParsing = () => (parsing ??= Promise.resolve(getPool()).then((p) => p ?? parser().then(inlineParsing)));
+
+// The static embedding model (scripts/browser_ltr.py writes it): a content-hashed asset,
+// downloaded once and cached, also handed to the parser threads.
+const staticModel = () =>
+  (state.static ??= fetch(staticUrl)
+    .then((r) => (r.ok ? r.arrayBuffer() : Promise.reject(new Error(`static model: HTTP ${r.status}`))))
+    .then(async (buffer) => {
+      await getPool()?.loadStatic(buffer.slice(0));
+      return { model: parseStaticModel(buffer), buffer };
+    })
+    .catch((err) => {
+      state.static = null;
+      throw err;
+    }));
+
+/** Embed every unit in the background; searches use the semantic stage once it is ready. */
+async function buildSemantic(index: BM25): Promise<void> {
+  const t0 = performance.now();
+  post({ type: "semantic-index", state: "building", units: index.units.length, ms: 0 });
+  try {
+    const { model } = await staticModel();
+    const texts = index.units.map(unitText);
+    const p = getPool();
+    let vectors: Float32Array;
+    if (p) vectors = await p.embed(texts, model.dim);
+    else {
+      vectors = new Float32Array(texts.length * model.dim);
+      texts.forEach((t, i) => vectors.set(embedText(model, t), i * model.dim));
+    }
+    if (state.index !== index) return; // another repository was loaded meanwhile
+    state.sem = { index, vectors, dim: model.dim };
+    post({ type: "semantic-index", state: "ready", units: index.units.length, ms: performance.now() - t0 });
+  } catch {
+    post({ type: "semantic-index", state: "failed", units: index.units.length, ms: performance.now() - t0 });
+  }
+}
+
+/** Cosine similarity of every unit to the issue and its title, if the semantic index is ready. */
+async function similarity(index: BM25, query: string): Promise<Similarity | undefined> {
+  const sem = state.sem;
+  if (!sem || sem.index !== index) return undefined;
+  const { model } = await staticModel();
+  const [title] = issueFields(query);
+  const matvec = (q: Float32Array) => {
+    const out = new Float32Array(index.units.length);
+    const { vectors, dim } = sem;
+    for (let u = 0, at = 0; u < out.length; u++, at += dim) {
+      let s = 0;
+      for (let j = 0; j < dim; j++) s += vectors[at + j] * q[j];
+      out[u] = s;
+    }
+    return out;
+  };
+  return { issue: matvec(embedText(model, query)), title: matvec(embedText(model, title)) };
+}
 
 // The learned ranker's trees (scripts/browser_ltr.py), a content-hashed asset fetched once.
 const ranker = () =>
@@ -47,9 +121,24 @@ const ranker = () =>
     }));
 
 // Parsed repositories are cached by git tree hash: same hash, same code, never stale.
-const repoCache = {
-  get: (key: string) => idbGet<Unit[]>("repos", key),
-  put: (key: string, units: Unit[]) => idbPut("repos", key, units),
+// Listings are reused for ten minutes: a reload or a second load of the same repository
+// then needs no GitHub API request (anonymous visitors get 60 an hour).
+const LISTING_TTL_MS = 10 * 60 * 1000;
+const repoCache: RepoCache = {
+  async get(key) {
+    const units = await idbGet<Unit[]>("repos", key);
+    if (units) void touchRepo(key);
+    return units;
+  },
+  async put(key, units) {
+    await idbPut("repos", key, units);
+    await touchRepo(key, units.reduce((n, u) => n + 2 * (u.text.length + u.path.length + u.qualname.length) + 64, 0));
+  },
+  async getListing(ref) {
+    const hit = await idbGet<{ at: number; listing: Listing }>("meta", `listing|${ref}`);
+    return hit && Date.now() - hit.at < LISTING_TTL_MS ? hit.listing : undefined;
+  },
+  putListing: (ref, listing) => idbPut("meta", `listing|${ref}`, { at: Date.now(), listing }),
 };
 
 async function contentKey(text: string): Promise<string> {
@@ -151,45 +240,94 @@ const wire = (c: Pick<Candidate, "unit" | "score" | "bm25"> & Partial<Candidate>
   id: c.unit.id, path: c.unit.path, qualname: c.unit.qualname, kind: c.unit.kind, line: c.unit.line,
   text: c.unit.text, score: c.score, bm25: c.bm25, semantic: c.semantic ?? null, reasons: c.reasons ?? [],
 });
+const wireFile = (f: FileCandidate): WireFile => ({ path: f.path, score: f.score, functions: f.units.slice(0, 4).map(wire) });
 
 async function load(input: string, includeTests: boolean): Promise<void> {
   state.controller = new AbortController();
   ranker().catch(() => {}); // fetched while the repository downloads
+  staticModel().catch(() => {});
   try {
-    const repo = await loadRepo(await parser(), input, {
+    const repo = await loadRepo(await getParsing(), input, {
       includeTests,
       cache: repoCache,
       signal: state.controller.signal,
       progress: (phase, done, total) => post({ type: "progress", phase, done, total }),
+      archive: ARCHIVE_PROXY ? (owner, name, ref) => `${ARCHIVE_PROXY}/${owner}/${name}/${encodePath(ref)}` : undefined,
+      partial: (units, counts, filesDone, filesTotal, where) => {
+        if (state.controller?.signal.aborted) return;
+        state.index = new BM25(units, { counts });
+        post({
+          type: "partial",
+          info: {
+            ...where, via: "", sha: null, files: filesTotal, units: units.length, notes: [], fromCache: false,
+            timings: { loadMs: 0, indexMs: 0 }, partial: { filesDone, filesTotal },
+          },
+        });
+      },
     });
     state.repo = repo;
+    state.index = repo.index;
+    state.sem = null;
     const { index: _index, units, ...info } = repo;
     post({ type: "loaded", info: { ...info, units: units.length } });
-    // Warm the embedding model while the visitor reads the keyword results.
-    embedder().catch(() => {});
+    void buildSemantic(repo.index);
+    void ranker().then((m) => {
+      post({ type: "stages", rerank: !!m.rerank, file: !!m.file });
+      // Warm the rerank model while the visitor reads the first results, if it is used at all,
+      // but not on a Data Saver connection: there it loads on the first rerank instead.
+      const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData;
+      if (m.rerank && !saveData) embedder().catch(() => {});
+    }, () => {});
+    void trimVectors(); // keep stored embeddings within budget
   } catch (err) {
+    // Back to the previous repository (if any), not a half-loaded one.
+    state.index = state.repo?.index ?? null;
     post({ type: "error", message: err instanceof Error ? err.message : String(err), cancelled: err instanceof LoadError && err.cancelled });
   }
 }
 
+/** File paths and unit counts of the loaded index, for the repository map. */
+function postMap() {
+  const counts = new Map<string, number>();
+  for (const u of state.index?.units ?? []) counts.set(u.path, (counts.get(u.path) ?? 0) + 1);
+  post({ type: "map", files: [...counts] });
+}
+
+/** The top `k` on the wire, the first ten with their explanations. */
+function explained(stage: Stage, all: Candidate[], k: number) {
+  const hits = all.slice(0, k).map(wire);
+  explain(stage, all.slice(0, 10), all).forEach((why, i) => {
+    hits[i].why = why;
+  });
+  return hits;
+}
+
 async function search(id: number, query: string, semantic: boolean, k: number): Promise<void> {
   state.latest = id;
-  const repo = state.repo;
-  if (!repo) return;
+  const index = state.index;
+  if (!index) return;
   const t0 = performance.now();
   const model = await ranker().catch(() => null);
   if (id !== state.latest) return;
   if (!model) {
     // Without the learned ranker (it failed to download), plain BM25 still works.
-    const kw = repo.index.search(query, k);
-    post({ type: "results", id, stage: "keyword", hits: kw.hits.map((h) => wire({ ...h, bm25: h.score })), terms: kw.terms, ms: performance.now() - t0 });
+    const kw = index.search(query, k);
+    post({ type: "results", id, stage: "instant", hits: kw.hits.map((h) => wire({ ...h, bm25: h.score })), terms: kw.terms, ms: performance.now() - t0 });
     return;
   }
-  // Stage 1: learned ranking over lexical and mention features, in milliseconds.
-  const ranked = rankStage1(repo.index, model, query);
-  post({ type: "results", id, stage: "keyword", hits: ranked.candidates.slice(0, k).map(wire), terms: ranked.terms, ms: performance.now() - t0 });
-  if (!semantic || !model.stage2 || ranked.candidates.length < 2) return;
-  // Stage 2: the same ranker, now also seeing embedding similarity for the top candidates.
+  const sim = await similarity(index, query);
+  if (id !== state.latest) return;
+  const semanticStage = sim ? model.semantic : undefined;
+  const stage = semanticStage ?? model.instant;
+  const sig = signals(index, query, semanticStage ? sim : undefined);
+  const ranked = rankUnits(index, model, stage, sig);
+  const files = semanticStage && model.file ? rankFiles(index, model.file, stage, sig, ranked).slice(0, 10).map(wireFile) : undefined;
+  post({
+    type: "results", id, stage: semanticStage ? "semantic" : "instant", hits: explained(stage, ranked.candidates, k),
+    files, terms: ranked.terms, ms: performance.now() - t0,
+  });
+  // The rerank stage was trained on the semantic stage's candidates.
+  if (!semantic || !model.rerank || !semanticStage || ranked.candidates.length < 2) return;
   try {
     const bind = await embedder();
     if (id !== state.latest) return;
@@ -209,10 +347,10 @@ async function search(id: number, query: string, semantic: boolean, k: number): 
       }
       return out;
     };
-    const hits = await rankStage2(model, query, ranked, embed, unitText);
+    const hits = await rerankStage(model, ranked, embed, unitText, query);
     if (id !== state.latest) return;
     post({
-      type: "results", id, stage: "semantic", hits: hits.slice(0, k).map(wire), terms: ranked.terms,
+      type: "results", id, stage: "rerank", hits: explained(model.rerank, hits, k), files, terms: ranked.terms,
       ms: performance.now() - t1, computed: units.computed, stored: units.stored,
     });
   } catch (err) {
@@ -223,5 +361,6 @@ async function search(id: number, query: string, semantic: boolean, k: number): 
 self.onmessage = ({ data }: MessageEvent<ToWorker>) => {
   if (data.type === "load") void load(data.input, data.includeTests);
   else if (data.type === "cancel") state.controller?.abort();
+  else if (data.type === "map") postMap();
   else void search(data.id, data.query, data.semantic, data.k);
 };
