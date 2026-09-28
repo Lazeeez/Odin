@@ -3,26 +3,33 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Odin: finding the code a bug report is about</title>
-  <meta name="description" content="Bug localization over real SWE-bench issues: code-aware BM25, code embeddings, learning to rank and a fine-tuned LLM reranker. Search any Python repository live in your browser.">
-  <meta name="theme-color" content="#4f46e5">
+  <title>Odin: find the code behind any bug report</title>
+  <meta name="description" content="Paste a bug report, get the functions most likely to need the fix. Odin searches any public Python repository, right in your browser.">
+  <meta name="theme-color" content="#ffffff">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Odin: finding the code a bug report is about">
-  <meta property="og:description" content="Given a bug report, find the function that has to change. Search any Python repository in your browser, and see how each stage performs on 300 real bugs.">
+  <meta property="og:title" content="Odin: find the code behind any bug report">
+  <meta property="og:description" content="Paste a bug report, get the functions most likely to need the fix. Works on any public Python repository, right in your browser.">
   <meta property="og:url" content="https://lazeeez.github.io/Odin/">
   <meta property="og:image" content="https://lazeeez.github.io/Odin/og.png">
   <meta name="twitter:card" content="summary_large_image">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%234f46e5'/><circle cx='14' cy='14' r='7' fill='none' stroke='white' stroke-width='3'/><path d='M19 19l6 6' stroke='white' stroke-width='3' stroke-linecap='round'/></svg>">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%235b5bd6'/><circle cx='14' cy='14' r='6.5' fill='none' stroke='white' stroke-width='3'/><path d='M18.8 18.8 24 24' stroke='white' stroke-width='3' stroke-linecap='round'/></svg>">
   <link rel="preconnect" href="https://api.github.com" crossorigin>
   <link rel="preconnect" href="https://raw.githubusercontent.com" crossorigin>
   <script>
-    // Apply a saved theme before first paint: no flash of the wrong colours.
-    try { const t = JSON.parse(localStorage.getItem("theme")); if (t) document.documentElement.dataset.theme = t; } catch {}
+    // Light or dark before first paint, so the page never flashes the wrong colours: the
+    // visitor's choice from the toggle, or the operating system's setting on a first visit.
+    (function () {
+      var t = null;
+      try { t = JSON.parse(localStorage.getItem("theme")); } catch (e) {}
+      if (t !== "light" && t !== "dark") t = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      document.documentElement.dataset.theme = t;
+      if (t === "dark") document.querySelector('meta[name="theme-color"]').setAttribute("content", "#0b0c10");
+    })();
   </script>
 </head>
 <body>
   <div id="app"></div>
-  <noscript><p style="padding:24px">This page runs a search engine in your browser, so it needs JavaScript.</p></noscript>
+  <noscript><p style="padding:24px">Odin runs a search engine in your browser, so it needs JavaScript.</p></noscript>
   <script type="module" src="/src/main.tsx"></script>
 </body>
 </html>
