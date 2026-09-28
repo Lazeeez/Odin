@@ -2,6 +2,17 @@
 import { pathText, tokenize } from "./tokenize.ts";
 import type { SearchResult, Unit } from "./types.ts";
 
+/** A unit's indexed terms and their counts: parallel arrays, cheap to post between threads. */
+export type TermCounts = [terms: string[], tfs: number[]];
+
+/** What a unit is indexed as: its qualified name, its code and its path's words. */
+export function unitCounts(u: { qualname: string; text: string; path: string }): TermCounts {
+  const counts = new Map<string, number>();
+  const text = [u.qualname, u.text, pathText(u.path)].join("\n");
+  for (const t of tokenize(text)) counts.set(t, (counts.get(t) ?? 0) + 1);
+  return [[...counts.keys()], [...counts.values()]];
+}
+
 export class BM25 {
   readonly units: readonly Unit[];
   // term -> flat [doc, tf, doc, tf, ...]: compact, and cheap to walk for one query term.
@@ -11,19 +22,19 @@ export class BM25 {
   /** Tokens per unit, a ranking feature (short units are likelier fixes). */
   readonly lengths: Float64Array;
 
-  constructor(units: readonly Unit[], k1 = 1.2, b = 0.75) {
+  /** `counts` (one per unit, from `unitCounts`) lets tokenizing happen elsewhere, e.g. in parallel. */
+  constructor(units: readonly Unit[], { counts, k1 = 1.2, b = 0.75 }: { counts?: readonly TermCounts[]; k1?: number; b?: number } = {}) {
     this.units = units;
     this.k1 = k1;
     const lengths = (this.lengths = new Float64Array(units.length));
     units.forEach((u, d) => {
-      const counts = new Map<string, number>();
-      for (const t of tokenize(`${u.qualname}\n${u.text}\n${pathText(u.path)}`)) counts.set(t, (counts.get(t) ?? 0) + 1);
+      const [terms, tfs] = counts?.[d] ?? unitCounts(u);
       let len = 0;
-      for (const [t, c] of counts) {
-        len += c;
-        let p = this.postings.get(t);
-        if (!p) this.postings.set(t, (p = []));
-        p.push(d, c);
+      for (let i = 0; i < terms.length; i++) {
+        len += tfs[i];
+        let p = this.postings.get(terms[i]);
+        if (!p) this.postings.set(terms[i], (p = []));
+        p.push(d, tfs[i]);
       }
       lengths[d] = len;
     });
