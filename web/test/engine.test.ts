@@ -291,3 +291,19 @@ describe("repository archives", () => {
     expect(got[long]).toContain("def deep()");
   });
 });
+
+describe("overall load progress", () => {
+  it("runs through the phases in order and never goes back", async () => {
+    const { overallProgress } = await import("../src/lib/progress.ts");
+    const seq = [
+      overallProgress("Listing files", 0, 1),
+      overallProgress("Downloading and parsing", 0, 900),
+      overallProgress("Downloading and parsing", 450, 900),
+      overallProgress("Downloading and parsing", 900, 900),
+      overallProgress("Building the index", 0, 1),
+    ];
+    expect(seq).toEqual([...seq].sort((a, b) => a - b));
+    expect(seq[2]).toBeCloseTo(0.5);
+    expect(overallProgress("Building the index", 1, 1)).toBe(1);
+  });
+});
