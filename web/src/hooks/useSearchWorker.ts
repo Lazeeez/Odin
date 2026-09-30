@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "preact/hooks";
 import { RESULTS, SEMANTIC } from "../engine/semantic.ts";
+import { overallProgress } from "../lib/progress.ts";
 import type { Backend, FromWorker, RankStage, RepoInfo, ToWorker, WireFile, WireHit } from "../worker/protocol.ts";
 
 export interface LoadStatus {
@@ -24,6 +25,8 @@ export function useSearchWorker() {
   const worker = useRef<Worker | null>(null);
   const seq = useRef(0);
   const loadingRef = useRef(false);
+  /** The furthest overall progress of the current load: never shown going backwards. */
+  const furthest = useRef(0);
   /** A repository asked for while another was loading: it starts once that load is cancelled. */
   const pending = useRef<{ input: string; includeTests: boolean } | null>(null);
   const start = useRef<(input: string, includeTests: boolean) => void>(() => {});
@@ -58,7 +61,8 @@ export function useSearchWorker() {
       case "progress": {
         if (!loadingRef.current) return; // late reports from downloads in flight at cancel
         const files = msg.total > 1 ? ` ${msg.done.toLocaleString()} / ${msg.total.toLocaleString()} files` : "";
-        setStatus({ text: `${msg.phase}…${files}`, fraction: msg.total ? msg.done / msg.total : 0, error: false });
+        furthest.current = Math.max(furthest.current, overallProgress(msg.phase, msg.done, msg.total));
+        setStatus({ text: `${msg.phase}…${files}`, fraction: furthest.current, error: false });
         return;
       }
       case "loaded":
@@ -136,6 +140,7 @@ export function useSearchWorker() {
       return;
     }
     pending.current = null;
+    furthest.current = 0;
     setLoadingBoth(true);
     setResults(null);
     setSemantic("");
