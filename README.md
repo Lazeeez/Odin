@@ -4,6 +4,11 @@ Bug localization over any git commit: structural chunking, code-aware BM25 and c
 
 The question this project answers: **given a bug report, can we find the code that has to change?** Every design decision is scored on SWE-bench issues, where the ground truth is the set of functions the maintainers' actual fix touched, and every claimed improvement comes with a paired significance test.
 
+It ships two ways:
+
+- **A research pipeline** (`src/odin`, Python): the full cascade on a GPU, evaluated on SWE-bench Lite.
+- **A website that runs entirely in the browser**, on any public Python repository: **[lazeeez.github.io/Odin](https://lazeeez.github.io/Odin/)**. Paste a repository and a bug report; parsing, indexing, embedding and ranking happen on your device.
+
 ## Headline results
 
 SWE-bench Lite test, 300 issues across 12 repositories, each searched at its own `base_commit`, out of roughly 10k to 45k candidate functions per snapshot. Nothing was trained or tuned on these issues.
@@ -16,6 +21,20 @@ SWE-bench Lite test, 300 issues across 12 repositories, each searched at its own
 *hit@k*: at least one location the maintainers' fix touched is in the top k. Brackets are 95% bootstrap intervals.
 
 For reference, the same retrieval stack started this project at 30.8% function recall@10 with plain BM25.
+
+### In the browser, on projects it never saw
+
+The website runs a lighter pipeline (no GPU, no git history) with rankers trained on 5,115 issues from 131 projects. It is scored on 747 bugs from 30 projects kept out of training entirely, the situation of every repository a visitor pastes ([ADR 0011](docs/decisions/0011-website-at-scale.md)):
+
+| In-browser stage | hit@1 | hit@10 | MRR |
+|---|---|---|---|
+| keyword search only | 32.8% | 66.1% | 0.435 |
+| instant learned ranking | 43.8% | 75.5% | 0.543 |
+| + static-embedding semantic index | 43.4% | 77.2% | 0.542 |
+| + MiniLM rerank of the top 20 | 43.9% | **77.2%** | **0.551** |
+| **file ranker** (the file that must change) | 69.2% | **94.4%** | 0.781 |
+
+Against the previous browser ranker, trained on SWE-bench alone: function hit@10 +1.3 points (p = 0.049) and file hit@10 +1.9 points (p = 0.005) on the unseen projects. On SWE-bench Lite the browser pipeline reaches 69.1% function hit@10 against the GPU pipeline's 79.4%.
 
 ### Every retriever
 
@@ -152,12 +171,39 @@ flowchart LR
     D --> E[ranked functions and files]
 ```
 
+The same cascade in the browser, with no server of its own:
+
+```mermaid
+flowchart LR
+    U["repository link<br/>+ bug report"] --> W[search worker]
+    W -->|"tree API, then files<br/>or one .tar.gz via the relay"| GH[(GitHub)]
+    W --> PT["parser threads<br/>Tree-sitter WASM"]
+    PT --> BM[code-aware BM25]
+    PT --> SE["static embeddings<br/>every function, int8"]
+    BM --> L1["LambdaMART, instant<br/>33 features"]
+    SE --> L2["LambdaMART, semantic<br/>+7 features"]
+    L1 --> L2 --> RR["MiniLM rerank<br/>top 20, WebGPU or WASM"]
+    L2 --> FR[file ranker]
+    PT --> IDB[(IndexedDB: parsed repos<br/>by tree hash, vectors by content)]
+```
+
 - **Chunk = the unit ground truth is labelled with.** Each non-nested function, method and class is a chunk. A class chunk holds only the lines its methods don't own (header, docstring, attributes). Everything else is a module chunk used for file-level search.
 - **Every issue is searched at its own `base_commit`.** Searching at HEAD leaks the fix ([ADR 0002](docs/decisions/0002-index-at-base-commit.md)).
+
+## Tech stack
+
+| Layer | Tools |
+|---|---|
+| Research pipeline | Python 3.11+, uv, Tree-sitter, NumPy/SciPy (sparse BM25), PyTorch + sentence-transformers (jina-code embeddings), LightGBM (LambdaMART), Hugging Face PEFT/LoRA on Qwen3 (cross-encoder), SQLite (analysis cache), git (blobless mirrors, `cat-file --batch`) |
+| Website | TypeScript (strict), Preact, Vite, Web Workers, Tree-sitter compiled to WebAssembly, Model2Vec static embeddings (int8), Transformers.js + ONNX Runtime (MiniLM on WebGPU or WASM), IndexedDB, a service worker (COOP/COEP isolation, offline cache) |
+| Hosting | GitHub Pages (static), an optional Cloudflare Worker relay for repository archives (`proxy/`) |
+| Quality | pytest, Vitest, Playwright end-to-end tests (desktop and phone), a Python/TypeScript parity suite, ruff, GitHub Actions CI, axe accessibility checks |
+| Data | SWE-bench (Lite, Verified, full), SWE-rebench (CC-BY-4.0) for 150 more projects |
 
 ## Evaluation methodology
 
 - **Ground truth** comes from the gold patch, mapped onto a Tree-sitter parse of each file *as it existed at `base_commit`* (details below).
+- **Unseen projects for the website.** The browser's rankers are cross-validated with whole projects as folds, and scored on 30 SWE-rebench projects that appear in no training fold, so the reported numbers are what a visitor's new repository gets.
 - **Held-out tuning.** Anything with a knob is tuned off Lite: fusion and expansion on SWE-bench Verified minus Lite (407 issues, `odin tune`), learned rankers on SWE-bench test minus Lite (1,941 issues, `odin ltr`, 5-fold CV grouped by query), and the reranker's depth and weights on 250 issues held out from its training (`odin ce-tune`), with the selection rule written down before looking. Lite test is run once per final configuration.
 - **No leakage through features.** Git history uses only strict ancestors of the base commit (`git rev-list`). Earlier-issue features only see issues opened at least 30 days before the query. Both boundaries have tests.
 - **Reproducibility.** Cached features and trained models carry a fingerprint of the source code that produced them, and a model refuses to load against different feature code. Every result file records the git commit, library versions, model hashes and command line.
@@ -201,11 +247,16 @@ uv run odin compare results/bm25-code_function_lite_test.json \
                     results/bm25-code-notests_function_lite_test.json
 uv run odin search psf/requests "redirect drops the authorization header" --no-tests
 make test
+
+# the website's rankers (SWE-bench + 150 SWE-rebench projects; ground truth committed)
+uv run python scripts/sample_rebench.py         # the fixed project sample (committed)
+uv run odin gold --dataset rebench --split train
+uv run python scripts/browser_ltr.py            # trains, cross-validates, exports web/src/assets/
 ```
 
 The first evaluation clones 12 blobless mirrors (about 400 MB) and fetches the source blobs for every needed commit in one request per repository. Later runs are offline.
 
-Retrievers: `random`, `oracle`, `bm25-naive`, `bm25-code`, `bm25-code-notests`, `bm25-code-notests-graph`, and with the `dense` extra `dense-notests`, `hybrid-notests`, `ltr-notests` and `ltr-ce-notests`. The first dense run embeds about 185k units (about 15 minutes on a laptop GPU). Later runs reuse `.cache/embeddings`.
+Retrievers: `random`, `oracle`, `bm25-naive`, `bm25-code`, `bm25-code-notests`, `bm25-code-notests-graph`, and with the `dense` extra `dense-notests`, `hybrid-notests`, `ltr-notests`, `ltr-ce-notests` and `ltr-ce-distilled-notests` (a single distilled reranker; tried, not adopted). The first dense run embeds about 185k units (about 15 minutes on a laptop GPU). Later runs reuse `.cache/embeddings`.
 
 ## Website
 
@@ -227,6 +278,8 @@ uv run python scripts/export_site.py   # refresh web/public/data/ from results/*
 The page is 38 KB of JavaScript and 13 KB of CSS (gzipped); the map, the game and the command palette are separate 1–2 KB chunks loaded on first use. Searching adds the workers, 150 KB (gzipped) of parser WebAssembly, the 276 KB ranker and the 16.8 MB static embedding model, each fetched once and cached. The rerank model's runtime comes from jsDelivr's CDN on first use. `npm run e2e` runs the Playwright suite against a built preview.
 
 One-time setup for Pages: repository Settings → Pages → Source: GitHub Actions.
+
+**Archive relay (optional, recommended).** `proxy/cloudflare-worker.js` passes GitHub's repository archives through with CORS headers, so a repository downloads as one `.tar.gz` instead of one request per file: Django is ready in 3.5 s instead of 13.8 s, transformers in 5.8 s instead of about a minute. It serves only the origins in `proxy/wrangler.toml`. Deploy with `npx wrangler deploy` in `proxy/` (free Cloudflare plan), then set the repository variable `ARCHIVE_PROXY` to the worker's URL; the next Pages build uses it. Without it, or if it is down, the site loads file by file.
 
 ## How ground truth is built
 
@@ -262,8 +315,10 @@ src/odin/
   search/bm25.py              vocabulary, precomputed-weight sparse BM25, top-k
   search/graph.py             one-hop call-graph expansion
   search/dense.py             embedding store, length-bucketed encoder, exact search, fusion
+  search/dense_train.py       embedding-model fine-tuning on bug reports (tried, not adopted)
+  search/static.py            Model2Vec static encoder and its int8 export for the browser
   search/retriever.py         Query, Retriever protocol, BM25Retriever, HybridRetriever
-  eval/dataset.py             SWE-bench loader
+  eval/dataset.py             SWE-bench and SWE-rebench loaders
   eval/goldpatch.py           unified diff -> removed lines + indented insertion points
   eval/ground_truth.py        diff + symbols -> gold files/functions per issue
   eval/metrics.py             recall/hit/all@k, MRR, bootstrap CIs, paired bootstrap test
@@ -278,6 +333,12 @@ src/odin/
   rank/cross_encoder.py       LLM reranker with shared-prefix KV caching
   rank/ce_train.py            LoRA fine-tuning with a listwise loss over hard negatives
   rank/ce_tune.py             reranker depth and blend weights on held-out training issues
+  rank/browser.py             the website's ranker features, pools and tree predictions
+scripts/                      browser ranker training and export, site data, examples, preview image
+web/                          the website: engine/ (port of the Python engine), worker/, pages/
+proxy/                        Cloudflare Worker relay for repository archives
+tests/                        pytest, including Python/TypeScript parity (tests/js/)
+data/                         committed ground truth and the SWE-rebench project sample
 benchmarks/                   batching throughput; query-time breakdown and exact vs HNSW
 docs/decisions/               why things are the way they are
 ```
@@ -291,6 +352,10 @@ docs/decisions/               why things are the way they are
 5. [Dense embeddings cached by content hash, fused with BM25, searched exactly](docs/decisions/0005-dense-hybrid-retrieval.md)
 6. [Learn the ranking with LambdaMART over retrieval, structure, mention and history features](docs/decisions/0006-learning-to-rank.md)
 7. [A fine-tuned cross-encoder as the last stage of a ranking cascade](docs/decisions/0007-fine-tuned-cross-encoder.md)
+8. [An embedding-store corruption bug: detection, cause, repair](docs/decisions/0008-embedding-store-corruption.md)
+9. [The first two stages, running in the visitor's browser on any repository](docs/decisions/0009-in-browser-search.md)
+10. [A learned ranker in the browser](docs/decisions/0010-browser-ranker.md)
+11. [The website at scale: 150 more projects, semantic search, faster loading](docs/decisions/0011-website-at-scale.md)
 
 ## Adding a retriever
 
@@ -315,6 +380,8 @@ What would move the numbers further, in expected order of impact:
 
 1. **A frontier LLM as the final stage.** Published SWE-bench localization agents get their precision from large models reading candidate code. The cascade already reduces each issue to about 20 candidates, which keeps that affordable.
 2. **A bigger reranker base model** where memory allows. More epochs, LTR-mined negatives and a two-adapter ensemble were already tried and kept ([ADR 0007](docs/decisions/0007-fine-tuned-cross-encoder.md)). Fine-tuning the embedding model was tried and did not help.
+
+Tried recently and not adopted: distilling the two-adapter reranker into one (better on validation, MRR 0.634 vs 0.623, but file hit@1 fell 0.690 → 0.660 on Lite, p = 0.027), and a learned query projection for the static embeddings (semantic-only MRR 0.287 → 0.220 on held-out projects). The website's *How it works* page lists every result that did and didn't work.
 
 ## License
 
