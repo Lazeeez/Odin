@@ -14,3 +14,6 @@ web/dist/
 *.tsbuildinfo
 web/test-results/
 web/playwright-report/
+
+# Wrangler's local state from deploying the relay (proxy/)
+.wrangler/
