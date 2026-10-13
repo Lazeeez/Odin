@@ -5,7 +5,8 @@ Where Odin stands on SWE-bench Lite when it is scored the way other papers score
 ## Summary
 
 - **At function level, the current cascade (odin-fast) is level with the best agent in the LocAgent paper and behind SweRank.** Function Acc@10 is 76.3% for Odin, 77.4% for LocAgent with Claude 3.5, and 82.1% to 88.7% for SweRank.
-- **At file level Odin is behind both.** File Acc@1 is 69.0% against 77.7% and 83.2%.
+- **Under CoSIL's protocol, odin-fast is ahead of CoSIL, Agentless and OrcaLoca** (each with a 32B model) on nine of ten numbers, and 2.3 points behind CoSIL on function Top-1.
+- **Under LocAgent's protocol, at file level Odin is behind both LocAgent and SweRank.** File Acc@1 is 69.0% against 77.7% and 83.2%.
 - **Odin's reranker is far smaller.** It has 0.6 billion parameters and runs on a 6 GB laptop GPU. SweRank's rerankers have 7 and 32 billion, and its best retriever 7 billion.
 - **Odin costs about a quarter of a cent per issue** on its laptop timings at a public GPU rental price, against one to two cents for SweRank's rerankers and 46 to 79 cents for the agents ([cost.md](cost.md)).
 - **Every other system's row is copied from its paper**, except one: SweRankEmbed-Small was also run inside Odin's index, where it scores 8.8 points below its paper at function Acc@10.
@@ -56,6 +57,26 @@ Reading the Odin rows:
 - **Odin's code-aware BM25 is well above the BM25 row of the papers** (function Acc@10 51.5% against 36.9%). The two differ in tokenizer, in what is indexed, and in excluding tests, so this is not a like-for-like pair.
 - **Each stage adds at every level.** Function Acc@10 goes 51.5 → 65.0 → 72.6 → 76.3.
 
+## Under CoSIL's protocol: all 300 issues, any correct location in the top N
+
+CoSIL's evaluator, which its paper also applies to Agentless and OrcaLoca. It differs from LocAgent's in three ways: all 300 Lite issues count, an issue succeeds when any one gold location is in the top N, and functions are matched by qualified name without the file.
+
+| System | Model | Source | File Top-1 | File Top-3 | File Top-5 | File MAP | File MRR | Func Top-1 | Func Top-3 | Func Top-5 | Func MAP | Func MRR |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Agentless | Qwen2.5-Coder-32B | reported, C2 | 0.583 | 0.730 | 0.733 | 0.669 | 0.659 | 0.247 | 0.397 | 0.427 | 0.308 | 0.325 |
+| OrcaLoca | Qwen2.5-Coder-32B | reported, C2 | 0.590 | 0.640 | 0.640 | 0.615 | 0.615 | 0.217 | 0.417 | 0.447 | 0.302 | 0.317 |
+| CoSIL | Qwen2.5-Coder-32B | reported, C2 | 0.607 | 0.773 | 0.827 | 0.698 | 0.694 | 0.430 | 0.543 | 0.577 | 0.461 | 0.489 |
+| Odin: code-aware BM25 | none | scored here | 0.457 | 0.660 | 0.723 | 0.562 | 0.562 | 0.190 | 0.317 | 0.390 | 0.257 | 0.260 |
+| Odin: + embeddings (hybrid) | 0.5B | scored here | 0.583 | 0.790 | 0.850 | 0.689 | 0.689 | 0.273 | 0.430 | 0.527 | 0.372 | 0.368 |
+| Odin: + LambdaMART | 0.5B | scored here | 0.627 | 0.850 | 0.883 | 0.735 | 0.735 | 0.337 | 0.530 | 0.600 | 0.430 | 0.437 |
+| **Odin: + reranker (odin-fast)** | 0.5B + 0.6B | scored here | **0.690** | **0.870** | **0.893** | **0.778** | **0.778** | **0.407** | **0.583** | **0.673** | **0.500** | **0.500** |
+
+- **C2** is Table 2 of CoSIL, [arXiv:2503.22424v1](https://arxiv.org/abs/2503.22424v1); the paper also gives 7B and 14B rows, omitted here. Odin's rows are in [results/comparison/cosil-lite_2026-10-14.json](../results/comparison/cosil-lite_2026-10-14.json).
+- **odin-fast is ahead of all three at file level** (Top-1 0.690 against CoSIL's 0.607) **and at function Top-3, Top-5, MAP and MRR.** At function Top-1 it is 2.3 points behind CoSIL (0.407 [0.350, 0.463] against 0.430), which is inside the interval.
+- **Odin was held to five function names per issue.** The compared systems list several names per file for up to five files, so they can have more than five chances; the direction of that difference favours them.
+- **Nine issues have no function-level target** in Odin's ground truth and count as failures in Odin's function columns, as the protocol requires.
+- **The three compared systems use a 32B model with several calls per issue.** The paper reports no cost per issue.
+
 ## One published model inside Odin's index
 
 SweRankEmbed-Small was run as the only retriever over Odin's own units, with test files excluded like every Odin row.
@@ -97,6 +118,6 @@ L5 and S5 are Table 5 of each paper.
 ## Not done yet
 
 - **No baseline has been reproduced with its authors' pipeline.** SweRank's preprocessed corpora are distributed outside its repository; re-running its own scripts on them is the next step, and the 7B and 32B models need the cluster.
-- **Other protocols.** Agentless, OrcaLoca and CoSIL report under their own metrics and subsets; they are added as their protocols are implemented from their code.
+- **Other protocols.** Agentless and OrcaLoca also report match rates in their own papers, on their own subsets; only CoSIL's evaluation of them is implemented here.
 - **Loc-Bench**, the non-SWE-bench benchmark both papers also report on (560 issues), belongs to phase 5.
 - **A deeper Odin run** to replace the module lower bound.
