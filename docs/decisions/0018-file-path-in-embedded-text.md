@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted as a candidate for odin-fast, 2026-10-14. The test and its decision rule below were written before the test ran; the outcome section was added after it.
+Not adopted, 2026-10-14. Path-aware embeddings passed the retriever test on dev and did not pass the cascade test on validation. Both rules were written before their tests ran; the outcomes were added after.
 
 ## Context
 
@@ -101,3 +101,40 @@ Written on 2026-10-14, before the path-aware rankers were trained.
 - **Otherwise it is not adopted** and stays recorded as a retriever-level gain that did not carry through the cascade.
 - Hit@10, all@10 and the ranker-only comparison are reported and do not decide.
 - Adoption would still mean retraining the final rankers on all training issues and, separately, deciding whether the reranker should be retrained on the new candidates. Nothing is evaluated on Lite or the holdout as part of this test.
+
+### Outcome of the cascade test
+
+250 validation issues, function level. Result files are in `results/validation-path/`. The path-aware rankers are in `models/paths/`.
+
+| | recall@1 | recall@10 | hit@10 | all@10 | MRR |
+|---|---|---|---|---|---|
+| Current cascade, after the ranker | 0.277 | 0.663 | 0.812 | 0.560 | 0.554 |
+| Path-aware, after the ranker | 0.282 | 0.668 | 0.824 | 0.564 | 0.570 |
+| Current cascade, after the reranker | 0.316 | 0.663 | 0.816 | 0.564 | 0.619 |
+| Path-aware, after the reranker | 0.315 | 0.676 | 0.832 | 0.572 | 0.617 |
+
+| Paired comparison, path-aware against current | Difference | 95% interval | p | Wins / losses |
+|---|---|---|---|---|
+| full cascade, recall@10 (the deciding test) | +0.014 | [-0.005, +0.035] | 0.164 | 10 / 9 |
+| full cascade, MRR (must not be worse) | -0.002 | [-0.018, +0.014] | 0.839 | 27 / 17 |
+| full cascade, hit@10 | +0.016 | [-0.004, +0.040] | 0.195 | 6 / 2 |
+| full cascade, all@10 | +0.008 | [-0.012, +0.032] | 0.587 | 5 / 3 |
+| full cascade, recall@1 | -0.002 | [-0.018, +0.015] | 0.837 | 3 / 5 |
+| after the ranker, recall@10 | +0.005 | [-0.026, +0.037] | 0.744 | 17 / 18 |
+| after the ranker, MRR | +0.016 | [-0.007, +0.040] | 0.171 | 47 / 33 |
+| after the ranker, hit@10 | +0.012 | [-0.020, +0.044] | 0.545 | 10 / 7 |
+| after the ranker, all@10 | +0.004 | [-0.032, +0.040] | 0.897 | 11 / 10 |
+| after the ranker, recall@1 | +0.006 | [-0.020, +0.032] | 0.687 | 13 / 10 |
+
+Ten tests were run; two were the declared deciding ones.
+
+- **The rule is not met.** The full path-aware cascade is 1.4 points ahead on recall@10, and that is not significant (p = 0.164). odin-fast does not adopt it.
+- **The retriever's gain mostly disappears by the end of the cascade.** Three points of recall@10 at the hybrid stage become half a point after the ranker and 1.4 after the reranker. The ranker already has features computed from the path, and the candidate pool already held a correct function for 97% of these issues, so better retrieval had little left to add here.
+- **Every difference points the same way except two that are flat,** and none is significant at 250 issues. This is a result the test could not resolve, not evidence that the path hurts.
+- **Familiar projects.** The validation issues come from projects the rankers trained on. On unseen projects the ranker's path features may carry less and the retriever more; that was not tested.
+
+### What is kept
+
+- The path-aware mode (`src/odin/search/path_aware.py`, `--paths`), the rankers in `models/paths/` and every result file stay in the repository.
+- The finding stands for the comparison with SweRank: a retriever evaluated without paths is understated by about ten points for that model and two to three for Odin's.
+- It can be looked at again where it is more likely to matter: with more training data, on the unseen-project set's validation folds, or for odin-max. Each would need its own rule written first.

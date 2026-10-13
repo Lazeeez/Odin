@@ -105,7 +105,7 @@ SweRankEmbed-Small was run as the only retriever over Odin's own units, with tes
   | the same model inside Odin's index (LocAgent labels) | 57.30 | 57.66 | 65.69 |
 
 - **What is ruled out.** Input length: 512 tokens instead of 1,024 moves function Acc@10 by at most 1.1 points. Class units: dropping every Odin unit that is not in the authors' corpus adds 1.5 points. Labels: with the same labels on the 272 issues both have, the gap is unchanged.
-- **Why it matters beyond this row.** Every Odin row in the tables above was produced with embeddings that never saw a file path. Whether adding it helps Odin's own embedding model, and whether the gain survives fusion with BM25, which already scores path terms, is being tested on the dev set under a rule fixed in advance ([ADR 0018](decisions/0018-file-path-in-embedded-text.md)).
+- **Why it matters beyond this row.** Every Odin row in the tables above was produced with embeddings that never saw a file path. Whether adding it helps Odin's own embedding model, and whether the gain survives fusion with BM25, which already scores path terms, was tested under rules fixed in advance ([ADR 0018](decisions/0018-file-path-in-embedded-text.md)): Odin's hybrid retriever gains 3.2 points of function recall@10 on dev (p = 0.001), but the full cascade gains 1.4 on validation, which is not significant (p = 0.164), so odin-fast was not changed.
 - **Nothing was chosen from this run.** Whether a SweRank retriever belongs in odin-max is a question for dev data.
 
 ## Cost
