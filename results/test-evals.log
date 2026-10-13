@@ -43,3 +43,16 @@ undated | lite | hybrid-notests | function | results/hybrid-notests_function_lit
 2026-10-13 | lite | hybrid-notests | file and function | results/comparison/locagent-lite_2026-10-13.json | stored rankings scored under the locagent-lite protocol (ADR 0014); nothing re-run, nothing decided
 2026-10-13 | lite | ltr-notests | file and function | results/comparison/locagent-lite_2026-10-13.json | stored rankings scored under the locagent-lite protocol (ADR 0014); nothing re-run, nothing decided
 2026-10-13 | lite | ltr-ce-notests | file and function | results/comparison/locagent-lite_2026-10-13.json | stored rankings scored under the locagent-lite protocol (ADR 0014); nothing re-run, nothing decided
+2026-10-13 | lite | oracle | file | results/provenance/oracle_file_lite_test.json | re-run to give the row a provenance block; identical rankings, nothing decided
+2026-10-13 | lite | random | file | results/provenance/random_file_lite_test.json | re-run to give the row a provenance block; identical rankings, nothing decided
+2026-10-13 | lite | bm25-code-notests-graph | function | results/provenance/bm25-code-notests-graph_function_lite_test.json | re-run to give the row a provenance block; identical rankings, nothing decided
+2026-10-13 | lite | bm25-code-notests | file | results/provenance/bm25-code-notests_file_lite_test.json | re-run to give the row a provenance block; identical rankings, nothing decided
+2026-10-13 | lite | bm25-code | file | results/provenance/bm25-code_file_lite_test.json | re-run to give the row a provenance block; identical rankings, nothing decided
+2026-10-13 | lite | bm25-code | function | results/provenance/bm25-code_function_lite_test.json | re-run to give the row a provenance block; identical rankings, nothing decided
+2026-10-13 | lite | bm25-naive | file | results/provenance/bm25-naive_file_lite_test.json | re-run to give the row a provenance block; identical rankings, nothing decided
+2026-10-13 | lite | bm25-naive | function | results/provenance/bm25-naive_function_lite_test.json | re-run to give the row a provenance block; identical rankings, nothing decided
+2026-10-13 | lite | dense-notests | file | results/provenance/dense-notests_file_lite_test.json | re-run to give the row a provenance block; recall identical, a few near-tied items reordered; nothing decided
+2026-10-13 | lite | dense-notests | function | results/provenance/dense-notests_function_lite_test.json | re-run to give the row a provenance block; recall identical, a few near-tied items reordered; nothing decided
+2026-10-13 | lite | hybrid-notests | file | results/provenance/hybrid-notests_file_lite_test.json | re-run to give the row a provenance block; recall identical, a few near-tied items reordered; nothing decided
+2026-10-13 | lite | hybrid-notests | function | results/provenance/hybrid-notests_function_lite_test.json | re-run to give the row a provenance block; recall identical, a few near-tied items reordered; nothing decided
+2026-10-13 | lite | dense-notests | function | results/repro/ (local) | second run to test determinism; identical to the first, nothing decided

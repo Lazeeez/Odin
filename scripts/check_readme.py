@@ -32,8 +32,14 @@ BROWSER_STAGES = {
 }
 
 
+def result_file(retriever: str, level: str) -> Path:
+    name = f"{retriever}_{level}_lite_test.json"
+    rerun = RESULTS / "provenance" / name
+    return rerun if rerun.exists() else RESULTS / name
+
+
 def load(retriever: str, level: str) -> dict:
-    return json.loads((RESULTS / f"{retriever}_{level}_lite_test.json").read_text(encoding="utf-8"))
+    return json.loads(result_file(retriever, level).read_text(encoding="utf-8"))
 
 
 def plain(cell: str) -> str:

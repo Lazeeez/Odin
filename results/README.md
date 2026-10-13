@@ -35,9 +35,12 @@ Each `*` stands for `_file_lite_test.json` and `_function_lite_test.json`.
 
 ## Test-set evaluations
 
-[test-evals.log](test-evals.log) lists every evaluation on a held-out test set, with the reason it was run and what was decided from it: 37 on SWE-bench Lite and 2 on the unseen-project set as of 2026-10-13. New evaluations append a line.
+[test-evals.log](test-evals.log) lists every evaluation on a held-out test set, with the reason it was run and what was decided from it: 50 on SWE-bench Lite and 2 on the unseen-project set as of 2026-10-13. New evaluations append a line.
 
-Thirteen files (`random`, `oracle`, the `bm25-*`, `dense-notests` and `hybrid-notests` rows) were written before provenance was recorded and have no `provenance` block. Their rankings are deterministic and `bm25-code-notests` at function level was re-run in October 2026 with identical output.
+Thirteen files in this folder (`random`, `oracle`, the `bm25-*`, `dense-notests` and `hybrid-notests` rows) were written before provenance was recorded. They are kept, and each was run again on 2026-10-13 into `provenance/` with a provenance block; the README check reads the re-run where one exists.
+
+- The nine lexical and sanity rows reproduce exactly, ranking for ranking.
+- The four dense and hybrid rows reproduce every recall, hit and all@k figure, and every number the README prints. Their MRR differs in the fourth decimal (at most 0.0006) and 24 to 35 issues per file have near-tied items in a different order. Two runs today are identical to each other, so this is not run-to-run noise. The likely cause, not confirmed, is that the stored files predate the change that routed query vectors through the embedding cache ([ADR 0008](../docs/decisions/0008-embedding-store-corruption.md)).
 
 ## Not here
 
