@@ -248,6 +248,28 @@ def check_comparison(rows: list[list[str]], report: Report) -> None:
         report.expect("comparison odin", float(shown), 100 * value, 2)
 
 
+def check_cost(text: str, report: Report) -> None:
+    perf = RESULTS / "perf" / "cascade_2026-10-13.json"
+    summary = json.loads(perf.read_text(encoding="utf-8"))["summary"]
+    price = json.loads(
+        (ROOT / "docs" / "data" / "published_cost_accuracy.json").read_text(encoding="utf-8")
+    )["gpu_price"]["dollars_per_hour"]
+    stated = re.search(
+        r"takes ([\d.]+) seconds per issue on a laptop GPU \(RTX 4050, 6 GB\), "
+        r"median ([\d.]+) seconds, and the reranker is (\d+)% of that.*?about \$([\d.]+) per issue",
+        text,
+    )
+    mean_s = summary["total"]["mean_ms"] / 1000
+    actual = (
+        mean_s,
+        summary["total"]["p50_ms"] / 1000,
+        100 * summary["reranker"]["mean_ms"] / summary["total"]["mean_ms"],
+        mean_s * price / 3600,
+    )
+    for shown, value, places in zip(stated.groups(), actual, (1, 1, 0, 4), strict=True):
+        report.expect("cost", float(shown), value, places)
+
+
 def check_prose(text: str, report: Report) -> None:
     ce_fn_mrr, _ = paired("ltr-notests", "ltr-ce-notests", "function", "mrr")
     ce_fn_r1, _ = paired("ltr-notests", "ltr-ce-notests", "function", "recall@1")
@@ -378,6 +400,7 @@ def main() -> int:
     check_performance(found["Performance"], text, report)
     check_dense_costs(text, report)
     check_comparison(found["Next to published systems"], report)
+    check_cost(text, report)
     check_prose(text, report)
     for line in report.mismatches:
         print("MISMATCH", line)

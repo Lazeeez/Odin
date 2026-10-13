@@ -35,6 +35,12 @@ Scored the way LocAgent and SweRank score themselves: 274 Lite issues, and an is
 
 Odin is level with the best agent of the LocAgent paper at function level and behind SweRank, with models an order of magnitude smaller; it is behind both at file level. The other rows are copied from the papers' tables and have not been re-run here. Sources, every other row, intervals, costs and what this means for the plan are in [docs/comparison.md](docs/comparison.md); the rules were fixed beforehand in [ADR 0014](docs/decisions/0014-comparison-protocols.md).
 
+### What it costs
+
+The full cascade takes 8.8 seconds per issue on a laptop GPU (RTX 4050, 6 GB), median 3.5 seconds, and the reranker is 96% of that. At a public GPU rental price that is about $0.0025 per issue, against $0.011 to $0.015 for SweRank's rerankers and $0.46 to $0.79 for agents running Claude 3.5, as their papers report them. The stage-by-stage table, the assumptions behind the dollar figure and the chart are in [docs/cost.md](docs/cost.md).
+
+![Function Acc@10 against cost per issue on SWE-bench Lite](docs/img/cost-accuracy.svg)
+
 ### In the browser, on projects it never saw
 
 The website runs a lighter pipeline (no GPU, no git history) with rankers trained on 5,115 issues from 131 projects. It is scored on 30 projects kept out of training entirely, the situation of every repository a visitor pastes: 747 bugs, the 785 sampled minus the 38 with no function or class target ([ADR 0011](docs/decisions/0011-website-at-scale.md)):

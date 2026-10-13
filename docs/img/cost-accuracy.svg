@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 500" font-family="system-ui, -apple-system, Segoe UI, sans-serif" role="img" aria-label="Function-level accuracy against cost per issue on SWE-bench Lite">
+<rect width="860" height="500" fill="#fcfcfb"/>
+<text x="64.0" y="26.0" font-size="16" fill="#0b0b0b" text-anchor="start" font-weight="600">Accuracy against cost per issue, SWE-bench Lite</text>
+<text x="64.0" y="46.0" font-size="12" fill="#52514e" text-anchor="start" font-weight="400">Function Acc@10 under the LocAgent protocol (274 issues)</text>
+<line x1="64" x2="836" y1="444.0" y2="444.0" stroke="#e7e6e2"/>
+<text x="56.0" y="448.0" font-size="11" fill="#898781" text-anchor="end" font-weight="400">60%</text>
+<line x1="64" x2="836" y1="325.2" y2="325.2" stroke="#e7e6e2"/>
+<text x="56.0" y="329.2" font-size="11" fill="#898781" text-anchor="end" font-weight="400">70%</text>
+<line x1="64" x2="836" y1="206.5" y2="206.5" stroke="#e7e6e2"/>
+<text x="56.0" y="210.5" font-size="11" fill="#898781" text-anchor="end" font-weight="400">80%</text>
+<line x1="64" x2="836" y1="87.8" y2="87.8" stroke="#e7e6e2"/>
+<text x="56.0" y="91.8" font-size="11" fill="#898781" text-anchor="end" font-weight="400">90%</text>
+<text x="64.0" y="462.0" font-size="11" fill="#898781" text-anchor="middle" font-weight="400">$0.001</text>
+<text x="297.9" y="462.0" font-size="11" fill="#898781" text-anchor="middle" font-weight="400">$0.01</text>
+<text x="531.7" y="462.0" font-size="11" fill="#898781" text-anchor="middle" font-weight="400">$0.1</text>
+<text x="765.6" y="462.0" font-size="11" fill="#898781" text-anchor="middle" font-weight="400">$1</text>
+<text x="450.0" y="488.0" font-size="11" fill="#898781" text-anchor="middle" font-weight="400">Cost per issue in US dollars, log scale</text>
+<circle cx="586" cy="22" r="5" fill="#2a78d6"/>
+<text x="598.0" y="26.0" font-size="12" fill="#52514e" text-anchor="start" font-weight="400">Published systems, as reported</text>
+<circle cx="586" cy="42" r="5" fill="#eb6834"/>
+<text x="598.0" y="46.0" font-size="12" fill="#52514e" text-anchor="start" font-weight="400">Odin, measured on a laptop GPU</text>
+<g><title>OpenHands, Claude 3.5: $0.79 per issue, 70.1%</title><circle cx="741.7" cy="324.4" r="6" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"/><text x="731.7" y="328.4" font-size="12" fill="#52514e" text-anchor="end" font-weight="400">OpenHands, Claude 3.5</text></g>
+<g><title>SWE-agent, Claude 3.5: $0.67 per issue, 64.6%</title><circle cx="724.9" cy="389.4" r="6" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"/><text x="714.9" y="407.4" font-size="12" fill="#52514e" text-anchor="end" font-weight="400">SWE-agent, Claude 3.5</text></g>
+<g><title>MoatlessTools, Claude 3.5: $0.46 per issue, 65.0%</title><circle cx="686.7" cy="385.1" r="6" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"/><text x="676.7" y="381.1" font-size="12" fill="#52514e" text-anchor="end" font-weight="400">MoatlessTools, Claude 3.5</text></g>
+<g><title>LocAgent, Claude 3.5: $0.66 per issue, 77.4%</title><circle cx="723.4" cy="237.7" r="6" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"/><text x="713.4" y="231.7" font-size="12" fill="#52514e" text-anchor="end" font-weight="400">LocAgent, Claude 3.5</text></g>
+<g><title>LocAgent, Qwen2.5-32B: $0.09 per issue, 77.0%</title><circle cx="521.0" cy="242.0" r="6" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"/><text x="511.0" y="234.0" font-size="12" fill="#52514e" text-anchor="end" font-weight="400">LocAgent, Qwen2.5-32B</text></g>
+<g><title>LocAgent, Qwen2.5-7B: $0.05 per issue, 71.5%</title><circle cx="461.3" cy="307.1" r="6" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"/><text x="451.3" y="311.1" font-size="12" fill="#52514e" text-anchor="end" font-weight="400">LocAgent, Qwen2.5-7B</text></g>
+<g><title>SweRank + GPT-4.1: $0.16 per issue, 88.0%</title><circle cx="579.5" cy="112.0" r="6" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"/><text x="589.5" y="116.0" font-size="12" fill="#52514e" text-anchor="start" font-weight="400">SweRank + GPT-4.1</text></g>
+<g><title>SweRankLLM-Large (32B): $0.015 per issue, 88.7%</title><circle cx="339.0" cy="103.3" r="6" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"/><text x="349.0" y="99.3" font-size="12" fill="#52514e" text-anchor="start" font-weight="400">SweRankLLM-Large (32B)</text></g>
+<g><title>SweRankLLM-Small (7B): $0.011 per issue, 86.1%</title><circle cx="307.5" cy="133.7" r="6" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"/><text x="297.5" y="145.7" font-size="12" fill="#52514e" text-anchor="end" font-weight="400">SweRankLLM-Small (7B)</text></g>
+<line x1="155.8" x2="353.9" y1="250.7" y2="250.7" stroke="#eb6834" stroke-width="2"/>
+<g><title>Odin: $0.0025 per issue, 76.3%</title><circle cx="155.8" cy="250.7" r="6" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"/><text x="145.8" y="254.7" font-size="12" fill="#0b0b0b" text-anchor="end" font-weight="600">Odin</text></g>
+<g><title>Odin, first issue on a repository: $0.017 per issue, 76.3%</title><circle cx="353.9" cy="250.7" r="6" fill="#eb6834" stroke="#fcfcfb" stroke-width="2"/><text x="363.9" y="270.7" font-size="12" fill="#0b0b0b" text-anchor="start" font-weight="600">Odin, first issue on a repository</text></g>
+</svg>

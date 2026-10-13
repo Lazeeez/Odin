@@ -7,7 +7,7 @@ Where Odin stands on SWE-bench Lite when it is scored the way other papers score
 - **At function level, the current cascade (odin-fast) is level with the best agent in the LocAgent paper and behind SweRank.** Function Acc@10 is 76.3% for Odin, 77.4% for LocAgent with Claude 3.5, and 82.1% to 88.7% for SweRank.
 - **At file level Odin is behind both.** File Acc@1 is 69.0% against 77.7% and 83.2%.
 - **Odin's reranker is far smaller.** It has 0.6 billion parameters and runs on a 6 GB laptop GPU. SweRank's rerankers have 7 and 32 billion, and its best retriever 7 billion.
-- **The cost side of the claim is not measured yet.** Odin's cost per issue is the work of phase 2; the cells are empty until then.
+- **Odin costs about a quarter of a cent per issue** on its laptop timings at a public GPU rental price, against one to two cents for SweRank's rerankers and 46 to 79 cents for the agents ([cost.md](cost.md)).
 - **Every other system's row is copied from its paper**, except one: SweRankEmbed-Small was also run inside Odin's index, where it scores 8.8 points below its paper at function Acc@10.
 
 ## The protocol
@@ -83,7 +83,7 @@ SweRankEmbed-Small was run as the only retriever over Odin's own units, with tes
 | SweRank reranker | GPT-4.1 | $0.16 | reported, S5 |
 | SweRankLLM-Large | 32B | $0.015 | reported, S5 |
 | SweRankLLM-Small | 7B | $0.011 | reported, S5 |
-| Odin (odin-fast) | 0.5B + 0.6B | not measured yet | phase 2 |
+| Odin (odin-fast) | 0.5B + 0.6B | $0.0025, or $0.017 for the first issue on a repository | measured here: [cost.md](cost.md) |
 
 L5 and S5 are Table 5 of each paper.
 

@@ -15,7 +15,7 @@ Phases are worked in this order, with a report to the owner after each.
 | 1 | 0. Audit | [docs/audit-2026-10.md](docs/audit-2026-10.md), this file, result files in the repo, the rate-limit fix | laptop | done; the follow-up decisions are tracked below |
 | 1b | Sealed holdout | `data/holdout/`, `data/gold/odin_holdout.jsonl`, the guard in `odin eval`, [ADR 0013](docs/decisions/0013-sealed-holdout.md) | laptop | done; nothing evaluated on it |
 | 2 | 1. Comparison with published systems | `eval/protocols.py`, `docs/comparison.md`, README section; baseline reproductions as PACE bundles; ends with the escalation novelty search | laptop, PACE for reproductions | in progress: LocAgent protocol, [docs/comparison.md](docs/comparison.md) and the [novelty search](docs/novelty-escalation.md) done; other protocols and the baseline reproductions (PACE bundles) to do |
-| 3 | 2. Cost and latency of the full cascade | per-stage timings, dollars per issue, accuracy-vs-cost chart | laptop now, PACE as a second hardware column | not started |
+| 3 | 2. Cost and latency of the full cascade | per-stage timings, dollars per issue, accuracy-vs-cost chart | laptop now, PACE as a second hardware column | laptop done: [docs/cost.md](docs/cost.md); the cluster column waits for PACE |
 | 4 | 3. Error analysis | `docs/error-analysis.md`, labelled misses | laptop, owner labels the residue | not started |
 | 4 | 4. Contamination study | `docs/contamination.md` | laptop | not started |
 | any time | 9. Hosting and presentation | Cloudflare Pages at odin.DOMAIN, same-origin relay, R2 assets, redirect from GitHub Pages, `docs/deploy.md`, README restructure | the domain name | waiting for the domain |
