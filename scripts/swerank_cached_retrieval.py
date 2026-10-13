@@ -53,6 +53,7 @@ def main() -> int:
     ap.add_argument("--model", default="Salesforce/SweRankEmbed-Small")
     ap.add_argument("--revision", default="745d2a06103a66d3cfa600aa52fc0d3523010daa")
     ap.add_argument("--sequence_length", type=int, default=1024)
+    ap.add_argument("--query_length", type=int)
     ap.add_argument("--batch_size", type=int, default=32)
     ap.add_argument("--cache", type=Path, required=True)
     ap.add_argument("--results_file", type=Path, required=True)
@@ -82,6 +83,7 @@ def main() -> int:
             key: text for key, text in zip(keys, texts, strict=True) if key not in cache.rows
         }
         if missing:
+            model.max_seq_length = args.sequence_length
             ordered = sorted(missing, key=lambda key: -len(missing[key]))
             vectors = model.encode(
                 [missing[key] for key in ordered],
@@ -91,6 +93,7 @@ def main() -> int:
             )
             cache.add(ordered, vectors.float().cpu().numpy())
         matrix = torch.from_numpy(cache.vectors[[cache.rows[key] for key in keys]])
+        model.max_seq_length = args.query_length or args.sequence_length
         for query in read_jsonl(args.dataset_dir / folder / "queries.jsonl"):
             vector = model.encode(
                 [f"{QUERY_PREFIX}: {query['text']}", "dummy"],
