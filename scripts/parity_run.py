@@ -29,7 +29,7 @@ QUERIES_PER_REPO = 20
 TOP = 10
 SCORE_TOLERANCE = 1e-5
 ISSUE_INDEX = ROOT / "web" / "public" / "data" / "issues" / "index.json"
-DEFAULT_OUT = ROOT / "results" / "parity_pinned.json"
+DEFAULT_OUT = ROOT / "results" / "parity_pinned_2026-10-13b.json"
 
 
 def node() -> str:

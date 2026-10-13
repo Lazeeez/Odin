@@ -1,0 +1,66 @@
+{
+  "what": "the website's TypeScript chunker and BM25 against the Python engine",
+  "passes_when": "every file chunks identically, scores agree within the tolerance, and a top 10 differs only in which of several units tied exactly at the cut-off score were kept",
+  "score_tolerance": 1e-05,
+  "passed": true,
+  "totals": {
+    "files": 1845,
+    "units": 31892,
+    "files_with_different_units": 0,
+    "queries": 46,
+    "queries_with_different_top10": 0,
+    "of_which_only_ties_at_the_cutoff": 0,
+    "largest_relative_score_difference": 1.7268290749446707e-07
+  },
+  "repos": {
+    "django/django": {
+      "commit": "4a72da71001f154ea60906a2f74898d32b7322a7",
+      "files": 862,
+      "units": 9979,
+      "files_with_different_units": 0,
+      "first_differing_files": [],
+      "queries": 20,
+      "queries_with_different_top10": 0,
+      "of_which_only_ties_at_the_cutoff": 0,
+      "largest_relative_score_difference": 1.4163201378601553e-07
+    },
+    "sympy/sympy": {
+      "commit": "d3b4158dea271485e3daa11bf82e69b8dab348ce",
+      "files": 864,
+      "units": 21212,
+      "files_with_different_units": 0,
+      "first_differing_files": [],
+      "queries": 20,
+      "queries_with_different_top10": 0,
+      "of_which_only_ties_at_the_cutoff": 0,
+      "largest_relative_score_difference": 1.7268290749446707e-07
+    },
+    "psf/requests": {
+      "commit": "a0df2cbb10419037d11d04352b3175405ab52941",
+      "files": 119,
+      "units": 701,
+      "files_with_different_units": 0,
+      "first_differing_files": [],
+      "queries": 6,
+      "queries_with_different_top10": 0,
+      "of_which_only_ties_at_the_cutoff": 0,
+      "largest_relative_score_difference": 1.5847414981694812e-07
+    }
+  },
+  "provenance": {
+    "timestamp": "2026-10-13T14:25:30+00:00",
+    "git_commit": "23f4d8c59b6a170e7acdf43327502358522b9b41",
+    "git_dirty": true,
+    "python": "3.11.16",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "packages": {
+      "numpy": "2.4.6",
+      "scipy": "1.17.1",
+      "tree-sitter": "0.26.0",
+      "lightgbm": "4.7.0",
+      "torch": "2.14.0+cu130",
+      "sentence-transformers": "6.1.0"
+    },
+    "models": {}
+  }
+}

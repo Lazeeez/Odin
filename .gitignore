@@ -5,7 +5,7 @@ __pycache__/
 results/*
 !results/README.md
 !results/test-evals.log
-!results/parity_pinned.json
+!results/parity_pinned*.json
 !results/holdout/
 !results/perf/
 !results/comparison/

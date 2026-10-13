@@ -1,0 +1,6237 @@
+{
+  "summary": {
+    "n": 300,
+    "mrr": 0.7408,
+    "recall@1": 0.6267,
+    "hit@1": 0.6267,
+    "all@1": 0.6267,
+    "recall@5": 0.8833,
+    "hit@5": 0.8833,
+    "all@5": 0.8833,
+    "recall@10": 0.93,
+    "hit@10": 0.93,
+    "all@10": 0.93,
+    "retriever": "ltr-notests",
+    "level": "file",
+    "skipped_no_target": 0,
+    "ci95": {
+      "mrr": [
+        0.6962,
+        0.78
+      ],
+      "recall@10": [
+        0.9,
+        0.9567
+      ]
+    },
+    "latency_ms_p50": 24.51,
+    "latency_ms_p95": 58.19,
+    "latency_ms_p99": 828.86,
+    "wall_s": 99.6,
+    "warmup_s": 9.4,
+    "index_ms_p50": 229.9,
+    "index_ms_p95": 405.0,
+    "index": {
+      "files_indexed": 391032,
+      "blobs_parsed": 0,
+      "blobs_from_disk_cache": 26289,
+      "blob_reuse": 1.0
+    },
+    "units_embedded": 0,
+    "embedding_store_size": 205739,
+    "by_repo": {
+      "astropy/astropy": {
+        "n": 6,
+        "mrr": 1.0,
+        "recall@1": 1.0,
+        "hit@1": 1.0,
+        "all@1": 1.0,
+        "recall@5": 1.0,
+        "hit@5": 1.0,
+        "all@5": 1.0,
+        "recall@10": 1.0,
+        "hit@10": 1.0,
+        "all@10": 1.0
+      },
+      "django/django": {
+        "n": 114,
+        "mrr": 0.7368,
+        "recall@1": 0.6053,
+        "hit@1": 0.6053,
+        "all@1": 0.6053,
+        "recall@5": 0.9035,
+        "hit@5": 0.9035,
+        "all@5": 0.9035,
+        "recall@10": 0.9386,
+        "hit@10": 0.9386,
+        "all@10": 0.9386
+      },
+      "matplotlib/matplotlib": {
+        "n": 23,
+        "mrr": 0.7138,
+        "recall@1": 0.5652,
+        "hit@1": 0.5652,
+        "all@1": 0.5652,
+        "recall@5": 0.913,
+        "hit@5": 0.913,
+        "all@5": 0.913,
+        "recall@10": 0.9565,
+        "hit@10": 0.9565,
+        "all@10": 0.9565
+      },
+      "mwaskom/seaborn": {
+        "n": 4,
+        "mrr": 0.619,
+        "recall@1": 0.5,
+        "hit@1": 0.5,
+        "all@1": 0.5,
+        "recall@5": 0.75,
+        "hit@5": 0.75,
+        "all@5": 0.75,
+        "recall@10": 1.0,
+        "hit@10": 1.0,
+        "all@10": 1.0
+      },
+      "pallets/flask": {
+        "n": 3,
+        "mrr": 0.7778,
+        "recall@1": 0.6667,
+        "hit@1": 0.6667,
+        "all@1": 0.6667,
+        "recall@5": 1.0,
+        "hit@5": 1.0,
+        "all@5": 1.0,
+        "recall@10": 1.0,
+        "hit@10": 1.0,
+        "all@10": 1.0
+      },
+      "psf/requests": {
+        "n": 6,
+        "mrr": 0.8333,
+        "recall@1": 0.6667,
+        "hit@1": 0.6667,
+        "all@1": 0.6667,
+        "recall@5": 1.0,
+        "hit@5": 1.0,
+        "all@5": 1.0,
+        "recall@10": 1.0,
+        "hit@10": 1.0,
+        "all@10": 1.0
+      },
+      "pydata/xarray": {
+        "n": 5,
+        "mrr": 0.9,
+        "recall@1": 0.8,
+        "hit@1": 0.8,
+        "all@1": 0.8,
+        "recall@5": 1.0,
+        "hit@5": 1.0,
+        "all@5": 1.0,
+        "recall@10": 1.0,
+        "hit@10": 1.0,
+        "all@10": 1.0
+      },
+      "pylint-dev/pylint": {
+        "n": 6,
+        "mrr": 0.6185,
+        "recall@1": 0.5,
+        "hit@1": 0.5,
+        "all@1": 0.5,
+        "recall@5": 0.6667,
+        "hit@5": 0.6667,
+        "all@5": 0.6667,
+        "recall@10": 1.0,
+        "hit@10": 1.0,
+        "all@10": 1.0
+      },
+      "pytest-dev/pytest": {
+        "n": 17,
+        "mrr": 0.5755,
+        "recall@1": 0.4118,
+        "hit@1": 0.4118,
+        "all@1": 0.4118,
+        "recall@5": 0.8235,
+        "hit@5": 0.8235,
+        "all@5": 0.8235,
+        "recall@10": 0.8235,
+        "hit@10": 0.8235,
+        "all@10": 0.8235
+      },
+      "scikit-learn/scikit-learn": {
+        "n": 23,
+        "mrr": 0.8841,
+        "recall@1": 0.8261,
+        "hit@1": 0.8261,
+        "all@1": 0.8261,
+        "recall@5": 0.9565,
+        "hit@5": 0.9565,
+        "all@5": 0.9565,
+        "recall@10": 0.9565,
+        "hit@10": 0.9565,
+        "all@10": 0.9565
+      },
+      "sphinx-doc/sphinx": {
+        "n": 16,
+        "mrr": 0.8083,
+        "recall@1": 0.6875,
+        "hit@1": 0.6875,
+        "all@1": 0.6875,
+        "recall@5": 0.9375,
+        "hit@5": 0.9375,
+        "all@5": 0.9375,
+        "recall@10": 1.0,
+        "hit@10": 1.0,
+        "all@10": 1.0
+      },
+      "sympy/sympy": {
+        "n": 77,
+        "mrr": 0.7112,
+        "recall@1": 0.6234,
+        "hit@1": 0.6234,
+        "all@1": 0.6234,
+        "recall@5": 0.8182,
+        "hit@5": 0.8182,
+        "all@5": 0.8182,
+        "recall@10": 0.8831,
+        "hit@10": 0.8831,
+        "all@10": 0.8831
+      }
+    }
+  },
+  "per_instance": [
+    {
+      "instance_id": "astropy__astropy-12907",
+      "repo": "astropy/astropy",
+      "gold": [
+        "astropy/modeling/separable.py"
+      ],
+      "ranked": [
+        "astropy/modeling/separable.py",
+        "astropy/modeling/core.py",
+        "astropy/modeling/fitting.py",
+        "astropy/convolution/core.py",
+        "astropy/modeling/polynomial.py",
+        "astropy/modeling/projections.py",
+        "astropy/modeling/functional_models.py",
+        "astropy/modeling/rotations.py",
+        "astropy/coordinates/transformations.py",
+        "astropy/modeling/mappings.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "astropy__astropy-14182",
+      "repo": "astropy/astropy",
+      "gold": [
+        "astropy/io/ascii/rst.py"
+      ],
+      "ranked": [
+        "astropy/io/ascii/rst.py",
+        "astropy/io/ascii/ui.py",
+        "astropy/io/ascii/core.py",
+        "astropy/io/ascii/connect.py",
+        "astropy/io/ascii/html.py",
+        "astropy/table/connect.py",
+        "astropy/io/registry/core.py",
+        "astropy/io/ascii/latex.py",
+        "astropy/io/fits/hdu/table.py",
+        "astropy/io/ascii/mrt.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "astropy__astropy-14365",
+      "repo": "astropy/astropy",
+      "gold": [
+        "astropy/io/ascii/qdp.py"
+      ],
+      "ranked": [
+        "astropy/io/ascii/qdp.py",
+        "astropy/io/fits/column.py",
+        "astropy/io/ascii/cds.py",
+        "astropy/io/ascii/ipac.py",
+        "astropy/io/votable/exceptions.py",
+        "astropy/io/ascii/core.py",
+        "astropy/io/ascii/basic.py",
+        "astropy/table/table.py",
+        "astropy/io/ascii/ecsv.py",
+        "astropy/io/ascii/daophot.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "astropy__astropy-14995",
+      "repo": "astropy/astropy",
+      "gold": [
+        "astropy/nddata/mixins/ndarithmetic.py"
+      ],
+      "ranked": [
+        "astropy/nddata/mixins/ndarithmetic.py",
+        "astropy/nddata/nddata.py",
+        "astropy/utils/masked/core.py",
+        "astropy/nddata/compat.py",
+        "astropy/table/table.py",
+        "astropy/utils/masked/function_helpers.py",
+        "astropy/nddata/nddata_withmixins.py",
+        "astropy/time/core.py",
+        "astropy/table/column.py",
+        "astropy/nddata/nddata_base.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "astropy__astropy-6938",
+      "repo": "astropy/astropy",
+      "gold": [
+        "astropy/io/fits/fitsrec.py"
+      ],
+      "ranked": [
+        "astropy/io/fits/fitsrec.py",
+        "astropy/io/fits/hdu/table.py",
+        "astropy/io/fits/util.py",
+        "astropy/io/fits/card.py",
+        "astropy/io/fits/column.py",
+        "astropy/wcs/wcs.py",
+        "astropy/time/formats.py",
+        "astropy/io/fits/convenience.py",
+        "astropy/coordinates/representation.py",
+        "astropy/io/fits/connect.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "astropy__astropy-7746",
+      "repo": "astropy/astropy",
+      "gold": [
+        "astropy/wcs/wcs.py"
+      ],
+      "ranked": [
+        "astropy/wcs/wcs.py",
+        "astropy/visualization/wcsaxes/core.py",
+        "astropy/nddata/mixins/ndarithmetic.py",
+        "astropy/wcs/utils.py",
+        "astropy/visualization/wcsaxes/transforms.py",
+        "astropy/coordinates/sky_coordinate.py",
+        "astropy/nddata/nddata.py",
+        "astropy/nddata/ccddata.py",
+        "astropy/wcs/_docutil.py",
+        "astropy/visualization/wcsaxes/coordinates_map.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-10914",
+      "repo": "django/django",
+      "gold": [
+        "django/conf/global_settings.py"
+      ],
+      "ranked": [
+        "django/core/files/storage.py",
+        "django/core/files/uploadedfile.py",
+        "django/db/models/fields/files.py",
+        "django/core/files/uploadhandler.py",
+        "django/core/files/temp.py",
+        "django/core/management/templates.py",
+        "django/utils/archive.py",
+        "django/http/request.py",
+        "django/forms/fields.py",
+        "django/http/multipartparser.py"
+      ],
+      "first_rank": null
+    },
+    {
+      "instance_id": "django__django-10924",
+      "repo": "django/django",
+      "gold": [
+        "django/db/models/fields/__init__.py"
+      ],
+      "ranked": [
+        "django/db/models/fields/__init__.py",
+        "django/forms/fields.py",
+        "django/db/models/fields/files.py",
+        "django/core/management/commands/makemessages.py",
+        "django/core/files/storage.py",
+        "django/contrib/sessions/backends/file.py",
+        "django/contrib/staticfiles/storage.py",
+        "django/db/migrations/writer.py",
+        "django/core/management/commands/makemigrations.py",
+        "django/contrib/admin/utils.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-11001",
+      "repo": "django/django",
+      "gold": [
+        "django/db/models/sql/compiler.py"
+      ],
+      "ranked": [
+        "django/db/models/sql/compiler.py",
+        "django/db/models/sql/query.py",
+        "django/db/models/expressions.py",
+        "django/db/models/query.py",
+        "django/db/backends/base/operations.py",
+        "django/contrib/postgres/aggregates/mixins.py",
+        "django/db/models/sql/where.py",
+        "django/db/backends/mysql/operations.py",
+        "django/contrib/admin/views/main.py",
+        "django/db/models/lookups.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-11019",
+      "repo": "django/django",
+      "gold": [
+        "django/forms/widgets.py"
+      ],
+      "ranked": [
+        "django/forms/widgets.py",
+        "django/contrib/admin/options.py",
+        "django/contrib/admin/widgets.py",
+        "django/forms/forms.py",
+        "django/contrib/admin/helpers.py",
+        "django/contrib/gis/forms/widgets.py",
+        "django/contrib/gis/admin/options.py",
+        "django/forms/formsets.py",
+        "django/template/context_processors.py",
+        "django/contrib/postgres/forms/array.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-11039",
+      "repo": "django/django",
+      "gold": [
+        "django/core/management/commands/sqlmigrate.py"
+      ],
+      "ranked": [
+        "django/core/management/commands/sqlmigrate.py",
+        "django/db/migrations/migration.py",
+        "django/db/transaction.py",
+        "django/db/backends/base/features.py",
+        "django/db/backends/base/schema.py",
+        "django/db/migrations/executor.py",
+        "django/db/backends/base/base.py",
+        "django/db/migrations/operations/base.py",
+        "django/db/backends/mysql/features.py",
+        "django/db/backends/base/operations.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-11049",
+      "repo": "django/django",
+      "gold": [
+        "django/db/models/fields/__init__.py"
+      ],
+      "ranked": [
+        "django/db/models/fields/__init__.py",
+        "django/forms/fields.py",
+        "django/utils/dateparse.py",
+        "django/utils/duration.py",
+        "django/db/backends/base/operations.py",
+        "django/db/models/functions/mixins.py",
+        "django/db/backends/mysql/operations.py",
+        "django/db/models/expressions.py",
+        "django/db/models/functions/datetime.py",
+        "django/db/backends/oracle/functions.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-11099",
+      "repo": "django/django",
+      "gold": [
+        "django/contrib/auth/validators.py"
+      ],
+      "ranked": [
+        "django/contrib/auth/validators.py",
+        "django/core/validators.py",
+        "django/contrib/auth/migrations/0008_alter_user_username_max_length.py",
+        "django/contrib/auth/migrations/0004_alter_user_username_opts.py",
+        "django/contrib/auth/migrations/0007_alter_validators_add_error_messages.py",
+        "django/contrib/auth/password_validation.py",
+        "django/contrib/auth/forms.py",
+        "django/contrib/auth/management/commands/createsuperuser.py",
+        "django/contrib/auth/backends.py",
+        "django/contrib/auth/models.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-11133",
+      "repo": "django/django",
+      "gold": [
+        "django/http/response.py"
+      ],
+      "ranked": [
+        "django/http/response.py",
+        "django/template/response.py",
+        "django/shortcuts.py",
+        "django/views/generic/base.py",
+        "django/core/handlers/base.py",
+        "django/contrib/gis/shortcuts.py",
+        "django/core/handlers/exception.py",
+        "django/views/static.py",
+        "django/views/debug.py",
+        "django/core/handlers/wsgi.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-11179",
+      "repo": "django/django",
+      "gold": [
+        "django/db/models/deletion.py"
+      ],
+      "ranked": [
+        "django/db/models/base.py",
+        "django/db/models/deletion.py",
+        "django/contrib/admin/options.py",
+        "django/forms/models.py",
+        "django/db/migrations/autodetector.py",
+        "django/db/models/query.py",
+        "django/contrib/auth/models.py",
+        "django/db/migrations/state.py",
+        "django/db/backends/sqlite3/schema.py",
+        "django/contrib/sites/models.py"
+      ],
+      "first_rank": 2
+    },
+    {
+      "instance_id": "django__django-11283",
+      "repo": "django/django",
+      "gold": [
+        "django/contrib/auth/migrations/0011_update_proxy_permissions.py"
+      ],
+      "ranked": [
+        "django/contrib/auth/migrations/0011_update_proxy_permissions.py",
+        "django/contrib/auth/models.py",
+        "django/contrib/auth/management/__init__.py",
+        "django/contrib/auth/migrations/0001_initial.py",
+        "django/db/migrations/autodetector.py",
+        "django/contrib/auth/admin.py",
+        "django/db/models/options.py",
+        "django/contrib/auth/apps.py",
+        "django/contrib/auth/migrations/0006_require_contenttypes_0002.py",
+        "django/contrib/auth/migrations/0002_alter_permission_name_max_length.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-11422",
+      "repo": "django/django",
+      "gold": [
+        "django/utils/autoreload.py"
+      ],
+      "ranked": [
+        "django/utils/autoreload.py",
+        "django/core/management/__init__.py",
+        "django/core/management/commands/runserver.py",
+        "django/core/management/base.py",
+        "django/apps/config.py",
+        "django/db/migrations/loader.py",
+        "django/core/management/commands/migrate.py",
+        "docs/_ext/djangodocs.py",
+        "django/core/management/commands/shell.py",
+        "django/core/management/commands/makemigrations.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-11564",
+      "repo": "django/django",
+      "gold": [
+        "django/conf/__init__.py"
+      ],
+      "ranked": [
+        "django/core/handlers/wsgi.py",
+        "django/templatetags/static.py",
+        "django/contrib/staticfiles/storage.py",
+        "django/conf/urls/static.py",
+        "django/template/context_processors.py",
+        "django/contrib/staticfiles/utils.py",
+        "django/contrib/staticfiles/handlers.py",
+        "django/forms/widgets.py",
+        "django/core/checks/urls.py",
+        "django/core/handlers/asgi.py"
+      ],
+      "first_rank": null
+    },
+    {
+      "instance_id": "django__django-11583",
+      "repo": "django/django",
+      "gold": [
+        "django/utils/autoreload.py"
+      ],
+      "ranked": [
+        "django/utils/autoreload.py",
+        "django/core/management/commands/runserver.py",
+        "django/core/management/commands/loaddata.py",
+        "django/core/management/commands/makemessages.py",
+        "django/core/management/base.py",
+        "django/core/management/__init__.py",
+        "django/core/files/storage.py",
+        "django/core/management/templates.py",
+        "django/db/models/fields/__init__.py",
+        "django/core/files/utils.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-11620",
+      "repo": "django/django",
+      "gold": [
+        "django/views/debug.py"
+      ],
+      "ranked": [
+        "django/views/debug.py",
+        "django/http/response.py",
+        "django/core/handlers/exception.py",
+        "django/views/defaults.py",
+        "django/urls/resolvers.py",
+        "django/urls/exceptions.py",
+        "django/shortcuts.py",
+        "django/middleware/common.py",
+        "django/contrib/contenttypes/views.py",
+        "django/urls/base.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-11630",
+      "repo": "django/django",
+      "gold": [
+        "django/core/checks/model_checks.py"
+      ],
+      "ranked": [
+        "django/db/backends/base/introspection.py",
+        "django/db/models/fields/related.py",
+        "django/db/models/base.py",
+        "django/apps/registry.py",
+        "django/core/checks/model_checks.py",
+        "django/db/migrations/operations/models.py",
+        "django/core/management/commands/migrate.py",
+        "django/db/models/options.py",
+        "django/db/migrations/autodetector.py",
+        "django/db/migrations/executor.py"
+      ],
+      "first_rank": 5
+    },
+    {
+      "instance_id": "django__django-11742",
+      "repo": "django/django",
+      "gold": [
+        "django/db/models/fields/__init__.py"
+      ],
+      "ranked": [
+        "django/db/models/fields/__init__.py",
+        "django/forms/fields.py",
+        "django/core/validators.py",
+        "django/db/models/fields/files.py",
+        "django/db/backends/mysql/validation.py",
+        "django/forms/models.py",
+        "django/db/models/base.py",
+        "django/db/backends/base/operations.py",
+        "django/contrib/admin/checks.py",
+        "django/db/backends/oracle/operations.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-11797",
+      "repo": "django/django",
+      "gold": [
+        "django/db/models/lookups.py"
+      ],
+      "ranked": [
+        "django/db/models/sql/query.py",
+        "django/db/models/sql/compiler.py",
+        "django/db/models/expressions.py",
+        "django/db/models/query.py",
+        "django/db/models/aggregates.py",
+        "django/contrib/auth/models.py",
+        "django/contrib/auth/backends.py",
+        "django/db/models/lookups.py",
+        "django/db/models/sql/where.py",
+        "django/contrib/admin/views/main.py"
+      ],
+      "first_rank": 8
+    },
+    {
+      "instance_id": "django__django-11815",
+      "repo": "django/django",
+      "gold": [
+        "django/db/migrations/serializer.py"
+      ],
+      "ranked": [
+        "django/db/migrations/serializer.py",
+        "django/db/migrations/migration.py",
+        "django/db/models/enums.py",
+        "django/db/models/fields/__init__.py",
+        "django/contrib/contenttypes/migrations/0002_remove_content_type_name.py",
+        "django/db/migrations/autodetector.py",
+        "django/contrib/auth/models.py",
+        "django/forms/fields.py",
+        "django/db/backends/base/operations.py",
+        "django/utils/translation/trans_real.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-11848",
+      "repo": "django/django",
+      "gold": [
+        "django/utils/http.py"
+      ],
+      "ranked": [
+        "django/utils/http.py",
+        "django/utils/cache.py",
+        "django/utils/feedgenerator.py",
+        "django/views/generic/dates.py",
+        "django/forms/widgets.py",
+        "django/utils/dateparse.py",
+        "django/utils/dateformat.py",
+        "django/db/models/functions/datetime.py",
+        "django/db/backends/sqlite3/base.py",
+        "django/db/backends/base/operations.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-11905",
+      "repo": "django/django",
+      "gold": [
+        "django/db/models/lookups.py"
+      ],
+      "ranked": [
+        "django/db/models/sql/query.py",
+        "django/db/models/lookups.py",
+        "django/contrib/admin/utils.py",
+        "django/forms/fields.py",
+        "django/contrib/admin/filters.py",
+        "django/db/models/fields/__init__.py",
+        "django/db/models/fields/related_lookups.py",
+        "django/db/models/expressions.py",
+        "django/forms/widgets.py",
+        "django/db/backends/sqlite3/operations.py"
+      ],
+      "first_rank": 2
+    },
+    {
+      "instance_id": "django__django-11910",
+      "repo": "django/django",
+      "gold": [
+        "django/db/migrations/autodetector.py"
+      ],
+      "ranked": [
+        "django/db/migrations/autodetector.py",
+        "django/db/migrations/operations/fields.py",
+        "django/db/models/fields/related.py",
+        "django/db/backends/sqlite3/schema.py",
+        "django/db/backends/base/schema.py",
+        "django/db/migrations/operations/models.py",
+        "django/db/backends/mysql/schema.py",
+        "django/db/models/fields/related_descriptors.py",
+        "django/core/management/commands/inspectdb.py",
+        "django/contrib/redirects/migrations/0001_initial.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-11964",
+      "repo": "django/django",
+      "gold": [
+        "django/db/models/enums.py"
+      ],
+      "ranked": [
+        "django/db/models/enums.py",
+        "django/forms/models.py",
+        "django/db/models/fields/__init__.py",
+        "django/forms/fields.py",
+        "django/db/models/fields/reverse_related.py",
+        "django/forms/widgets.py",
+        "django/contrib/admin/options.py",
+        "django/contrib/admin/models.py",
+        "django/contrib/admin/filters.py",
+        "django/db/migrations/serializer.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-11999",
+      "repo": "django/django",
+      "gold": [
+        "django/db/models/fields/__init__.py"
+      ],
+      "ranked": [
+        "django/db/models/base.py",
+        "django/contrib/admin/utils.py",
+        "django/contrib/admin/checks.py",
+        "django/contrib/admin/views/main.py",
+        "django/db/models/fields/__init__.py",
+        "django/contrib/admin/options.py",
+        "django/forms/models.py",
+        "django/contrib/admin/filters.py",
+        "django/contrib/admin/sites.py",
+        "django/db/models/sql/query.py"
+      ],
+      "first_rank": 5
+    },
+    {
+      "instance_id": "django__django-12113",
+      "repo": "django/django",
+      "gold": [
+        "django/db/backends/sqlite3/creation.py"
+      ],
+      "ranked": [
+        "django/db/backends/sqlite3/base.py",
+        "django/db/backends/base/creation.py",
+        "django/db/backends/sqlite3/creation.py",
+        "django/db/backends/base/base.py",
+        "django/db/utils.py",
+        "django/db/models/sql/compiler.py",
+        "django/db/backends/base/features.py",
+        "django/db/backends/utils.py",
+        "django/db/backends/sqlite3/features.py",
+        "django/db/models/query.py"
+      ],
+      "first_rank": 3
+    },
+    {
+      "instance_id": "django__django-12125",
+      "repo": "django/django",
+      "gold": [
+        "django/db/migrations/serializer.py"
+      ],
+      "ranked": [
+        "django/db/migrations/autodetector.py",
+        "django/db/migrations/operations/models.py",
+        "django/core/management/commands/makemigrations.py",
+        "django/db/models/base.py",
+        "django/utils/deconstruct.py",
+        "django/db/migrations/serializer.py",
+        "django/db/models/fields/related.py",
+        "django/contrib/contenttypes/migrations/0001_initial.py",
+        "django/db/models/sql/query.py",
+        "django/db/models/fields/__init__.py"
+      ],
+      "first_rank": 6
+    },
+    {
+      "instance_id": "django__django-12184",
+      "repo": "django/django",
+      "gold": [
+        "django/urls/resolvers.py"
+      ],
+      "ranked": [
+        "django/core/handlers/base.py",
+        "django/views/generic/base.py",
+        "django/urls/resolvers.py",
+        "django/contrib/admindocs/views.py",
+        "django/core/handlers/exception.py",
+        "django/template/defaulttags.py",
+        "django/views/debug.py",
+        "django/contrib/admin/widgets.py",
+        "django/shortcuts.py",
+        "django/contrib/admin/sites.py"
+      ],
+      "first_rank": 3
+    },
+    {
+      "instance_id": "django__django-12284",
+      "repo": "django/django",
+      "gold": [
+        "django/db/models/fields/__init__.py"
+      ],
+      "ranked": [
+        "django/forms/models.py",
+        "django/db/models/fields/__init__.py",
+        "django/db/models/base.py",
+        "django/contrib/admin/filters.py",
+        "django/db/models/fields/reverse_related.py",
+        "django/db/models/enums.py",
+        "django/contrib/admin/options.py",
+        "django/forms/fields.py",
+        "django/db/models/fields/related.py",
+        "django/contrib/admin/checks.py"
+      ],
+      "first_rank": 2
+    },
+    {
+      "instance_id": "django__django-12286",
+      "repo": "django/django",
+      "gold": [
+        "django/core/checks/translation.py"
+      ],
+      "ranked": [
+        "django/core/checks/translation.py",
+        "django/utils/translation/trans_real.py",
+        "django/utils/translation/__init__.py",
+        "django/templatetags/i18n.py",
+        "django/utils/translation/trans_null.py",
+        "django/views/i18n.py",
+        "django/middleware/locale.py",
+        "django/conf/global_settings.py",
+        "django/core/management/base.py",
+        "django/template/context_processors.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-12308",
+      "repo": "django/django",
+      "gold": [
+        "django/contrib/admin/utils.py"
+      ],
+      "ranked": [
+        "django/contrib/postgres/forms/jsonb.py",
+        "django/forms/fields.py",
+        "django/contrib/postgres/fields/jsonb.py",
+        "django/db/models/fields/json.py",
+        "django/contrib/admin/helpers.py",
+        "django/contrib/admin/utils.py",
+        "django/contrib/admin/options.py",
+        "django/contrib/postgres/forms/hstore.py",
+        "django/contrib/admin/checks.py",
+        "django/forms/utils.py"
+      ],
+      "first_rank": 6
+    },
+    {
+      "instance_id": "django__django-12453",
+      "repo": "django/django",
+      "gold": [
+        "django/db/backends/base/creation.py"
+      ],
+      "ranked": [
+        "django/db/backends/base/creation.py",
+        "django/db/transaction.py",
+        "django/db/backends/base/base.py",
+        "django/db/backends/base/features.py",
+        "django/core/serializers/base.py",
+        "django/db/backends/mysql/base.py",
+        "django/db/models/base.py",
+        "django/core/management/commands/loaddata.py",
+        "django/forms/models.py",
+        "django/db/backends/oracle/creation.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-12470",
+      "repo": "django/django",
+      "gold": [
+        "django/db/models/sql/compiler.py"
+      ],
+      "ranked": [
+        "django/db/models/base.py",
+        "django/db/models/sql/compiler.py",
+        "django/db/models/options.py",
+        "django/db/models/query.py",
+        "django/db/models/sql/query.py",
+        "django/forms/models.py",
+        "django/contrib/admin/options.py",
+        "django/contrib/admin/views/main.py",
+        "django/contrib/admin/checks.py",
+        "django/contrib/contenttypes/fields.py"
+      ],
+      "first_rank": 2
+    },
+    {
+      "instance_id": "django__django-12497",
+      "repo": "django/django",
+      "gold": [
+        "django/db/models/fields/related.py"
+      ],
+      "ranked": [
+        "django/db/models/fields/related.py",
+        "django/db/models/fields/related_descriptors.py",
+        "django/db/models/base.py",
+        "django/db/models/fields/reverse_related.py",
+        "django/db/migrations/autodetector.py",
+        "django/contrib/contenttypes/fields.py",
+        "django/db/migrations/state.py",
+        "django/forms/models.py",
+        "django/db/backends/sqlite3/schema.py",
+        "django/db/backends/base/schema.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-12589",
+      "repo": "django/django",
+      "gold": [
+        "django/db/models/sql/query.py"
+      ],
+      "ranked": [
+        "django/db/models/sql/query.py",
+        "django/db/models/sql/compiler.py",
+        "django/db/models/expressions.py",
+        "django/db/models/query.py",
+        "django/db/models/fields/related.py",
+        "django/db/models/aggregates.py",
+        "django/db/models/fields/related_lookups.py",
+        "django/db/models/lookups.py",
+        "django/contrib/auth/models.py",
+        "django/db/models/fields/__init__.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-12700",
+      "repo": "django/django",
+      "gold": [
+        "django/views/debug.py"
+      ],
+      "ranked": [
+        "django/views/debug.py",
+        "django/conf/__init__.py",
+        "django/template/defaultfilters.py",
+        "django/forms/fields.py",
+        "django/forms/forms.py",
+        "django/contrib/postgres/forms/array.py",
+        "django/core/serializers/pyyaml.py",
+        "django/db/migrations/serializer.py",
+        "django/db/models/fields/__init__.py",
+        "django/forms/formsets.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-12708",
+      "repo": "django/django",
+      "gold": [
+        "django/db/backends/base/schema.py"
+      ],
+      "ranked": [
+        "django/db/backends/base/schema.py",
+        "django/db/backends/mysql/schema.py",
+        "django/db/migrations/autodetector.py",
+        "django/db/migrations/operations/models.py",
+        "django/db/models/base.py",
+        "django/db/backends/sqlite3/schema.py",
+        "django/db/models/options.py",
+        "django/db/backends/postgresql/schema.py",
+        "django/db/models/fields/related.py",
+        "django/db/migrations/operations/fields.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-12747",
+      "repo": "django/django",
+      "gold": [
+        "django/db/models/deletion.py"
+      ],
+      "ranked": [
+        "django/db/models/query.py",
+        "django/db/models/deletion.py",
+        "django/contrib/admin/utils.py",
+        "django/db/models/sql/subqueries.py",
+        "django/contrib/admin/options.py",
+        "django/forms/models.py",
+        "django/db/models/base.py",
+        "django/contrib/admin/actions.py",
+        "django/db/models/fields/related.py",
+        "django/db/models/sql/compiler.py"
+      ],
+      "first_rank": 2
+    },
+    {
+      "instance_id": "django__django-12856",
+      "repo": "django/django",
+      "gold": [
+        "django/db/models/base.py"
+      ],
+      "ranked": [
+        "django/db/models/base.py",
+        "django/db/models/fields/related.py",
+        "django/db/models/options.py",
+        "django/db/backends/base/schema.py",
+        "django/db/models/constraints.py",
+        "django/db/migrations/operations/models.py",
+        "django/db/backends/sqlite3/schema.py",
+        "django/forms/models.py",
+        "django/db/migrations/autodetector.py",
+        "django/db/backends/mysql/introspection.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-12908",
+      "repo": "django/django",
+      "gold": [
+        "django/db/models/query.py"
+      ],
+      "ranked": [
+        "django/db/models/query.py",
+        "django/db/models/sql/query.py",
+        "django/db/models/sql/compiler.py",
+        "django/db/models/aggregates.py",
+        "django/contrib/admin/utils.py",
+        "django/db/backends/base/operations.py",
+        "django/db/backends/postgresql/operations.py",
+        "django/contrib/admin/views/main.py",
+        "django/contrib/admin/views/autocomplete.py",
+        "django/db/models/expressions.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-12915",
+      "repo": "django/django",
+      "gold": [
+        "django/contrib/staticfiles/handlers.py"
+      ],
+      "ranked": [
+        "django/core/handlers/base.py",
+        "django/contrib/staticfiles/handlers.py",
+        "django/core/handlers/asgi.py",
+        "django/core/handlers/wsgi.py",
+        "django/core/asgi.py",
+        "django/http/response.py",
+        "django/utils/deprecation.py",
+        "django/core/handlers/exception.py",
+        "django/contrib/staticfiles/storage.py",
+        "django/views/static.py"
+      ],
+      "first_rank": 2
+    },
+    {
+      "instance_id": "django__django-12983",
+      "repo": "django/django",
+      "gold": [
+        "django/utils/text.py"
+      ],
+      "ranked": [
+        "django/utils/text.py",
+        "django/template/defaultfilters.py",
+        "django/utils/html.py",
+        "django/contrib/flatpages/forms.py",
+        "django/forms/fields.py",
+        "django/db/models/fields/__init__.py",
+        "django/utils/http.py",
+        "django/utils/encoding.py",
+        "django/db/models/lookups.py",
+        "django/urls/converters.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-13028",
+      "repo": "django/django",
+      "gold": [
+        "django/db/models/sql/query.py"
+      ],
+      "ranked": [
+        "django/db/models/sql/query.py",
+        "django/db/models/query.py",
+        "django/db/models/manager.py",
+        "django/db/models/fields/related.py",
+        "django/forms/models.py",
+        "django/contrib/admin/filters.py",
+        "django/contrib/admin/options.py",
+        "django/db/models/expressions.py",
+        "django/db/models/fields/related_descriptors.py",
+        "django/db/utils.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-13033",
+      "repo": "django/django",
+      "gold": [
+        "django/db/models/sql/compiler.py"
+      ],
+      "ranked": [
+        "django/db/models/base.py",
+        "django/db/models/sql/compiler.py",
+        "django/db/models/sql/query.py",
+        "django/contrib/contenttypes/fields.py",
+        "django/db/models/query.py",
+        "django/db/models/fields/related.py",
+        "django/contrib/admin/views/main.py",
+        "django/db/models/expressions.py",
+        "django/forms/models.py",
+        "django/db/models/options.py"
+      ],
+      "first_rank": 2
+    },
+    {
+      "instance_id": "django__django-13158",
+      "repo": "django/django",
+      "gold": [
+        "django/db/models/sql/query.py"
+      ],
+      "ranked": [
+        "django/db/models/query.py",
+        "django/forms/models.py",
+        "django/db/models/sql/query.py",
+        "django/db/models/expressions.py",
+        "django/db/models/sql/compiler.py",
+        "django/db/models/fields/related.py",
+        "django/contrib/admin/options.py",
+        "django/contrib/admin/filters.py",
+        "django/db/models/manager.py",
+        "django/contrib/contenttypes/fields.py"
+      ],
+      "first_rank": 3
+    },
+    {
+      "instance_id": "django__django-13220",
+      "repo": "django/django",
+      "gold": [
+        "django/core/exceptions.py"
+      ],
+      "ranked": [
+        "django/core/validators.py",
+        "django/forms/models.py",
+        "django/core/exceptions.py",
+        "django/forms/forms.py",
+        "django/db/models/fields/__init__.py",
+        "django/db/models/base.py",
+        "django/contrib/postgres/validators.py",
+        "django/forms/fields.py",
+        "django/forms/formsets.py",
+        "django/forms/utils.py"
+      ],
+      "first_rank": 3
+    },
+    {
+      "instance_id": "django__django-13230",
+      "repo": "django/django",
+      "gold": [
+        "django/contrib/syndication/views.py"
+      ],
+      "ranked": [
+        "django/utils/feedgenerator.py",
+        "django/contrib/syndication/views.py",
+        "django/contrib/gis/feeds.py",
+        "django/contrib/gis/views.py",
+        "django/db/models/sql/query.py",
+        "django/contrib/admin/checks.py",
+        "django/contrib/sitemaps/__init__.py",
+        "django/db/models/query.py",
+        "django/template/defaulttags.py",
+        "django/contrib/syndication/apps.py"
+      ],
+      "first_rank": 2
+    },
+    {
+      "instance_id": "django__django-13265",
+      "repo": "django/django",
+      "gold": [
+        "django/db/migrations/autodetector.py"
+      ],
+      "ranked": [
+        "django/db/migrations/operations/models.py",
+        "django/db/migrations/autodetector.py",
+        "django/db/models/base.py",
+        "django/db/models/options.py",
+        "django/db/backends/base/schema.py",
+        "django/db/models/indexes.py",
+        "django/db/models/sql/compiler.py",
+        "django/db/models/fields/proxy.py",
+        "django/contrib/contenttypes/fields.py",
+        "django/db/backends/mysql/schema.py"
+      ],
+      "first_rank": 2
+    },
+    {
+      "instance_id": "django__django-13315",
+      "repo": "django/django",
+      "gold": [
+        "django/forms/models.py"
+      ],
+      "ranked": [
+        "django/forms/models.py",
+        "django/db/models/fields/related.py",
+        "django/db/models/fields/reverse_related.py",
+        "django/contrib/admin/widgets.py",
+        "django/db/models/fields/__init__.py",
+        "django/contrib/admin/options.py",
+        "django/contrib/contenttypes/fields.py",
+        "django/contrib/admin/filters.py",
+        "django/contrib/admin/checks.py",
+        "django/forms/fields.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-13321",
+      "repo": "django/django",
+      "gold": [
+        "django/contrib/sessions/backends/base.py"
+      ],
+      "ranked": [
+        "django/contrib/sessions/backends/base.py",
+        "django/contrib/sessions/backends/db.py",
+        "django/contrib/sessions/backends/file.py",
+        "django/contrib/auth/middleware.py",
+        "django/core/signing.py",
+        "django/contrib/auth/__init__.py",
+        "django/contrib/sessions/backends/signed_cookies.py",
+        "django/contrib/sessions/backends/cached_db.py",
+        "django/contrib/sessions/backends/cache.py",
+        "django/contrib/messages/storage/session.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-13401",
+      "repo": "django/django",
+      "gold": [
+        "django/db/models/fields/__init__.py"
+      ],
+      "ranked": [
+        "django/db/models/base.py",
+        "django/db/migrations/state.py",
+        "django/contrib/auth/models.py",
+        "django/db/models/options.py",
+        "django/db/models/fields/__init__.py",
+        "django/db/models/fields/related.py",
+        "django/forms/models.py",
+        "django/contrib/admin/checks.py",
+        "django/contrib/contenttypes/fields.py",
+        "django/db/models/query_utils.py"
+      ],
+      "first_rank": 5
+    },
+    {
+      "instance_id": "django__django-13447",
+      "repo": "django/django",
+      "gold": [
+        "django/contrib/admin/sites.py"
+      ],
+      "ranked": [
+        "django/contrib/admin/sites.py",
+        "django/contrib/admindocs/views.py",
+        "django/apps/registry.py",
+        "django/apps/config.py",
+        "django/db/migrations/state.py",
+        "django/core/management/commands/dumpdata.py",
+        "django/contrib/admin/options.py",
+        "django/core/serializers/__init__.py",
+        "django/db/models/options.py",
+        "django/db/migrations/operations/models.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-13448",
+      "repo": "django/django",
+      "gold": [
+        "django/db/backends/base/creation.py"
+      ],
+      "ranked": [
+        "django/db/backends/base/creation.py",
+        "django/db/utils.py",
+        "django/core/management/commands/test.py",
+        "django/db/backends/sqlite3/creation.py",
+        "django/db/backends/oracle/creation.py",
+        "django/core/management/base.py",
+        "django/db/backends/base/features.py",
+        "django/db/backends/mysql/creation.py",
+        "django/db/models/sql/compiler.py",
+        "django/core/serializers/base.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-13551",
+      "repo": "django/django",
+      "gold": [
+        "django/contrib/auth/tokens.py"
+      ],
+      "ranked": [
+        "django/contrib/auth/forms.py",
+        "django/contrib/auth/tokens.py",
+        "django/contrib/auth/views.py",
+        "django/contrib/auth/base_user.py",
+        "django/contrib/auth/models.py",
+        "django/contrib/auth/hashers.py",
+        "django/conf/__init__.py",
+        "django/core/validators.py",
+        "django/core/mail/message.py",
+        "django/contrib/auth/password_validation.py"
+      ],
+      "first_rank": 2
+    },
+    {
+      "instance_id": "django__django-13590",
+      "repo": "django/django",
+      "gold": [
+        "django/db/models/sql/query.py"
+      ],
+      "ranked": [
+        "django/db/models/query.py",
+        "django/db/models/sql/query.py",
+        "django/db/models/utils.py",
+        "django/db/models/lookups.py",
+        "django/contrib/postgres/fields/ranges.py",
+        "django/forms/models.py",
+        "django/db/models/expressions.py",
+        "django/db/migrations/migration.py",
+        "django/db/models/sql/compiler.py",
+        "django/db/models/options.py"
+      ],
+      "first_rank": 2
+    },
+    {
+      "instance_id": "django__django-13658",
+      "repo": "django/django",
+      "gold": [
+        "django/core/management/__init__.py"
+      ],
+      "ranked": [
+        "django/core/management/__init__.py",
+        "django/core/management/base.py",
+        "django/core/management/commands/shell.py",
+        "django/core/management/commands/migrate.py",
+        "django/core/management/utils.py",
+        "django/core/management/commands/test.py",
+        "django/contrib/auth/management/commands/createsuperuser.py",
+        "django/core/management/commands/sqlmigrate.py",
+        "django/core/management/commands/runserver.py",
+        "django/core/management/commands/makemessages.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-13660",
+      "repo": "django/django",
+      "gold": [
+        "django/core/management/commands/shell.py"
+      ],
+      "ranked": [
+        "django/core/management/commands/shell.py",
+        "django/core/management/__init__.py",
+        "django/core/management/base.py",
+        "docs/_ext/djangodocs.py",
+        "django/core/management/commands/runserver.py",
+        "django/core/management/commands/sqlmigrate.py",
+        "django/core/management/commands/dbshell.py",
+        "django/utils/autoreload.py",
+        "django/contrib/auth/management/commands/createsuperuser.py",
+        "django/core/management/commands/inspectdb.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-13710",
+      "repo": "django/django",
+      "gold": [
+        "django/contrib/admin/options.py"
+      ],
+      "ranked": [
+        "django/contrib/admin/options.py",
+        "django/db/models/options.py",
+        "django/contrib/admin/utils.py",
+        "django/contrib/admin/helpers.py",
+        "django/contrib/auth/models.py",
+        "django/contrib/admin/models.py",
+        "django/contrib/contenttypes/admin.py",
+        "django/contrib/contenttypes/models.py",
+        "django/contrib/flatpages/models.py",
+        "django/contrib/redirects/models.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-13757",
+      "repo": "django/django",
+      "gold": [
+        "django/db/models/fields/json.py"
+      ],
+      "ranked": [
+        "django/db/models/fields/json.py",
+        "django/db/backends/sqlite3/features.py",
+        "django/db/models/lookups.py",
+        "django/db/models/sql/query.py",
+        "django/contrib/admin/utils.py",
+        "django/db/models/fields/related_lookups.py",
+        "django/contrib/postgres/fields/jsonb.py",
+        "django/db/backends/base/features.py",
+        "django/db/models/functions/comparison.py",
+        "django/db/backends/sqlite3/introspection.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-13768",
+      "repo": "django/django",
+      "gold": [
+        "django/dispatch/dispatcher.py"
+      ],
+      "ranked": [
+        "django/dispatch/dispatcher.py",
+        "django/core/handlers/exception.py",
+        "django/utils/log.py",
+        "django/views/debug.py",
+        "django/utils/autoreload.py",
+        "django/core/handlers/asgi.py",
+        "django/core/servers/basehttp.py",
+        "django/core/management/base.py",
+        "django/db/utils.py",
+        "django/core/serializers/__init__.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-13925",
+      "repo": "django/django",
+      "gold": [
+        "django/db/models/base.py"
+      ],
+      "ranked": [
+        "django/db/models/base.py",
+        "django/db/models/fields/__init__.py",
+        "django/db/models/options.py",
+        "django/apps/config.py",
+        "django/db/backends/oracle/operations.py",
+        "django/forms/models.py",
+        "django/db/backends/base/schema.py",
+        "django/db/models/fields/files.py",
+        "django/db/migrations/autodetector.py",
+        "django/db/models/fields/related.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-13933",
+      "repo": "django/django",
+      "gold": [
+        "django/forms/models.py"
+      ],
+      "ranked": [
+        "django/forms/models.py",
+        "django/forms/fields.py",
+        "django/db/models/fields/__init__.py",
+        "django/forms/widgets.py",
+        "django/db/models/fields/related.py",
+        "django/db/models/fields/reverse_related.py",
+        "django/db/migrations/questioner.py",
+        "django/contrib/admin/filters.py",
+        "django/contrib/admin/options.py",
+        "django/db/models/enums.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-13964",
+      "repo": "django/django",
+      "gold": [
+        "django/db/models/base.py"
+      ],
+      "ranked": [
+        "django/db/models/base.py",
+        "django/db/models/fields/related.py",
+        "django/forms/models.py",
+        "django/db/models/options.py",
+        "django/db/models/query.py",
+        "django/db/models/fields/related_descriptors.py",
+        "django/db/models/fields/__init__.py",
+        "django/contrib/contenttypes/fields.py",
+        "django/db/models/query_utils.py",
+        "django/db/models/sql/compiler.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-14016",
+      "repo": "django/django",
+      "gold": [
+        "django/db/models/query_utils.py"
+      ],
+      "ranked": [
+        "django/db/models/query_utils.py",
+        "django/db/models/query.py",
+        "django/db/models/expressions.py",
+        "django/db/models/sql/query.py",
+        "django/forms/models.py",
+        "django/db/models/base.py",
+        "django/db/models/fields/related_descriptors.py",
+        "django/db/models/fields/related.py",
+        "django/utils/functional.py",
+        "django/db/models/constraints.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-14017",
+      "repo": "django/django",
+      "gold": [
+        "django/db/models/query_utils.py"
+      ],
+      "ranked": [
+        "django/db/models/query_utils.py",
+        "django/db/models/expressions.py",
+        "django/db/models/sql/query.py",
+        "django/db/models/query.py",
+        "django/db/models/constraints.py",
+        "django/contrib/postgres/search.py",
+        "django/db/models/base.py",
+        "django/db/models/sql/compiler.py",
+        "django/utils/tree.py",
+        "django/db/backends/oracle/operations.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-14155",
+      "repo": "django/django",
+      "gold": [
+        "django/urls/resolvers.py"
+      ],
+      "ranked": [
+        "django/urls/resolvers.py",
+        "django/db/migrations/serializer.py",
+        "django/db/models/expressions.py",
+        "django/views/debug.py",
+        "django/utils/functional.py",
+        "django/http/request.py",
+        "django/urls/base.py",
+        "django/template/defaulttags.py",
+        "django/core/handlers/base.py",
+        "django/db/models/base.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-14238",
+      "repo": "django/django",
+      "gold": [
+        "django/db/models/fields/__init__.py"
+      ],
+      "ranked": [
+        "django/apps/config.py",
+        "django/db/models/fields/__init__.py",
+        "django/db/models/options.py",
+        "django/db/models/base.py",
+        "django/db/backends/base/features.py",
+        "django/db/backends/mysql/base.py",
+        "django/apps/registry.py",
+        "django/db/backends/postgresql/introspection.py",
+        "django/db/backends/sqlite3/features.py",
+        "django/contrib/admin/helpers.py"
+      ],
+      "first_rank": 2
+    },
+    {
+      "instance_id": "django__django-14382",
+      "repo": "django/django",
+      "gold": [
+        "django/core/management/templates.py"
+      ],
+      "ranked": [
+        "django/core/management/templates.py",
+        "django/core/management/commands/startapp.py",
+        "django/utils/autoreload.py",
+        "django/urls/resolvers.py",
+        "django/middleware/common.py",
+        "django/contrib/flatpages/forms.py",
+        "django/core/management/__init__.py",
+        "django/core/files/utils.py",
+        "django/db/models/fields/files.py",
+        "django/core/files/storage.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-14411",
+      "repo": "django/django",
+      "gold": [
+        "django/contrib/auth/forms.py"
+      ],
+      "ranked": [
+        "django/contrib/auth/forms.py",
+        "django/contrib/admin/helpers.py",
+        "django/forms/widgets.py",
+        "django/contrib/admin/widgets.py",
+        "django/forms/boundfield.py",
+        "django/db/models/enums.py",
+        "django/contrib/admin/utils.py",
+        "django/forms/forms.py",
+        "django/contrib/postgres/forms/array.py",
+        "django/forms/models.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-14534",
+      "repo": "django/django",
+      "gold": [
+        "django/forms/boundfield.py"
+      ],
+      "ranked": [
+        "django/forms/boundfield.py",
+        "django/forms/widgets.py",
+        "django/contrib/admin/widgets.py",
+        "django/forms/forms.py",
+        "django/contrib/postgres/forms/array.py",
+        "django/contrib/auth/forms.py",
+        "django/forms/models.py",
+        "django/forms/fields.py",
+        "django/contrib/admin/options.py",
+        "django/db/models/fields/related.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-14580",
+      "repo": "django/django",
+      "gold": [
+        "django/db/migrations/serializer.py"
+      ],
+      "ranked": [
+        "django/db/migrations/autodetector.py",
+        "django/db/migrations/writer.py",
+        "django/db/migrations/migration.py",
+        "django/db/migrations/recorder.py",
+        "django/db/migrations/state.py",
+        "django/db/migrations/loader.py",
+        "django/db/migrations/operations/models.py",
+        "django/core/management/commands/makemigrations.py",
+        "django/db/migrations/questioner.py",
+        "django/db/backends/base/introspection.py"
+      ],
+      "first_rank": null
+    },
+    {
+      "instance_id": "django__django-14608",
+      "repo": "django/django",
+      "gold": [
+        "django/forms/formsets.py"
+      ],
+      "ranked": [
+        "django/forms/formsets.py",
+        "django/forms/forms.py",
+        "django/contrib/admin/helpers.py",
+        "django/forms/models.py",
+        "django/forms/utils.py",
+        "django/forms/boundfield.py",
+        "django/contrib/admin/forms.py",
+        "django/contrib/admin/options.py",
+        "django/core/exceptions.py",
+        "django/contrib/auth/forms.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-14667",
+      "repo": "django/django",
+      "gold": [
+        "django/db/models/sql/query.py"
+      ],
+      "ranked": [
+        "django/db/models/query.py",
+        "django/db/models/sql/query.py",
+        "django/db/models/fields/related_descriptors.py",
+        "django/db/models/sql/compiler.py",
+        "django/db/models/query_utils.py",
+        "django/db/models/base.py",
+        "django/db/models/deletion.py",
+        "django/contrib/contenttypes/fields.py",
+        "django/forms/models.py",
+        "django/db/models/expressions.py"
+      ],
+      "first_rank": 2
+    },
+    {
+      "instance_id": "django__django-14672",
+      "repo": "django/django",
+      "gold": [
+        "django/db/models/fields/reverse_related.py"
+      ],
+      "ranked": [
+        "django/db/models/fields/reverse_related.py",
+        "django/db/models/base.py",
+        "django/db/models/fields/related.py",
+        "django/db/models/options.py",
+        "django/utils/hashable.py",
+        "django/db/models/fields/related_descriptors.py",
+        "django/db/models/fields/__init__.py",
+        "django/core/serializers/base.py",
+        "django/core/checks/model_checks.py",
+        "django/core/checks/registry.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-14730",
+      "repo": "django/django",
+      "gold": [
+        "django/db/models/fields/related.py"
+      ],
+      "ranked": [
+        "django/db/models/fields/related.py",
+        "django/db/models/fields/reverse_related.py",
+        "django/db/models/fields/related_descriptors.py",
+        "django/db/models/base.py",
+        "django/contrib/contenttypes/fields.py",
+        "django/db/models/options.py",
+        "django/contrib/admin/checks.py",
+        "django/contrib/admin/options.py",
+        "django/contrib/admin/utils.py",
+        "django/db/backends/base/schema.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-14752",
+      "repo": "django/django",
+      "gold": [
+        "django/contrib/admin/views/autocomplete.py"
+      ],
+      "ranked": [
+        "django/contrib/admin/views/autocomplete.py",
+        "django/contrib/admin/widgets.py",
+        "django/contrib/admin/checks.py",
+        "django/contrib/admin/options.py",
+        "django/contrib/admin/sites.py",
+        "django/contrib/auth/forms.py",
+        "django/views/i18n.py",
+        "django/http/response.py",
+        "django/views/generic/list.py",
+        "django/db/models/fields/json.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-14787",
+      "repo": "django/django",
+      "gold": [
+        "django/utils/decorators.py"
+      ],
+      "ranked": [
+        "django/utils/decorators.py",
+        "django/views/decorators/debug.py",
+        "django/template/library.py",
+        "django/utils/inspect.py",
+        "django/utils/functional.py",
+        "django/views/decorators/cache.py",
+        "django/db/utils.py",
+        "django/views/debug.py",
+        "django/urls/resolvers.py",
+        "django/contrib/admin/sites.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-14855",
+      "repo": "django/django",
+      "gold": [
+        "django/contrib/admin/helpers.py"
+      ],
+      "ranked": [
+        "django/contrib/admin/helpers.py",
+        "django/contrib/admin/widgets.py",
+        "django/contrib/admin/options.py",
+        "django/contrib/admin/sites.py",
+        "django/contrib/admin/models.py",
+        "django/contrib/auth/admin.py",
+        "django/contrib/admin/checks.py",
+        "django/contrib/admin/views/main.py",
+        "django/contrib/admin/templatetags/admin_urls.py",
+        "django/contrib/admin/utils.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-14915",
+      "repo": "django/django",
+      "gold": [
+        "django/forms/models.py"
+      ],
+      "ranked": [
+        "django/forms/models.py",
+        "django/forms/widgets.py",
+        "django/forms/fields.py",
+        "django/contrib/admin/widgets.py",
+        "django/db/models/enums.py",
+        "django/db/models/fields/__init__.py",
+        "django/db/models/fields/related.py",
+        "django/db/models/fields/reverse_related.py",
+        "django/forms/boundfield.py",
+        "django/contrib/admin/options.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-14997",
+      "repo": "django/django",
+      "gold": [
+        "django/db/backends/ddl_references.py"
+      ],
+      "ranked": [
+        "django/db/backends/sqlite3/schema.py",
+        "django/db/backends/sqlite3/base.py",
+        "django/db/backends/base/schema.py",
+        "django/db/models/constraints.py",
+        "django/db/migrations/operations/fields.py",
+        "django/db/backends/postgresql/schema.py",
+        "django/db/utils.py",
+        "django/db/backends/oracle/schema.py",
+        "django/db/migrations/operations/models.py",
+        "django/db/migrations/migration.py"
+      ],
+      "first_rank": null
+    },
+    {
+      "instance_id": "django__django-14999",
+      "repo": "django/django",
+      "gold": [
+        "django/db/migrations/operations/models.py"
+      ],
+      "ranked": [
+        "django/db/migrations/operations/models.py",
+        "django/db/backends/base/schema.py",
+        "django/db/backends/sqlite3/schema.py",
+        "django/db/migrations/autodetector.py",
+        "django/db/backends/mysql/schema.py",
+        "django/db/migrations/operations/fields.py",
+        "django/contrib/contenttypes/management/__init__.py",
+        "django/db/models/fields/related.py",
+        "django/db/backends/ddl_references.py",
+        "django/core/checks/model_checks.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-15061",
+      "repo": "django/django",
+      "gold": [
+        "django/forms/widgets.py"
+      ],
+      "ranked": [
+        "django/forms/boundfield.py",
+        "django/forms/widgets.py",
+        "django/contrib/admin/widgets.py",
+        "django/forms/models.py",
+        "django/contrib/postgres/forms/array.py",
+        "django/contrib/auth/forms.py",
+        "django/contrib/admin/helpers.py",
+        "django/forms/fields.py",
+        "django/db/models/enums.py",
+        "django/db/models/options.py"
+      ],
+      "first_rank": 2
+    },
+    {
+      "instance_id": "django__django-15202",
+      "repo": "django/django",
+      "gold": [
+        "django/core/validators.py"
+      ],
+      "ranked": [
+        "django/forms/fields.py",
+        "django/core/validators.py",
+        "django/contrib/flatpages/forms.py",
+        "django/db/models/fields/__init__.py",
+        "django/forms/forms.py",
+        "django/contrib/gis/forms/fields.py",
+        "django/forms/widgets.py",
+        "django/urls/resolvers.py",
+        "django/utils/ipv6.py",
+        "django/utils/html.py"
+      ],
+      "first_rank": 2
+    },
+    {
+      "instance_id": "django__django-15213",
+      "repo": "django/django",
+      "gold": [
+        "django/db/models/fields/__init__.py"
+      ],
+      "ranked": [
+        "django/db/models/expressions.py",
+        "django/db/models/query_utils.py",
+        "django/db/models/sql/query.py",
+        "django/db/models/query.py",
+        "django/db/models/lookups.py",
+        "django/db/backends/oracle/operations.py",
+        "django/db/models/sql/compiler.py",
+        "django/db/models/base.py",
+        "django/db/backends/mysql/operations.py",
+        "django/db/models/indexes.py"
+      ],
+      "first_rank": null
+    },
+    {
+      "instance_id": "django__django-15252",
+      "repo": "django/django",
+      "gold": [
+        "django/db/migrations/executor.py"
+      ],
+      "ranked": [
+        "django/db/migrations/recorder.py",
+        "django/db/migrations/executor.py",
+        "django/db/utils.py",
+        "django/core/management/commands/migrate.py",
+        "django/db/backends/base/creation.py",
+        "django/db/migrations/loader.py",
+        "django/db/migrations/operations/base.py",
+        "django/db/migrations/operations/models.py",
+        "django/core/management/commands/showmigrations.py",
+        "django/core/management/commands/makemigrations.py"
+      ],
+      "first_rank": 2
+    },
+    {
+      "instance_id": "django__django-15320",
+      "repo": "django/django",
+      "gold": [
+        "django/db/models/expressions.py"
+      ],
+      "ranked": [
+        "django/db/models/sql/query.py",
+        "django/db/models/expressions.py",
+        "django/db/models/sql/compiler.py",
+        "django/db/models/sql/where.py",
+        "django/db/backends/mysql/compiler.py",
+        "django/db/models/lookups.py",
+        "django/db/models/fields/related_lookups.py",
+        "django/db/models/sql/datastructures.py",
+        "django/contrib/postgres/search.py",
+        "django/db/models/functions/datetime.py"
+      ],
+      "first_rank": 2
+    },
+    {
+      "instance_id": "django__django-15347",
+      "repo": "django/django",
+      "gold": [
+        "django/contrib/messages/storage/cookie.py"
+      ],
+      "ranked": [
+        "django/contrib/messages/storage/base.py",
+        "django/contrib/messages/storage/cookie.py",
+        "django/contrib/messages/api.py",
+        "django/core/mail/message.py",
+        "django/contrib/admin/options.py",
+        "django/contrib/messages/apps.py",
+        "django/contrib/messages/storage/session.py",
+        "django/contrib/admin/checks.py",
+        "django/contrib/messages/utils.py",
+        "django/forms/fields.py"
+      ],
+      "first_rank": 2
+    },
+    {
+      "instance_id": "django__django-15388",
+      "repo": "django/django",
+      "gold": [
+        "django/template/autoreload.py"
+      ],
+      "ranked": [
+        "django/template/autoreload.py",
+        "django/utils/autoreload.py",
+        "django/template/backends/base.py",
+        "django/core/management/templates.py",
+        "django/core/checks/templates.py",
+        "django/template/utils.py",
+        "django/template/backends/django.py",
+        "django/db/migrations/writer.py",
+        "django/forms/renderers.py",
+        "django/core/management/commands/loaddata.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-15400",
+      "repo": "django/django",
+      "gold": [
+        "django/utils/functional.py"
+      ],
+      "ranked": [
+        "django/utils/functional.py",
+        "django/db/models/expressions.py",
+        "django/contrib/gis/geos/mutable_list.py",
+        "django/contrib/syndication/views.py",
+        "django/db/models/base.py",
+        "docs/_ext/djangodocs.py",
+        "django/utils/connection.py",
+        "django/utils/html.py",
+        "django/utils/datastructures.py",
+        "django/db/backends/oracle/base.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-15498",
+      "repo": "django/django",
+      "gold": [
+        "django/views/static.py"
+      ],
+      "ranked": [
+        "django/utils/cache.py",
+        "django/views/static.py",
+        "django/middleware/http.py",
+        "django/utils/http.py",
+        "django/http/response.py",
+        "django/views/decorators/http.py",
+        "django/http/multipartparser.py",
+        "django/http/request.py",
+        "django/utils/translation/trans_real.py",
+        "django/core/servers/basehttp.py"
+      ],
+      "first_rank": 2
+    },
+    {
+      "instance_id": "django__django-15695",
+      "repo": "django/django",
+      "gold": [
+        "django/db/migrations/operations/models.py"
+      ],
+      "ranked": [
+        "django/db/migrations/operations/models.py",
+        "django/db/migrations/autodetector.py",
+        "django/db/backends/base/schema.py",
+        "django/contrib/postgres/operations.py",
+        "django/contrib/contenttypes/management/__init__.py",
+        "django/db/migrations/migration.py",
+        "django/db/migrations/state.py",
+        "django/db/migrations/operations/fields.py",
+        "django/db/backends/mysql/features.py",
+        "django/db/backends/mysql/schema.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-15738",
+      "repo": "django/django",
+      "gold": [
+        "django/db/migrations/autodetector.py"
+      ],
+      "ranked": [
+        "django/db/backends/base/schema.py",
+        "django/db/models/fields/related.py",
+        "django/db/migrations/autodetector.py",
+        "django/db/migrations/operations/models.py",
+        "django/db/migrations/state.py",
+        "django/db/models/base.py",
+        "django/db/backends/sqlite3/schema.py",
+        "django/forms/models.py",
+        "django/contrib/contenttypes/migrations/0001_initial.py",
+        "django/contrib/auth/migrations/0001_initial.py"
+      ],
+      "first_rank": 3
+    },
+    {
+      "instance_id": "django__django-15781",
+      "repo": "django/django",
+      "gold": [
+        "django/core/management/base.py"
+      ],
+      "ranked": [
+        "django/core/management/base.py",
+        "django/core/management/__init__.py",
+        "django/core/management/commands/optimizemigration.py",
+        "django/core/management/commands/makemigrations.py",
+        "django/core/management/commands/shell.py",
+        "django/core/management/commands/showmigrations.py",
+        "django/core/management/commands/test.py",
+        "django/core/management/commands/sqlmigrate.py",
+        "django/core/management/commands/dumpdata.py",
+        "django/core/management/templates.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-15789",
+      "repo": "django/django",
+      "gold": [
+        "django/utils/html.py"
+      ],
+      "ranked": [
+        "django/utils/html.py",
+        "django/core/serializers/json.py",
+        "django/template/defaultfilters.py",
+        "django/db/models/fields/json.py",
+        "django/forms/fields.py",
+        "django/contrib/messages/storage/cookie.py",
+        "django/http/response.py",
+        "django/contrib/admin/utils.py",
+        "django/views/i18n.py",
+        "django/core/serializers/jsonl.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-15790",
+      "repo": "django/django",
+      "gold": [
+        "django/core/checks/templates.py"
+      ],
+      "ranked": [
+        "django/core/checks/templates.py",
+        "django/template/library.py",
+        "django/template/backends/django.py",
+        "django/template/defaulttags.py",
+        "django/template/engine.py",
+        "django/contrib/admindocs/views.py",
+        "django/template/loader_tags.py",
+        "django/core/checks/registry.py",
+        "django/template/base.py",
+        "django/template/utils.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-15814",
+      "repo": "django/django",
+      "gold": [
+        "django/db/models/sql/query.py"
+      ],
+      "ranked": [
+        "django/db/models/query.py",
+        "django/db/models/sql/query.py",
+        "django/db/models/fields/related_descriptors.py",
+        "django/db/models/sql/compiler.py",
+        "django/db/models/query_utils.py",
+        "django/forms/models.py",
+        "django/contrib/admin/views/main.py",
+        "django/contrib/admin/options.py",
+        "django/db/migrations/state.py",
+        "django/db/models/options.py"
+      ],
+      "first_rank": 2
+    },
+    {
+      "instance_id": "django__django-15819",
+      "repo": "django/django",
+      "gold": [
+        "django/core/management/commands/inspectdb.py"
+      ],
+      "ranked": [
+        "django/db/models/fields/related.py",
+        "django/db/migrations/autodetector.py",
+        "django/db/models/fields/related_descriptors.py",
+        "django/core/management/commands/inspectdb.py",
+        "django/db/models/fields/reverse_related.py",
+        "django/contrib/contenttypes/fields.py",
+        "django/db/models/options.py",
+        "django/db/models/base.py",
+        "django/contrib/admin/utils.py",
+        "django/db/migrations/state.py"
+      ],
+      "first_rank": 4
+    },
+    {
+      "instance_id": "django__django-15851",
+      "repo": "django/django",
+      "gold": [
+        "django/db/backends/postgresql/client.py"
+      ],
+      "ranked": [
+        "django/db/backends/postgresql/client.py",
+        "django/core/management/commands/dbshell.py",
+        "django/db/backends/postgresql/base.py",
+        "django/core/management/commands/sqlflush.py",
+        "django/core/management/commands/sqlsequencereset.py",
+        "django/db/backends/mysql/client.py",
+        "django/core/management/commands/shell.py",
+        "django/core/management/__init__.py",
+        "django/core/management/commands/inspectdb.py",
+        "django/db/backends/postgresql/creation.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-15902",
+      "repo": "django/django",
+      "gold": [
+        "django/forms/formsets.py"
+      ],
+      "ranked": [
+        "django/forms/formsets.py",
+        "django/forms/forms.py",
+        "django/forms/utils.py",
+        "django/forms/renderers.py",
+        "django/contrib/admin/options.py",
+        "django/utils/deprecation.py",
+        "django/contrib/admin/helpers.py",
+        "django/core/management/__init__.py",
+        "django/core/management/base.py",
+        "django/contrib/auth/admin.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-15996",
+      "repo": "django/django",
+      "gold": [
+        "django/db/migrations/serializer.py"
+      ],
+      "ranked": [
+        "django/db/migrations/serializer.py",
+        "django/db/models/enums.py",
+        "django/db/migrations/writer.py",
+        "django/forms/fields.py",
+        "django/db/models/fields/__init__.py",
+        "django/core/serializers/base.py",
+        "django/core/serializers/python.py",
+        "django/core/validators.py",
+        "django/utils/regex_helper.py",
+        "django/db/models/constraints.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-16041",
+      "repo": "django/django",
+      "gold": [
+        "django/forms/formsets.py"
+      ],
+      "ranked": [
+        "django/forms/formsets.py",
+        "django/forms/forms.py",
+        "django/forms/models.py",
+        "django/contrib/admin/helpers.py",
+        "django/contrib/admin/options.py",
+        "django/views/generic/edit.py",
+        "django/contrib/auth/views.py",
+        "django/db/models/fields/__init__.py",
+        "django/forms/fields.py",
+        "django/forms/boundfield.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-16046",
+      "repo": "django/django",
+      "gold": [
+        "django/utils/numberformat.py"
+      ],
+      "ranked": [
+        "django/db/backends/oracle/base.py",
+        "django/utils/numberformat.py",
+        "django/db/models/fields/__init__.py",
+        "django/contrib/postgres/forms/array.py",
+        "django/contrib/admin/templatetags/admin_list.py",
+        "django/utils/formats.py",
+        "django/db/backends/mysql/schema.py",
+        "django/contrib/admin/options.py",
+        "django/forms/fields.py",
+        "django/contrib/gis/gdal/field.py"
+      ],
+      "first_rank": 2
+    },
+    {
+      "instance_id": "django__django-16139",
+      "repo": "django/django",
+      "gold": [
+        "django/contrib/auth/forms.py"
+      ],
+      "ranked": [
+        "django/contrib/auth/forms.py",
+        "django/contrib/auth/admin.py",
+        "django/contrib/auth/views.py",
+        "django/contrib/admin/sites.py",
+        "django/contrib/admin/helpers.py",
+        "django/contrib/admin/forms.py",
+        "django/contrib/admin/options.py",
+        "django/contrib/auth/password_validation.py",
+        "django/contrib/auth/models.py",
+        "django/contrib/admin/widgets.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-16229",
+      "repo": "django/django",
+      "gold": [
+        "django/forms/boundfield.py"
+      ],
+      "ranked": [
+        "django/contrib/admin/options.py",
+        "django/forms/models.py",
+        "django/contrib/contenttypes/admin.py",
+        "django/contrib/admin/helpers.py",
+        "django/forms/forms.py",
+        "django/db/models/fields/related.py",
+        "django/contrib/contenttypes/forms.py",
+        "django/forms/formsets.py",
+        "django/db/models/fields/files.py",
+        "django/db/models/fields/__init__.py"
+      ],
+      "first_rank": null
+    },
+    {
+      "instance_id": "django__django-16255",
+      "repo": "django/django",
+      "gold": [
+        "django/contrib/sitemaps/__init__.py"
+      ],
+      "ranked": [
+        "django/contrib/sitemaps/__init__.py",
+        "django/contrib/sitemaps/views.py",
+        "django/contrib/flatpages/sitemaps.py",
+        "django/core/handlers/base.py",
+        "django/contrib/gis/sitemaps/kml.py",
+        "django/urls/resolvers.py",
+        "django/utils/decorators.py",
+        "django/core/handlers/exception.py",
+        "django/contrib/gis/geos/mutable_list.py",
+        "django/utils/datastructures.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-16379",
+      "repo": "django/django",
+      "gold": [
+        "django/core/cache/backends/filebased.py"
+      ],
+      "ranked": [
+        "django/core/cache/backends/filebased.py",
+        "django/core/cache/backends/base.py",
+        "django/core/cache/backends/db.py",
+        "django/core/cache/backends/memcached.py",
+        "django/core/cache/backends/locmem.py",
+        "django/core/cache/backends/dummy.py",
+        "django/contrib/sessions/backends/cache.py",
+        "django/contrib/sessions/backends/file.py",
+        "django/core/cache/backends/redis.py",
+        "django/middleware/cache.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-16400",
+      "repo": "django/django",
+      "gold": [
+        "django/contrib/auth/management/__init__.py"
+      ],
+      "ranked": [
+        "django/db/utils.py",
+        "django/core/management/commands/migrate.py",
+        "django/db/backends/base/creation.py",
+        "django/db/models/manager.py",
+        "django/db/models/query.py",
+        "django/core/management/commands/flush.py",
+        "django/db/migrations/executor.py",
+        "django/db/migrations/operations/models.py",
+        "django/core/management/commands/makemigrations.py",
+        "django/contrib/auth/management/__init__.py"
+      ],
+      "first_rank": 10
+    },
+    {
+      "instance_id": "django__django-16408",
+      "repo": "django/django",
+      "gold": [
+        "django/db/models/sql/compiler.py"
+      ],
+      "ranked": [
+        "django/db/models/query.py",
+        "django/db/models/sql/query.py",
+        "django/db/models/query_utils.py",
+        "django/db/models/sql/compiler.py",
+        "django/db/models/fields/related.py",
+        "django/contrib/contenttypes/fields.py",
+        "django/contrib/admin/views/main.py",
+        "django/contrib/admin/utils.py",
+        "django/db/models/fields/related_descriptors.py",
+        "django/db/models/deletion.py"
+      ],
+      "first_rank": 4
+    },
+    {
+      "instance_id": "django__django-16527",
+      "repo": "django/django",
+      "gold": [
+        "django/contrib/admin/templatetags/admin_modify.py"
+      ],
+      "ranked": [
+        "django/contrib/admin/templatetags/admin_modify.py",
+        "django/contrib/admin/options.py",
+        "django/contrib/auth/admin.py",
+        "django/contrib/admin/checks.py",
+        "django/contrib/admin/helpers.py",
+        "django/forms/models.py",
+        "django/contrib/admin/sites.py",
+        "django/contrib/auth/models.py",
+        "django/contrib/admin/actions.py",
+        "django/contrib/contenttypes/forms.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-16595",
+      "repo": "django/django",
+      "gold": [
+        "django/db/migrations/operations/fields.py"
+      ],
+      "ranked": [
+        "django/db/migrations/operations/fields.py",
+        "django/db/migrations/autodetector.py",
+        "django/db/migrations/optimizer.py",
+        "django/db/migrations/operations/models.py",
+        "django/db/backends/base/schema.py",
+        "django/db/backends/sqlite3/schema.py",
+        "django/db/backends/postgresql/schema.py",
+        "django/contrib/redirects/migrations/0002_alter_redirect_new_path_help_text.py",
+        "django/db/migrations/operations/base.py",
+        "django/contrib/auth/migrations/0002_alter_permission_name_max_length.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-16816",
+      "repo": "django/django",
+      "gold": [
+        "django/contrib/admin/checks.py"
+      ],
+      "ranked": [
+        "django/contrib/admin/utils.py",
+        "django/contrib/admin/templatetags/base.py",
+        "django/contrib/admin/checks.py",
+        "django/template/base.py",
+        "django/template/loader_tags.py",
+        "django/contrib/admin/options.py",
+        "django/forms/models.py",
+        "django/core/handlers/exception.py",
+        "django/contrib/admin/templatetags/admin_list.py",
+        "django/template/backends/django.py"
+      ],
+      "first_rank": 3
+    },
+    {
+      "instance_id": "django__django-16820",
+      "repo": "django/django",
+      "gold": [
+        "django/db/migrations/operations/models.py"
+      ],
+      "ranked": [
+        "django/db/migrations/autodetector.py",
+        "django/db/backends/base/schema.py",
+        "django/db/migrations/operations/models.py",
+        "django/db/models/base.py",
+        "django/db/models/options.py",
+        "django/db/migrations/state.py",
+        "django/db/backends/sqlite3/schema.py",
+        "django/core/management/commands/squashmigrations.py",
+        "django/db/backends/mysql/schema.py",
+        "django/contrib/postgres/operations.py"
+      ],
+      "first_rank": 3
+    },
+    {
+      "instance_id": "django__django-16873",
+      "repo": "django/django",
+      "gold": [
+        "django/template/defaultfilters.py"
+      ],
+      "ranked": [
+        "django/template/defaultfilters.py",
+        "django/template/defaulttags.py",
+        "django/utils/html.py",
+        "django/template/engine.py",
+        "django/template/base.py",
+        "django/template/library.py",
+        "django/db/models/sql/datastructures.py",
+        "django/templatetags/i18n.py",
+        "django/forms/utils.py",
+        "django/db/models/sql/query.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-16910",
+      "repo": "django/django",
+      "gold": [
+        "django/db/models/sql/query.py"
+      ],
+      "ranked": [
+        "django/db/models/query.py",
+        "django/db/models/sql/query.py",
+        "django/db/models/sql/compiler.py",
+        "django/db/models/fields/related_descriptors.py",
+        "django/contrib/admin/views/main.py",
+        "django/db/models/fields/related.py",
+        "django/db/models/fields/reverse_related.py",
+        "django/contrib/admin/options.py",
+        "django/contrib/contenttypes/fields.py",
+        "django/db/models/query_utils.py"
+      ],
+      "first_rank": 2
+    },
+    {
+      "instance_id": "django__django-17051",
+      "repo": "django/django",
+      "gold": [
+        "django/db/models/query.py"
+      ],
+      "ranked": [
+        "django/db/models/query.py",
+        "django/db/models/sql/compiler.py",
+        "django/db/models/base.py",
+        "django/db/backends/sqlite3/operations.py",
+        "django/db/backends/postgresql/operations.py",
+        "django/db/backends/base/operations.py",
+        "django/db/backends/mysql/operations.py",
+        "django/contrib/contenttypes/fields.py",
+        "django/db/models/fields/related_descriptors.py",
+        "django/db/backends/base/features.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "django__django-17087",
+      "repo": "django/django",
+      "gold": [
+        "django/db/migrations/serializer.py"
+      ],
+      "ranked": [
+        "django/db/models/fields/related.py",
+        "django/db/migrations/operations/fields.py",
+        "django/db/models/fields/__init__.py",
+        "django/db/migrations/autodetector.py",
+        "django/db/models/base.py",
+        "django/contrib/postgres/fields/array.py",
+        "django/db/backends/base/schema.py",
+        "django/forms/models.py",
+        "django/apps/config.py",
+        "django/db/backends/mysql/schema.py"
+      ],
+      "first_rank": null
+    },
+    {
+      "instance_id": "matplotlib__matplotlib-18869",
+      "repo": "matplotlib/matplotlib",
+      "gold": [
+        "lib/matplotlib/__init__.py"
+      ],
+      "ranked": [
+        "lib/matplotlib/__init__.py",
+        "setupext.py",
+        "doc/conf.py",
+        "lib/matplotlib/axes/_base.py",
+        "lib/matplotlib/sphinxext/plot_directive.py",
+        "lib/matplotlib/figure.py",
+        "lib/matplotlib/backends/backend_pdf.py",
+        "lib/matplotlib/artist.py",
+        "lib/matplotlib/ticker.py",
+        "examples/units/basic_units.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "matplotlib__matplotlib-22711",
+      "repo": "matplotlib/matplotlib",
+      "gold": [
+        "lib/matplotlib/widgets.py"
+      ],
+      "ranked": [
+        "lib/matplotlib/widgets.py",
+        "examples/widgets/range_slider.py",
+        "lib/matplotlib/backends/backend_qt.py",
+        "lib/matplotlib/ticker.py",
+        "examples/user_interfaces/fourier_demo_wx_sgskip.py",
+        "examples/widgets/slider_demo.py",
+        "examples/widgets/slider_snap_demo.py",
+        "lib/matplotlib/colors.py",
+        "lib/matplotlib/lines.py",
+        "lib/matplotlib/colorbar.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "matplotlib__matplotlib-22835",
+      "repo": "matplotlib/matplotlib",
+      "gold": [
+        "lib/matplotlib/artist.py"
+      ],
+      "ranked": [
+        "lib/matplotlib/artist.py",
+        "lib/matplotlib/colors.py",
+        "lib/matplotlib/colorbar.py",
+        "lib/matplotlib/image.py",
+        "lib/matplotlib/cm.py",
+        "lib/matplotlib/contour.py",
+        "lib/matplotlib/pyplot.py",
+        "lib/matplotlib/widgets.py",
+        "tutorials/colors/colormapnorms.py",
+        "lib/matplotlib/collections.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "matplotlib__matplotlib-23299",
+      "repo": "matplotlib/matplotlib",
+      "gold": [
+        "lib/matplotlib/__init__.py"
+      ],
+      "ranked": [
+        "lib/matplotlib/_pylab_helpers.py",
+        "lib/matplotlib/pyplot.py",
+        "lib/matplotlib/__init__.py",
+        "lib/matplotlib/backends/backend_nbagg.py",
+        "lib/matplotlib/figure.py",
+        "lib/matplotlib/backends/backend_template.py",
+        "lib/matplotlib/backends/_backend_gtk.py",
+        "lib/matplotlib/backend_bases.py",
+        "lib/matplotlib/sphinxext/plot_directive.py",
+        "lib/matplotlib/backends/backend_qt.py"
+      ],
+      "first_rank": 3
+    },
+    {
+      "instance_id": "matplotlib__matplotlib-23314",
+      "repo": "matplotlib/matplotlib",
+      "gold": [
+        "lib/mpl_toolkits/mplot3d/axes3d.py"
+      ],
+      "ranked": [
+        "lib/mpl_toolkits/axes_grid1/mpl_axes.py",
+        "lib/matplotlib/widgets.py",
+        "lib/matplotlib/figure.py",
+        "lib/matplotlib/artist.py",
+        "lib/matplotlib/pyplot.py",
+        "lib/mpl_toolkits/mplot3d/axes3d.py",
+        "lib/matplotlib/axis.py",
+        "lib/matplotlib/axes/_base.py",
+        "lib/matplotlib/gridspec.py",
+        "lib/mpl_toolkits/mplot3d/art3d.py"
+      ],
+      "first_rank": 6
+    },
+    {
+      "instance_id": "matplotlib__matplotlib-23476",
+      "repo": "matplotlib/matplotlib",
+      "gold": [
+        "lib/matplotlib/figure.py"
+      ],
+      "ranked": [
+        "lib/matplotlib/figure.py",
+        "lib/matplotlib/backends/backend_macosx.py",
+        "lib/matplotlib/backend_bases.py",
+        "lib/matplotlib/backends/_backend_tk.py",
+        "lib/matplotlib/backends/backend_agg.py",
+        "lib/matplotlib/pyplot.py",
+        "lib/matplotlib/backends/backend_wx.py",
+        "lib/matplotlib/backends/backend_pdf.py",
+        "lib/matplotlib/backends/backend_webagg_core.py",
+        "lib/matplotlib/backends/backend_template.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "matplotlib__matplotlib-23562",
+      "repo": "matplotlib/matplotlib",
+      "gold": [
+        "lib/mpl_toolkits/mplot3d/art3d.py"
+      ],
+      "ranked": [
+        "lib/mpl_toolkits/mplot3d/art3d.py",
+        "lib/mpl_toolkits/mplot3d/axes3d.py",
+        "lib/matplotlib/collections.py",
+        "lib/matplotlib/tri/tripcolor.py",
+        "lib/matplotlib/figure.py",
+        "lib/matplotlib/pyplot.py",
+        "examples/widgets/polygon_selector_demo.py",
+        "lib/matplotlib/axes/_axes.py",
+        "lib/matplotlib/backend_bases.py",
+        "examples/event_handling/lasso_demo.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "matplotlib__matplotlib-23563",
+      "repo": "matplotlib/matplotlib",
+      "gold": [
+        "lib/mpl_toolkits/mplot3d/art3d.py"
+      ],
+      "ranked": [
+        "lib/mpl_toolkits/mplot3d/art3d.py",
+        "lib/matplotlib/widgets.py",
+        "lib/matplotlib/path.py",
+        "lib/mpl_toolkits/mplot3d/axes3d.py",
+        "lib/matplotlib/collections.py",
+        "lib/mpl_toolkits/mplot3d/axis3d.py",
+        "lib/matplotlib/contour.py",
+        "lib/matplotlib/backend_bases.py",
+        "lib/matplotlib/patches.py",
+        "lib/matplotlib/figure.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "matplotlib__matplotlib-23913",
+      "repo": "matplotlib/matplotlib",
+      "gold": [
+        "lib/matplotlib/legend.py"
+      ],
+      "ranked": [
+        "lib/matplotlib/legend.py",
+        "lib/matplotlib/axes/_axes.py",
+        "lib/matplotlib/offsetbox.py",
+        "lib/matplotlib/figure.py",
+        "lib/matplotlib/text.py",
+        "tutorials/intermediate/legend_guide.py",
+        "lib/matplotlib/legend_handler.py",
+        "lib/matplotlib/backends/qt_editor/figureoptions.py",
+        "lib/matplotlib/axes/_base.py",
+        "lib/matplotlib/pyplot.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "matplotlib__matplotlib-23964",
+      "repo": "matplotlib/matplotlib",
+      "gold": [
+        "lib/matplotlib/backends/backend_ps.py"
+      ],
+      "ranked": [
+        "lib/matplotlib/backends/backend_ps.py",
+        "lib/matplotlib/backend_bases.py",
+        "lib/matplotlib/figure.py",
+        "lib/matplotlib/text.py",
+        "lib/matplotlib/font_manager.py",
+        "lib/matplotlib/axes/_axes.py",
+        "lib/matplotlib/artist.py",
+        "lib/matplotlib/backends/backend_pdf.py",
+        "lib/matplotlib/rcsetup.py",
+        "lib/matplotlib/axes/_base.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "matplotlib__matplotlib-23987",
+      "repo": "matplotlib/matplotlib",
+      "gold": [
+        "lib/matplotlib/figure.py"
+      ],
+      "ranked": [
+        "lib/matplotlib/figure.py",
+        "lib/matplotlib/_constrained_layout.py",
+        "lib/matplotlib/layout_engine.py",
+        "lib/matplotlib/pyplot.py",
+        "tutorials/intermediate/constrainedlayout_guide.py",
+        "lib/matplotlib/_tight_layout.py",
+        "tutorials/provisional/mosaic.py",
+        "lib/matplotlib/artist.py",
+        "tutorials/intermediate/tight_layout_guide.py",
+        "lib/matplotlib/gridspec.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "matplotlib__matplotlib-24149",
+      "repo": "matplotlib/matplotlib",
+      "gold": [
+        "lib/matplotlib/axes/_axes.py"
+      ],
+      "ranked": [
+        "lib/matplotlib/axes/_axes.py",
+        "lib/matplotlib/cbook/__init__.py",
+        "lib/matplotlib/pyplot.py",
+        "lib/matplotlib/units.py",
+        "lib/mpl_toolkits/mplot3d/axes3d.py",
+        "lib/matplotlib/collections.py",
+        "lib/matplotlib/axis.py",
+        "lib/matplotlib/axes/_base.py",
+        "lib/matplotlib/animation.py",
+        "lib/matplotlib/colors.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "matplotlib__matplotlib-24265",
+      "repo": "matplotlib/matplotlib",
+      "gold": [
+        "lib/matplotlib/style/core.py"
+      ],
+      "ranked": [
+        "lib/matplotlib/style/core.py",
+        "lib/matplotlib/__init__.py",
+        "setup.py",
+        "lib/matplotlib/pyplot.py",
+        "lib/matplotlib/backend_bases.py",
+        "setupext.py",
+        "lib/matplotlib/cm.py",
+        "lib/matplotlib/axes/_base.py",
+        "lib/matplotlib/figure.py",
+        "lib/matplotlib/patches.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "matplotlib__matplotlib-24334",
+      "repo": "matplotlib/matplotlib",
+      "gold": [
+        "lib/matplotlib/axis.py"
+      ],
+      "ranked": [
+        "lib/matplotlib/axis.py",
+        "lib/matplotlib/colorbar.py",
+        "lib/matplotlib/pyplot.py",
+        "lib/matplotlib/axes/_secondary_axes.py",
+        "lib/mpl_toolkits/axisartist/axis_artist.py",
+        "lib/mpl_toolkits/mplot3d/axis3d.py",
+        "lib/matplotlib/axes/_base.py",
+        "lib/matplotlib/ticker.py",
+        "lib/matplotlib/projections/polar.py",
+        "lib/mpl_toolkits/axes_grid1/mpl_axes.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "matplotlib__matplotlib-24970",
+      "repo": "matplotlib/matplotlib",
+      "gold": [
+        "lib/matplotlib/colors.py"
+      ],
+      "ranked": [
+        "lib/matplotlib/_api/deprecation.py",
+        "lib/matplotlib/colors.py",
+        "lib/matplotlib/cbook.py",
+        "setupext.py",
+        "lib/matplotlib/pyplot.py",
+        "lib/matplotlib/image.py",
+        "lib/matplotlib/collections.py",
+        "lib/matplotlib/colorbar.py",
+        "lib/matplotlib/axes/_axes.py",
+        "lib/matplotlib/cm.py"
+      ],
+      "first_rank": 2
+    },
+    {
+      "instance_id": "matplotlib__matplotlib-25079",
+      "repo": "matplotlib/matplotlib",
+      "gold": [
+        "lib/matplotlib/colors.py"
+      ],
+      "ranked": [
+        "lib/matplotlib/cm.py",
+        "lib/matplotlib/colorbar.py",
+        "lib/matplotlib/image.py",
+        "lib/matplotlib/colors.py",
+        "lib/matplotlib/contour.py",
+        "lib/matplotlib/pyplot.py",
+        "lib/matplotlib/figure.py",
+        "tutorials/colors/colormapnorms.py",
+        "lib/matplotlib/axes/_base.py",
+        "lib/matplotlib/backends/backend_agg.py"
+      ],
+      "first_rank": 4
+    },
+    {
+      "instance_id": "matplotlib__matplotlib-25311",
+      "repo": "matplotlib/matplotlib",
+      "gold": [
+        "lib/matplotlib/offsetbox.py"
+      ],
+      "ranked": [
+        "lib/matplotlib/legend.py",
+        "lib/matplotlib/figure.py",
+        "lib/matplotlib/offsetbox.py",
+        "lib/matplotlib/text.py",
+        "lib/matplotlib/pyplot.py",
+        "lib/matplotlib/backends/qt_editor/figureoptions.py",
+        "lib/matplotlib/axes/_axes.py",
+        "lib/matplotlib/artist.py",
+        "lib/matplotlib/axes/_base.py",
+        "lib/matplotlib/backends/backend_qtagg.py"
+      ],
+      "first_rank": 3
+    },
+    {
+      "instance_id": "matplotlib__matplotlib-25332",
+      "repo": "matplotlib/matplotlib",
+      "gold": [
+        "lib/matplotlib/cbook.py"
+      ],
+      "ranked": [
+        "lib/matplotlib/figure.py",
+        "lib/matplotlib/pyplot.py",
+        "lib/matplotlib/image.py",
+        "galleries/examples/text_labels_and_annotations/align_ylabels.py",
+        "lib/matplotlib/axes/_base.py",
+        "lib/matplotlib/artist.py",
+        "lib/matplotlib/axis.py",
+        "lib/matplotlib/offsetbox.py",
+        "lib/matplotlib/legend.py",
+        "lib/matplotlib/text.py"
+      ],
+      "first_rank": null
+    },
+    {
+      "instance_id": "matplotlib__matplotlib-25433",
+      "repo": "matplotlib/matplotlib",
+      "gold": [
+        "lib/matplotlib/figure.py"
+      ],
+      "ranked": [
+        "lib/matplotlib/widgets.py",
+        "lib/matplotlib/figure.py",
+        "galleries/examples/widgets/range_slider.py",
+        "lib/matplotlib/pyplot.py",
+        "galleries/examples/widgets/slider_demo.py",
+        "lib/matplotlib/backends/backend_qt.py",
+        "galleries/examples/user_interfaces/fourier_demo_wx_sgskip.py",
+        "galleries/examples/widgets/slider_snap_demo.py",
+        "lib/matplotlib/contour.py",
+        "lib/matplotlib/backend_bases.py"
+      ],
+      "first_rank": 2
+    },
+    {
+      "instance_id": "matplotlib__matplotlib-25442",
+      "repo": "matplotlib/matplotlib",
+      "gold": [
+        "lib/matplotlib/offsetbox.py"
+      ],
+      "ranked": [
+        "lib/matplotlib/widgets.py",
+        "lib/matplotlib/offsetbox.py",
+        "lib/matplotlib/artist.py",
+        "lib/matplotlib/figure.py",
+        "lib/matplotlib/backend_bases.py",
+        "lib/matplotlib/backends/backend_gtk3.py",
+        "lib/matplotlib/pyplot.py",
+        "lib/matplotlib/backends/backend_wx.py",
+        "lib/matplotlib/backends/backend_qt.py",
+        "galleries/examples/widgets/annotated_cursor.py"
+      ],
+      "first_rank": 2
+    },
+    {
+      "instance_id": "matplotlib__matplotlib-25498",
+      "repo": "matplotlib/matplotlib",
+      "gold": [
+        "lib/matplotlib/colorbar.py"
+      ],
+      "ranked": [
+        "lib/matplotlib/colorbar.py",
+        "lib/matplotlib/cm.py",
+        "lib/matplotlib/colors.py",
+        "lib/matplotlib/image.py",
+        "lib/matplotlib/contour.py",
+        "lib/matplotlib/figure.py",
+        "lib/matplotlib/pyplot.py",
+        "lib/mpl_toolkits/axes_grid1/axes_grid.py",
+        "galleries/users_explain/colors/colormapnorms.py",
+        "galleries/examples/images_contours_and_fields/multi_image.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "matplotlib__matplotlib-26011",
+      "repo": "matplotlib/matplotlib",
+      "gold": [
+        "lib/matplotlib/axis.py"
+      ],
+      "ranked": [
+        "lib/matplotlib/axes/_base.py",
+        "lib/matplotlib/axis.py",
+        "lib/mpl_toolkits/axes_grid1/parasite_axes.py",
+        "lib/mpl_toolkits/mplot3d/axes3d.py",
+        "lib/matplotlib/pyplot.py",
+        "lib/matplotlib/axes/_axes.py",
+        "lib/matplotlib/cm.py",
+        "lib/matplotlib/widgets.py",
+        "lib/matplotlib/colorbar.py",
+        "lib/matplotlib/figure.py"
+      ],
+      "first_rank": 2
+    },
+    {
+      "instance_id": "matplotlib__matplotlib-26020",
+      "repo": "matplotlib/matplotlib",
+      "gold": [
+        "lib/mpl_toolkits/axes_grid1/axes_grid.py"
+      ],
+      "ranked": [
+        "lib/matplotlib/axis.py",
+        "lib/matplotlib/axes/_base.py",
+        "lib/mpl_toolkits/axes_grid1/axes_grid.py",
+        "lib/matplotlib/figure.py",
+        "lib/matplotlib/pyplot.py",
+        "lib/mpl_toolkits/axes_grid1/mpl_axes.py",
+        "setupext.py",
+        "lib/mpl_toolkits/axisartist/axislines.py",
+        "lib/matplotlib/axes/_axes.py",
+        "lib/matplotlib/projections/polar.py"
+      ],
+      "first_rank": 3
+    },
+    {
+      "instance_id": "mwaskom__seaborn-2848",
+      "repo": "mwaskom/seaborn",
+      "gold": [
+        "seaborn/_oldcore.py"
+      ],
+      "ranked": [
+        "seaborn/categorical.py",
+        "seaborn/axisgrid.py",
+        "seaborn/relational.py",
+        "seaborn/distributions.py",
+        "seaborn/regression.py",
+        "seaborn/_core/plot.py",
+        "seaborn/_oldcore.py",
+        "seaborn/_core/rules.py",
+        "seaborn/palettes.py",
+        "seaborn/utils.py"
+      ],
+      "first_rank": 7
+    },
+    {
+      "instance_id": "mwaskom__seaborn-3010",
+      "repo": "mwaskom/seaborn",
+      "gold": [
+        "seaborn/_stats/regression.py"
+      ],
+      "ranked": [
+        "seaborn/_stats/regression.py",
+        "seaborn/regression.py",
+        "seaborn/_core/plot.py",
+        "seaborn/_core/groupby.py",
+        "seaborn/distributions.py",
+        "seaborn/_core/moves.py",
+        "seaborn/_statistics.py",
+        "seaborn/axisgrid.py",
+        "seaborn/matrix.py",
+        "seaborn/categorical.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "mwaskom__seaborn-3190",
+      "repo": "mwaskom/seaborn",
+      "gold": [
+        "seaborn/_core/scales.py"
+      ],
+      "ranked": [
+        "seaborn/_core/plot.py",
+        "seaborn/_core/properties.py",
+        "seaborn/_core/scales.py",
+        "seaborn/_core/data.py",
+        "seaborn/_marks/base.py",
+        "seaborn/_compat.py",
+        "seaborn/_oldcore.py",
+        "seaborn/distributions.py",
+        "seaborn/axisgrid.py",
+        "seaborn/matrix.py"
+      ],
+      "first_rank": 3
+    },
+    {
+      "instance_id": "mwaskom__seaborn-3407",
+      "repo": "mwaskom/seaborn",
+      "gold": [
+        "seaborn/axisgrid.py"
+      ],
+      "ranked": [
+        "seaborn/axisgrid.py",
+        "seaborn/_core/plot.py",
+        "seaborn/_oldcore.py",
+        "seaborn/relational.py",
+        "seaborn/matrix.py",
+        "seaborn/regression.py",
+        "seaborn/_core/data.py",
+        "seaborn/distributions.py",
+        "seaborn/categorical.py",
+        "seaborn/_core/subplots.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "pallets__flask-4045",
+      "repo": "pallets/flask",
+      "gold": [
+        "src/flask/blueprints.py"
+      ],
+      "ranked": [
+        "src/flask/blueprints.py",
+        "src/flask/wrappers.py",
+        "src/flask/helpers.py",
+        "src/flask/app.py",
+        "src/flask/scaffold.py",
+        "src/flask/debughelpers.py",
+        "src/flask/templating.py",
+        "src/flask/ctx.py",
+        "src/flask/cli.py",
+        "examples/tutorial/flaskr/auth.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "pallets__flask-4992",
+      "repo": "pallets/flask",
+      "gold": [
+        "src/flask/config.py"
+      ],
+      "ranked": [
+        "src/flask/config.py",
+        "src/flask/app.py",
+        "src/flask/helpers.py",
+        "src/flask/cli.py",
+        "src/flask/scaffold.py",
+        "src/flask/json/__init__.py",
+        "src/flask/json/provider.py",
+        "src/flask/blueprints.py",
+        "src/flask/__init__.py",
+        "examples/tutorial/flaskr/__init__.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "pallets__flask-5063",
+      "repo": "pallets/flask",
+      "gold": [
+        "src/flask/cli.py"
+      ],
+      "ranked": [
+        "src/flask/blueprints.py",
+        "src/flask/app.py",
+        "src/flask/cli.py",
+        "src/flask/scaffold.py",
+        "src/flask/wrappers.py",
+        "src/flask/helpers.py",
+        "src/flask/sessions.py",
+        "src/flask/testing.py",
+        "src/flask/ctx.py",
+        "examples/tutorial/flaskr/__init__.py"
+      ],
+      "first_rank": 3
+    },
+    {
+      "instance_id": "psf__requests-1963",
+      "repo": "psf/requests",
+      "gold": [
+        "requests/sessions.py"
+      ],
+      "ranked": [
+        "requests/sessions.py",
+        "requests/models.py",
+        "requests/api.py",
+        "requests/cookies.py",
+        "requests/packages/urllib3/poolmanager.py",
+        "requests/auth.py",
+        "requests/exceptions.py",
+        "requests/adapters.py",
+        "requests/packages/urllib3/response.py",
+        "requests/packages/urllib3/request.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "psf__requests-2148",
+      "repo": "psf/requests",
+      "gold": [
+        "requests/models.py"
+      ],
+      "ranked": [
+        "requests/models.py",
+        "requests/packages/urllib3/response.py",
+        "requests/exceptions.py",
+        "requests/packages/urllib3/exceptions.py",
+        "requests/packages/urllib3/connectionpool.py",
+        "requests/adapters.py",
+        "requests/sessions.py",
+        "requests/packages/urllib3/contrib/pyopenssl.py",
+        "requests/packages/urllib3/util/retry.py",
+        "requests/packages/urllib3/util/timeout.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "psf__requests-2317",
+      "repo": "psf/requests",
+      "gold": [
+        "requests/sessions.py"
+      ],
+      "ranked": [
+        "requests/sessions.py",
+        "requests/models.py",
+        "requests/packages/urllib3/request.py",
+        "requests/packages/urllib3/packages/six.py",
+        "requests/utils.py",
+        "requests/api.py",
+        "requests/adapters.py",
+        "requests/auth.py",
+        "requests/cookies.py",
+        "requests/packages/urllib3/connectionpool.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "psf__requests-2674",
+      "repo": "psf/requests",
+      "gold": [
+        "requests/adapters.py"
+      ],
+      "ranked": [
+        "requests/packages/urllib3/exceptions.py",
+        "requests/adapters.py",
+        "requests/models.py",
+        "requests/exceptions.py",
+        "requests/sessions.py",
+        "requests/packages/urllib3/connectionpool.py",
+        "requests/packages/urllib3/contrib/pyopenssl.py",
+        "requests/packages/urllib3/util/timeout.py",
+        "requests/packages/urllib3/poolmanager.py",
+        "requests/packages/urllib3/__init__.py"
+      ],
+      "first_rank": 2
+    },
+    {
+      "instance_id": "psf__requests-3362",
+      "repo": "psf/requests",
+      "gold": [
+        "requests/utils.py"
+      ],
+      "ranked": [
+        "requests/models.py",
+        "requests/utils.py",
+        "requests/sessions.py",
+        "requests/packages/urllib3/response.py",
+        "requests/packages/urllib3/exceptions.py",
+        "requests/packages/urllib3/filepost.py",
+        "requests/exceptions.py",
+        "requests/adapters.py",
+        "requests/packages/urllib3/contrib/appengine.py",
+        "requests/packages/urllib3/packages/six.py"
+      ],
+      "first_rank": 2
+    },
+    {
+      "instance_id": "psf__requests-863",
+      "repo": "psf/requests",
+      "gold": [
+        "requests/models.py"
+      ],
+      "ranked": [
+        "requests/models.py",
+        "requests/hooks.py",
+        "requests/sessions.py",
+        "requests/auth.py",
+        "requests/packages/oauthlib/common.py",
+        "requests/api.py",
+        "requests/utils.py",
+        "requests/cookies.py",
+        "requests/packages/oauthlib/oauth1/rfc5849/utils.py",
+        "requests/structures.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "pydata__xarray-3364",
+      "repo": "pydata/xarray",
+      "gold": [
+        "xarray/core/concat.py"
+      ],
+      "ranked": [
+        "xarray/core/concat.py",
+        "xarray/core/combine.py",
+        "xarray/backends/api.py",
+        "xarray/core/variable.py",
+        "xarray/core/dataset.py",
+        "xarray/core/dataarray.py",
+        "xarray/core/merge.py",
+        "asv_bench/benchmarks/combine.py",
+        "xarray/core/groupby.py",
+        "xarray/core/coordinates.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "pydata__xarray-4094",
+      "repo": "pydata/xarray",
+      "gold": [
+        "xarray/core/dataarray.py"
+      ],
+      "ranked": [
+        "xarray/core/dataarray.py",
+        "xarray/core/dataset.py",
+        "xarray/core/variable.py",
+        "xarray/core/combine.py",
+        "xarray/core/groupby.py",
+        "xarray/core/concat.py",
+        "xarray/core/parallel.py",
+        "xarray/core/merge.py",
+        "xarray/backends/api.py",
+        "xarray/core/duck_array_ops.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "pydata__xarray-4248",
+      "repo": "pydata/xarray",
+      "gold": [
+        "xarray/core/formatting.py"
+      ],
+      "ranked": [
+        "xarray/core/dataset.py",
+        "xarray/core/formatting.py",
+        "xarray/core/dataarray.py",
+        "xarray/conventions.py",
+        "xarray/core/coordinates.py",
+        "xarray/coding/cftimeindex.py",
+        "xarray/plot/utils.py",
+        "xarray/core/variable.py",
+        "xarray/coding/times.py",
+        "xarray/core/formatting_html.py"
+      ],
+      "first_rank": 2
+    },
+    {
+      "instance_id": "pydata__xarray-4493",
+      "repo": "pydata/xarray",
+      "gold": [
+        "xarray/core/variable.py"
+      ],
+      "ranked": [
+        "xarray/core/variable.py",
+        "xarray/core/dataset.py",
+        "xarray/core/dataarray.py",
+        "xarray/core/common.py",
+        "xarray/core/merge.py",
+        "xarray/core/parallel.py",
+        "xarray/core/computation.py",
+        "xarray/backends/apiv2.py",
+        "xarray/core/indexing.py",
+        "xarray/core/coordinates.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "pydata__xarray-5131",
+      "repo": "pydata/xarray",
+      "gold": [
+        "xarray/core/groupby.py"
+      ],
+      "ranked": [
+        "xarray/core/groupby.py",
+        "xarray/core/formatting.py",
+        "xarray/core/dataset.py",
+        "xarray/core/common.py",
+        "xarray/core/accessor_str.py",
+        "xarray/core/resample.py",
+        "xarray/core/combine.py",
+        "xarray/coding/cftimeindex.py",
+        "xarray/core/formatting_html.py",
+        "xarray/core/dataarray.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "pylint-dev__pylint-5859",
+      "repo": "pylint-dev/pylint",
+      "gold": [
+        "pylint/checkers/misc.py"
+      ],
+      "ranked": [
+        "pylint/checkers/misc.py",
+        "pylint/lint/pylinter.py",
+        "pylint/checkers/refactoring/not_checker.py",
+        "pylint/checkers/similar.py",
+        "pylint/checkers/format.py",
+        "pylint/checkers/typecheck.py",
+        "pylint/checkers/spelling.py",
+        "pylint/config/option.py",
+        "pylint/checkers/refactoring/implicit_booleaness_checker.py",
+        "pylint/checkers/base.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "pylint-dev__pylint-6506",
+      "repo": "pylint-dev/pylint",
+      "gold": [
+        "pylint/config/config_initialization.py"
+      ],
+      "ranked": [
+        "pylint/config/config_initialization.py",
+        "pylint/config/exceptions.py",
+        "pylint/config/arguments_manager.py",
+        "pylint/lint/run.py",
+        "pylint/config/option_manager_mixin.py",
+        "pylint/lint/pylinter.py",
+        "pylint/utils/pragma_parser.py",
+        "pylint/config/option.py",
+        "pylint/__init__.py",
+        "pylint/config/arguments_provider.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "pylint-dev__pylint-7080",
+      "repo": "pylint-dev/pylint",
+      "gold": [
+        "pylint/lint/expand_modules.py"
+      ],
+      "ranked": [
+        "pylint/lint/pylinter.py",
+        "pylint/lint/expand_modules.py",
+        "pylint/checkers/typecheck.py",
+        "pylint/pyreverse/inspector.py",
+        "pylint/pyreverse/main.py",
+        "pylint/testutils/pyreverse.py",
+        "pylint/checkers/similar.py",
+        "pylint/lint/run.py",
+        "doc/exts/pylint_features.py",
+        "pylint/checkers/imports.py"
+      ],
+      "first_rank": 2
+    },
+    {
+      "instance_id": "pylint-dev__pylint-7114",
+      "repo": "pylint-dev/pylint",
+      "gold": [
+        "pylint/lint/expand_modules.py"
+      ],
+      "ranked": [
+        "pylint/lint/pylinter.py",
+        "pylint/checkers/variables.py",
+        "pylint/utils/linterstats.py",
+        "pylint/epylint.py",
+        "pylint/checkers/similar.py",
+        "pylint/checkers/non_ascii_names.py",
+        "pylint/checkers/imports.py",
+        "pylint/checkers/base/name_checker/checker.py",
+        "pylint/checkers/base/basic_checker.py",
+        "pylint/lint/expand_modules.py"
+      ],
+      "first_rank": 10
+    },
+    {
+      "instance_id": "pylint-dev__pylint-7228",
+      "repo": "pylint-dev/pylint",
+      "gold": [
+        "pylint/config/argument.py"
+      ],
+      "ranked": [
+        "pylint/lint/run.py",
+        "pylint/config/config_initialization.py",
+        "pylint/checkers/unicode.py",
+        "pylint/config/arguments_manager.py",
+        "pylint/checkers/strings.py",
+        "pylint/pyreverse/main.py",
+        "pylint/utils/pragma_parser.py",
+        "pylint/__init__.py",
+        "pylint/config/argument.py",
+        "pylint/lint/expand_modules.py"
+      ],
+      "first_rank": 9
+    },
+    {
+      "instance_id": "pylint-dev__pylint-7993",
+      "repo": "pylint-dev/pylint",
+      "gold": [
+        "pylint/reporters/text.py"
+      ],
+      "ranked": [
+        "pylint/reporters/text.py",
+        "pylint/message/message.py",
+        "pylint/lint/pylinter.py",
+        "pylint/testutils/output_line.py",
+        "doc/exts/pylint_messages.py",
+        "pylint/checkers/refactoring/recommendation_checker.py",
+        "pylint/checkers/base_checker.py",
+        "pylint/testutils/_primer/primer_run_command.py",
+        "pylint/testutils/checker_test_case.py",
+        "pylint/message/message_definition.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "pytest-dev__pytest-11143",
+      "repo": "pytest-dev/pytest",
+      "gold": [
+        "src/_pytest/assertion/rewrite.py"
+      ],
+      "ranked": [
+        "src/_pytest/assertion/rewrite.py",
+        "src/_pytest/python.py",
+        "src/_pytest/doctest.py",
+        "src/_pytest/_py/path.py",
+        "src/_pytest/pathlib.py",
+        "src/_pytest/_code/code.py",
+        "src/_pytest/mark/expression.py",
+        "src/_pytest/config/__init__.py",
+        "src/_pytest/_code/source.py",
+        "src/_pytest/pytester.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "pytest-dev__pytest-11148",
+      "repo": "pytest-dev/pytest",
+      "gold": [
+        "src/_pytest/pathlib.py"
+      ],
+      "ranked": [
+        "src/_pytest/logging.py",
+        "src/_pytest/python.py",
+        "src/_pytest/pathlib.py",
+        "src/_pytest/config/__init__.py",
+        "src/_pytest/_py/path.py",
+        "src/_pytest/debugging.py",
+        "src/_pytest/main.py",
+        "src/_pytest/unittest.py",
+        "src/_pytest/monkeypatch.py",
+        "src/_pytest/capture.py"
+      ],
+      "first_rank": 3
+    },
+    {
+      "instance_id": "pytest-dev__pytest-5103",
+      "repo": "pytest-dev/pytest",
+      "gold": [
+        "src/_pytest/assertion/rewrite.py"
+      ],
+      "ranked": [
+        "src/_pytest/pytester.py",
+        "src/_pytest/python.py",
+        "src/_pytest/python_api.py",
+        "src/_pytest/reports.py",
+        "src/_pytest/compat.py",
+        "src/_pytest/fixtures.py",
+        "src/_pytest/hookspec.py",
+        "src/_pytest/main.py",
+        "src/_pytest/runner.py",
+        "src/_pytest/pathlib.py"
+      ],
+      "first_rank": null
+    },
+    {
+      "instance_id": "pytest-dev__pytest-5221",
+      "repo": "pytest-dev/pytest",
+      "gold": [
+        "src/_pytest/python.py"
+      ],
+      "ranked": [
+        "src/_pytest/fixtures.py",
+        "src/_pytest/python.py",
+        "src/_pytest/setuponly.py",
+        "src/_pytest/unittest.py",
+        "src/_pytest/doctest.py",
+        "src/_pytest/setupplan.py",
+        "src/_pytest/capture.py",
+        "src/_pytest/runner.py",
+        "src/_pytest/tmpdir.py",
+        "bench/manyparam.py"
+      ],
+      "first_rank": 2
+    },
+    {
+      "instance_id": "pytest-dev__pytest-5227",
+      "repo": "pytest-dev/pytest",
+      "gold": [
+        "src/_pytest/logging.py"
+      ],
+      "ranked": [
+        "src/_pytest/logging.py",
+        "src/_pytest/compat.py",
+        "src/_pytest/junitxml.py",
+        "src/_pytest/terminal.py",
+        "src/_pytest/fixtures.py",
+        "src/_pytest/pytester.py",
+        "src/_pytest/assertion/rewrite.py",
+        "src/_pytest/_code/code.py",
+        "src/_pytest/nodes.py",
+        "doc/en/conf.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "pytest-dev__pytest-5413",
+      "repo": "pytest-dev/pytest",
+      "gold": [
+        "src/_pytest/_code/code.py"
+      ],
+      "ranked": [
+        "src/_pytest/_code/code.py",
+        "src/_pytest/python_api.py",
+        "src/_pytest/fixtures.py",
+        "src/_pytest/python.py",
+        "src/_pytest/assertion/rewrite.py",
+        "src/_pytest/hookspec.py",
+        "src/_pytest/doctest.py",
+        "src/_pytest/debugging.py",
+        "src/_pytest/nodes.py",
+        "src/_pytest/outcomes.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "pytest-dev__pytest-5495",
+      "repo": "pytest-dev/pytest",
+      "gold": [
+        "src/_pytest/assertion/util.py"
+      ],
+      "ranked": [
+        "src/_pytest/assertion/rewrite.py",
+        "src/_pytest/assertion/util.py",
+        "src/_pytest/assertion/__init__.py",
+        "doc/en/example/assertion/failure_demo.py",
+        "src/_pytest/config/__init__.py",
+        "src/_pytest/hookspec.py",
+        "src/_pytest/doctest.py",
+        "src/_pytest/python_api.py",
+        "src/_pytest/_code/code.py",
+        "src/_pytest/capture.py"
+      ],
+      "first_rank": 2
+    },
+    {
+      "instance_id": "pytest-dev__pytest-5692",
+      "repo": "pytest-dev/pytest",
+      "gold": [
+        "src/_pytest/junitxml.py"
+      ],
+      "ranked": [
+        "src/_pytest/junitxml.py",
+        "src/_pytest/reports.py",
+        "src/_pytest/terminal.py",
+        "src/_pytest/runner.py",
+        "src/_pytest/nodes.py",
+        "src/_pytest/hookspec.py",
+        "src/_pytest/python.py",
+        "src/_pytest/logging.py",
+        "src/_pytest/pytester.py",
+        "doc/en/conf.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "pytest-dev__pytest-6116",
+      "repo": "pytest-dev/pytest",
+      "gold": [
+        "src/_pytest/main.py"
+      ],
+      "ranked": [
+        "src/_pytest/main.py",
+        "src/_pytest/terminal.py",
+        "src/_pytest/config/argparsing.py",
+        "src/_pytest/hookspec.py",
+        "src/_pytest/capture.py",
+        "src/_pytest/python.py",
+        "src/_pytest/doctest.py",
+        "src/_pytest/mark/__init__.py",
+        "src/_pytest/junitxml.py",
+        "src/_pytest/pytester.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "pytest-dev__pytest-7168",
+      "repo": "pytest-dev/pytest",
+      "gold": [
+        "src/_pytest/_io/saferepr.py"
+      ],
+      "ranked": [
+        "src/_pytest/_code/code.py",
+        "src/_pytest/reports.py",
+        "src/_pytest/python.py",
+        "src/_pytest/resultlog.py",
+        "src/_pytest/_io/saferepr.py",
+        "src/_pytest/debugging.py",
+        "src/_pytest/nodes.py",
+        "src/_pytest/hookspec.py",
+        "src/_pytest/runner.py",
+        "src/_pytest/config/__init__.py"
+      ],
+      "first_rank": 5
+    },
+    {
+      "instance_id": "pytest-dev__pytest-7220",
+      "repo": "pytest-dev/pytest",
+      "gold": [
+        "src/_pytest/nodes.py"
+      ],
+      "ranked": [
+        "src/_pytest/pytester.py",
+        "src/_pytest/assertion/rewrite.py",
+        "src/_pytest/python.py",
+        "src/_pytest/fixtures.py",
+        "src/_pytest/monkeypatch.py",
+        "src/_pytest/tmpdir.py",
+        "src/_pytest/hookspec.py",
+        "src/_pytest/_code/code.py",
+        "src/_pytest/config/__init__.py",
+        "src/_pytest/cacheprovider.py"
+      ],
+      "first_rank": null
+    },
+    {
+      "instance_id": "pytest-dev__pytest-7373",
+      "repo": "pytest-dev/pytest",
+      "gold": [
+        "src/_pytest/mark/evaluate.py"
+      ],
+      "ranked": [
+        "src/_pytest/skipping.py",
+        "src/_pytest/mark/evaluate.py",
+        "src/_pytest/outcomes.py",
+        "src/_pytest/python.py",
+        "src/_pytest/mark/structures.py",
+        "src/_pytest/unittest.py",
+        "src/_pytest/stepwise.py",
+        "src/_pytest/assertion/rewrite.py",
+        "src/_pytest/mark/__init__.py",
+        "src/_pytest/fixtures.py"
+      ],
+      "first_rank": 2
+    },
+    {
+      "instance_id": "pytest-dev__pytest-7432",
+      "repo": "pytest-dev/pytest",
+      "gold": [
+        "src/_pytest/skipping.py"
+      ],
+      "ranked": [
+        "src/_pytest/skipping.py",
+        "src/_pytest/outcomes.py",
+        "src/_pytest/unittest.py",
+        "src/_pytest/stepwise.py",
+        "src/_pytest/doctest.py",
+        "src/_pytest/junitxml.py",
+        "src/_pytest/main.py",
+        "src/_pytest/runner.py",
+        "src/_pytest/terminal.py",
+        "src/_pytest/mark/structures.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "pytest-dev__pytest-7490",
+      "repo": "pytest-dev/pytest",
+      "gold": [
+        "src/_pytest/skipping.py"
+      ],
+      "ranked": [
+        "src/_pytest/outcomes.py",
+        "src/_pytest/skipping.py",
+        "src/_pytest/python.py",
+        "src/_pytest/fixtures.py",
+        "src/_pytest/unittest.py",
+        "src/_pytest/nodes.py",
+        "src/_pytest/junitxml.py",
+        "src/_pytest/mark/structures.py",
+        "src/_pytest/main.py",
+        "src/_pytest/mark/__init__.py"
+      ],
+      "first_rank": 2
+    },
+    {
+      "instance_id": "pytest-dev__pytest-8365",
+      "repo": "pytest-dev/pytest",
+      "gold": [
+        "src/_pytest/tmpdir.py"
+      ],
+      "ranked": [
+        "src/_pytest/tmpdir.py",
+        "src/_pytest/pathlib.py",
+        "src/_pytest/pytester.py",
+        "src/_pytest/main.py",
+        "src/_pytest/assertion/rewrite.py",
+        "src/_pytest/cacheprovider.py",
+        "src/_pytest/config/__init__.py",
+        "src/_pytest/config/findpaths.py",
+        "src/_pytest/python.py",
+        "src/_pytest/_code/code.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "pytest-dev__pytest-8906",
+      "repo": "pytest-dev/pytest",
+      "gold": [
+        "src/_pytest/python.py"
+      ],
+      "ranked": [
+        "src/_pytest/outcomes.py",
+        "src/_pytest/skipping.py",
+        "src/_pytest/unittest.py",
+        "src/_pytest/python.py",
+        "src/_pytest/doctest.py",
+        "src/_pytest/config/__init__.py",
+        "bench/skip.py",
+        "src/_pytest/mark/structures.py",
+        "src/_pytest/stepwise.py",
+        "src/_pytest/pathlib.py"
+      ],
+      "first_rank": 4
+    },
+    {
+      "instance_id": "pytest-dev__pytest-9359",
+      "repo": "pytest-dev/pytest",
+      "gold": [
+        "src/_pytest/_code/source.py"
+      ],
+      "ranked": [
+        "src/_pytest/_code/code.py",
+        "src/_pytest/assertion/rewrite.py",
+        "src/_pytest/nodes.py",
+        "src/_pytest/config/__init__.py",
+        "src/_pytest/python.py",
+        "src/_pytest/hookspec.py",
+        "src/_pytest/terminal.py",
+        "src/_pytest/fixtures.py",
+        "src/_pytest/pytester.py",
+        "src/_pytest/doctest.py"
+      ],
+      "first_rank": null
+    },
+    {
+      "instance_id": "scikit-learn__scikit-learn-10297",
+      "repo": "scikit-learn/scikit-learn",
+      "gold": [
+        "sklearn/linear_model/ridge.py"
+      ],
+      "ranked": [
+        "sklearn/linear_model/ridge.py",
+        "sklearn/linear_model/coordinate_descent.py",
+        "sklearn/linear_model/logistic.py",
+        "sklearn/linear_model/least_angle.py",
+        "sklearn/model_selection/_validation.py",
+        "sklearn/covariance/graph_lasso_.py",
+        "sklearn/model_selection/_search.py",
+        "sklearn/cross_validation.py",
+        "sklearn/model_selection/_split.py",
+        "sklearn/feature_selection/rfe.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "scikit-learn__scikit-learn-10508",
+      "repo": "scikit-learn/scikit-learn",
+      "gold": [
+        "sklearn/preprocessing/label.py"
+      ],
+      "ranked": [
+        "sklearn/preprocessing/label.py",
+        "sklearn/preprocessing/data.py",
+        "sklearn/svm/base.py",
+        "sklearn/linear_model/logistic.py",
+        "sklearn/utils/class_weight.py",
+        "sklearn/utils/estimator_checks.py",
+        "sklearn/neighbors/nearest_centroid.py",
+        "sklearn/metrics/cluster/unsupervised.py",
+        "sklearn/gaussian_process/gpc.py",
+        "sklearn/ensemble/gradient_boosting.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "scikit-learn__scikit-learn-10949",
+      "repo": "scikit-learn/scikit-learn",
+      "gold": [
+        "sklearn/utils/validation.py"
+      ],
+      "ranked": [
+        "sklearn/utils/validation.py",
+        "sklearn/utils/estimator_checks.py",
+        "sklearn/exceptions.py",
+        "sklearn/utils/mocking.py",
+        "sklearn/feature_extraction/text.py",
+        "sklearn/preprocessing/data.py",
+        "sklearn/metrics/pairwise.py",
+        "sklearn/utils/fixes.py",
+        "sklearn/compose/_column_transformer.py",
+        "sklearn/utils/testing.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "scikit-learn__scikit-learn-11040",
+      "repo": "scikit-learn/scikit-learn",
+      "gold": [
+        "sklearn/neighbors/base.py"
+      ],
+      "ranked": [
+        "sklearn/neighbors/base.py",
+        "sklearn/neighbors/unsupervised.py",
+        "sklearn/neighbors/regression.py",
+        "sklearn/neighbors/approximate.py",
+        "sklearn/neighbors/classification.py",
+        "sklearn/neighbors/graph.py",
+        "sklearn/manifold/locally_linear.py",
+        "sklearn/neighbors/nearest_centroid.py",
+        "sklearn/cluster/mean_shift_.py",
+        "sklearn/manifold/t_sne.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "scikit-learn__scikit-learn-11281",
+      "repo": "scikit-learn/scikit-learn",
+      "gold": [
+        "sklearn/mixture/base.py"
+      ],
+      "ranked": [
+        "sklearn/utils/estimator_checks.py",
+        "sklearn/mixture/base.py",
+        "sklearn/base.py",
+        "sklearn/cluster/birch.py",
+        "sklearn/mixture/gmm.py",
+        "sklearn/mixture/dpgmm.py",
+        "sklearn/cluster/k_means_.py",
+        "sklearn/mixture/gaussian_mixture.py",
+        "sklearn/mixture/bayesian_mixture.py",
+        "sklearn/cluster/bicluster.py"
+      ],
+      "first_rank": 2
+    },
+    {
+      "instance_id": "scikit-learn__scikit-learn-12471",
+      "repo": "scikit-learn/scikit-learn",
+      "gold": [
+        "sklearn/preprocessing/_encoders.py"
+      ],
+      "ranked": [
+        "sklearn/preprocessing/_encoders.py",
+        "sklearn/preprocessing/label.py",
+        "sklearn/preprocessing/_discretization.py",
+        "sklearn/feature_extraction/dict_vectorizer.py",
+        "sklearn/ensemble/forest.py",
+        "sklearn/feature_extraction/hashing.py",
+        "sklearn/compose/_column_transformer.py",
+        "sklearn/utils/estimator_checks.py",
+        "sklearn/utils/testing.py",
+        "sklearn/preprocessing/data.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "scikit-learn__scikit-learn-13142",
+      "repo": "scikit-learn/scikit-learn",
+      "gold": [
+        "sklearn/mixture/base.py"
+      ],
+      "ranked": [
+        "sklearn/mixture/base.py",
+        "sklearn/mixture/gaussian_mixture.py",
+        "sklearn/utils/estimator_checks.py",
+        "sklearn/cluster/hierarchical.py",
+        "sklearn/cluster/k_means_.py",
+        "sklearn/mixture/bayesian_mixture.py",
+        "sklearn/neighbors/lof.py",
+        "sklearn/ensemble/gradient_boosting.py",
+        "sklearn/cluster/birch.py",
+        "sklearn/pipeline.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "scikit-learn__scikit-learn-13241",
+      "repo": "scikit-learn/scikit-learn",
+      "gold": [
+        "sklearn/decomposition/kernel_pca.py"
+      ],
+      "ranked": [
+        "sklearn/decomposition/kernel_pca.py",
+        "sklearn/decomposition/pca.py",
+        "sklearn/metrics/pairwise.py",
+        "sklearn/manifold/isomap.py",
+        "sklearn/decomposition/sparse_pca.py",
+        "sklearn/gaussian_process/kernels.py",
+        "benchmarks/bench_plot_parallel_pairwise.py",
+        "sklearn/decomposition/incremental_pca.py",
+        "sklearn/svm/classes.py",
+        "sklearn/preprocessing/data.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "scikit-learn__scikit-learn-13439",
+      "repo": "scikit-learn/scikit-learn",
+      "gold": [
+        "sklearn/pipeline.py"
+      ],
+      "ranked": [
+        "sklearn/pipeline.py",
+        "sklearn/utils/validation.py",
+        "sklearn/externals/joblib/parallel.py",
+        "sklearn/model_selection/_search.py",
+        "sklearn/preprocessing/data.py",
+        "sklearn/utils/estimator_checks.py",
+        "sklearn/compose/_column_transformer.py",
+        "sklearn/feature_selection/univariate_selection.py",
+        "sklearn/datasets/samples_generator.py",
+        "sklearn/externals/six.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "scikit-learn__scikit-learn-13496",
+      "repo": "scikit-learn/scikit-learn",
+      "gold": [
+        "sklearn/ensemble/iforest.py"
+      ],
+      "ranked": [
+        "sklearn/ensemble/iforest.py",
+        "sklearn/ensemble/forest.py",
+        "sklearn/ensemble/bagging.py",
+        "sklearn/ensemble/gradient_boosting.py",
+        "sklearn/neighbors/nca.py",
+        "sklearn/mixture/base.py",
+        "sklearn/linear_model/stochastic_gradient.py",
+        "sklearn/linear_model/coordinate_descent.py",
+        "sklearn/linear_model/passive_aggressive.py",
+        "sklearn/linear_model/perceptron.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "scikit-learn__scikit-learn-13497",
+      "repo": "scikit-learn/scikit-learn",
+      "gold": [
+        "sklearn/feature_selection/mutual_info_.py"
+      ],
+      "ranked": [
+        "sklearn/feature_selection/mutual_info_.py",
+        "sklearn/utils/estimator_checks.py",
+        "sklearn/impute.py",
+        "sklearn/preprocessing/_encoders.py",
+        "sklearn/metrics/cluster/supervised.py",
+        "sklearn/feature_selection/base.py",
+        "sklearn/preprocessing/_discretization.py",
+        "sklearn/preprocessing/data.py",
+        "sklearn/feature_selection/from_model.py",
+        "sklearn/utils/__init__.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "scikit-learn__scikit-learn-13584",
+      "repo": "scikit-learn/scikit-learn",
+      "gold": [
+        "sklearn/utils/_pprint.py"
+      ],
+      "ranked": [
+        "sklearn/utils/validation.py",
+        "sklearn/utils/estimator_checks.py",
+        "sklearn/utils/_pprint.py",
+        "doc/tutorial/machine_learning_map/pyparsing.py",
+        "sklearn/compose/_column_transformer.py",
+        "sklearn/linear_model/logistic.py",
+        "sklearn/_config.py",
+        "sklearn/model_selection/_search.py",
+        "sklearn/impute.py",
+        "sklearn/externals/joblib/memory.py"
+      ],
+      "first_rank": 3
+    },
+    {
+      "instance_id": "scikit-learn__scikit-learn-13779",
+      "repo": "scikit-learn/scikit-learn",
+      "gold": [
+        "sklearn/ensemble/voting.py"
+      ],
+      "ranked": [
+        "sklearn/ensemble/voting.py",
+        "sklearn/ensemble/gradient_boosting.py",
+        "sklearn/ensemble/weight_boosting.py",
+        "sklearn/ensemble/bagging.py",
+        "sklearn/utils/estimator_checks.py",
+        "sklearn/ensemble/forest.py",
+        "sklearn/dummy.py",
+        "sklearn/linear_model/logistic.py",
+        "sklearn/multioutput.py",
+        "sklearn/linear_model/ridge.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "scikit-learn__scikit-learn-14087",
+      "repo": "scikit-learn/scikit-learn",
+      "gold": [
+        "sklearn/linear_model/logistic.py"
+      ],
+      "ranked": [
+        "sklearn/linear_model/logistic.py",
+        "sklearn/model_selection/_search.py",
+        "sklearn/linear_model/ridge.py",
+        "sklearn/svm/base.py",
+        "sklearn/linear_model/coordinate_descent.py",
+        "sklearn/linear_model/least_angle.py",
+        "sklearn/model_selection/_validation.py",
+        "sklearn/linear_model/theil_sen.py",
+        "sklearn/linear_model/omp.py",
+        "sklearn/covariance/graph_lasso_.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "scikit-learn__scikit-learn-14092",
+      "repo": "scikit-learn/scikit-learn",
+      "gold": [
+        "sklearn/neighbors/nca.py"
+      ],
+      "ranked": [
+        "sklearn/model_selection/_search.py",
+        "sklearn/neighbors/nca.py",
+        "sklearn/decomposition/online_lda.py",
+        "sklearn/utils/estimator_checks.py",
+        "sklearn/utils/validation.py",
+        "sklearn/linear_model/ridge.py",
+        "sklearn/linear_model/coordinate_descent.py",
+        "sklearn/model_selection/_validation.py",
+        "sklearn/feature_extraction/text.py",
+        "sklearn/mixture/base.py"
+      ],
+      "first_rank": 2
+    },
+    {
+      "instance_id": "scikit-learn__scikit-learn-14894",
+      "repo": "scikit-learn/scikit-learn",
+      "gold": [
+        "sklearn/svm/base.py"
+      ],
+      "ranked": [
+        "sklearn/svm/base.py",
+        "sklearn/linear_model/base.py",
+        "sklearn/svm/classes.py",
+        "sklearn/linear_model/coordinate_descent.py",
+        "sklearn/preprocessing/data.py",
+        "sklearn/linear_model/ridge.py",
+        "sklearn/impute/_base.py",
+        "sklearn/ensemble/weight_boosting.py",
+        "examples/applications/svm_gui.py",
+        "examples/applications/plot_model_complexity_influence.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "scikit-learn__scikit-learn-14983",
+      "repo": "scikit-learn/scikit-learn",
+      "gold": [
+        "sklearn/model_selection/_split.py"
+      ],
+      "ranked": [
+        "sklearn/model_selection/_split.py",
+        "sklearn/base.py",
+        "sklearn/metrics/scorer.py",
+        "sklearn/model_selection/_search.py",
+        "sklearn/gaussian_process/kernels.py",
+        "sklearn/utils/_pprint.py",
+        "sklearn/model_selection/_validation.py",
+        "examples/model_selection/plot_cv_indices.py",
+        "sklearn/feature_selection/rfe.py",
+        "doc/tutorial/machine_learning_map/pyparsing.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "scikit-learn__scikit-learn-15512",
+      "repo": "scikit-learn/scikit-learn",
+      "gold": [
+        "sklearn/cluster/_affinity_propagation.py"
+      ],
+      "ranked": [
+        "sklearn/cluster/_affinity_propagation.py",
+        "sklearn/cluster/_spectral.py",
+        "sklearn/utils/estimator_checks.py",
+        "sklearn/cluster/_k_means.py",
+        "sklearn/cluster/_hierarchical.py",
+        "sklearn/cluster/_mean_shift.py",
+        "sklearn/semi_supervised/_label_propagation.py",
+        "sklearn/base.py",
+        "sklearn/cluster/_birch.py",
+        "sklearn/cluster/_optics.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "scikit-learn__scikit-learn-15535",
+      "repo": "scikit-learn/scikit-learn",
+      "gold": [
+        "sklearn/metrics/cluster/_supervised.py"
+      ],
+      "ranked": [
+        "sklearn/metrics/cluster/_supervised.py",
+        "sklearn/utils/estimator_checks.py",
+        "sklearn/impute/_base.py",
+        "sklearn/utils/validation.py",
+        "examples/cluster/plot_adjusted_for_chance_measures.py",
+        "sklearn/base.py",
+        "sklearn/feature_selection/_mutual_info.py",
+        "sklearn/cluster/_bicluster.py",
+        "sklearn/cluster/_k_means.py",
+        "sklearn/preprocessing/_encoders.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "scikit-learn__scikit-learn-25500",
+      "repo": "scikit-learn/scikit-learn",
+      "gold": [
+        "sklearn/isotonic.py"
+      ],
+      "ranked": [
+        "sklearn/calibration.py",
+        "sklearn/model_selection/_validation.py",
+        "sklearn/pipeline.py",
+        "examples/calibration/plot_calibration_curve.py",
+        "sklearn/multioutput.py",
+        "sklearn/ensemble/_stacking.py",
+        "sklearn/utils/estimator_checks.py",
+        "sklearn/utils/fixes.py",
+        "sklearn/dummy.py",
+        "sklearn/compose/_column_transformer.py"
+      ],
+      "first_rank": null
+    },
+    {
+      "instance_id": "scikit-learn__scikit-learn-25570",
+      "repo": "scikit-learn/scikit-learn",
+      "gold": [
+        "sklearn/compose/_column_transformer.py"
+      ],
+      "ranked": [
+        "sklearn/compose/_column_transformer.py",
+        "sklearn/utils/_set_output.py",
+        "sklearn/pipeline.py",
+        "sklearn/utils/estimator_checks.py",
+        "sklearn/base.py",
+        "sklearn/impute/_base.py",
+        "sklearn/preprocessing/_data.py",
+        "sklearn/impute/_iterative.py",
+        "sklearn/utils/_testing.py",
+        "sklearn/compose/_target.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "scikit-learn__scikit-learn-25638",
+      "repo": "scikit-learn/scikit-learn",
+      "gold": [
+        "sklearn/utils/multiclass.py"
+      ],
+      "ranked": [
+        "sklearn/utils/multiclass.py",
+        "sklearn/utils/validation.py",
+        "sklearn/utils/_encode.py",
+        "sklearn/metrics/_classification.py",
+        "sklearn/utils/estimator_checks.py",
+        "sklearn/impute/_base.py",
+        "sklearn/preprocessing/_label.py",
+        "sklearn/utils/_array_api.py",
+        "sklearn/preprocessing/_encoders.py",
+        "sklearn/utils/__init__.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "scikit-learn__scikit-learn-25747",
+      "repo": "scikit-learn/scikit-learn",
+      "gold": [
+        "sklearn/utils/_set_output.py"
+      ],
+      "ranked": [
+        "sklearn/utils/_set_output.py",
+        "sklearn/pipeline.py",
+        "sklearn/compose/_column_transformer.py",
+        "sklearn/preprocessing/_function_transformer.py",
+        "sklearn/base.py",
+        "sklearn/feature_selection/_base.py",
+        "sklearn/utils/estimator_checks.py",
+        "sklearn/utils/_testing.py",
+        "sklearn/preprocessing/_encoders.py",
+        "sklearn/_config.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "sphinx-doc__sphinx-10325",
+      "repo": "sphinx-doc/sphinx",
+      "gold": [
+        "sphinx/ext/autodoc/__init__.py"
+      ],
+      "ranked": [
+        "sphinx/ext/autodoc/__init__.py",
+        "sphinx/ext/autosummary/generate.py",
+        "sphinx/ext/autodoc/importer.py",
+        "sphinx/util/inspect.py",
+        "sphinx/ext/napoleon/__init__.py",
+        "doc/usage/extensions/example_google.py",
+        "sphinx/ext/inheritance_diagram.py",
+        "doc/usage/extensions/example_numpy.py",
+        "sphinx/ext/autosummary/__init__.py",
+        "sphinx/addnodes.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "sphinx-doc__sphinx-10451",
+      "repo": "sphinx-doc/sphinx",
+      "gold": [
+        "sphinx/ext/autodoc/typehints.py"
+      ],
+      "ranked": [
+        "sphinx/ext/autodoc/__init__.py",
+        "sphinx/ext/autodoc/typehints.py",
+        "sphinx/ext/napoleon/docstring.py",
+        "sphinx/util/inspect.py",
+        "doc/usage/extensions/example_numpy.py",
+        "sphinx/util/typing.py",
+        "doc/usage/extensions/example_google.py",
+        "sphinx/ext/autosummary/__init__.py",
+        "sphinx/ext/autodoc/mock.py",
+        "sphinx/ext/napoleon/__init__.py"
+      ],
+      "first_rank": 2
+    },
+    {
+      "instance_id": "sphinx-doc__sphinx-11445",
+      "repo": "sphinx-doc/sphinx",
+      "gold": [
+        "sphinx/util/rst.py"
+      ],
+      "ranked": [
+        "sphinx/util/rst.py",
+        "sphinx/domains/python.py",
+        "sphinx/domains/rst.py",
+        "sphinx/parsers.py",
+        "sphinx/config.py",
+        "sphinx/transforms/i18n.py",
+        "sphinx/environment/adapters/toctree.py",
+        "sphinx/ext/autodoc/__init__.py",
+        "sphinx/util/docutils.py",
+        "sphinx/writers/latex.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "sphinx-doc__sphinx-7686",
+      "repo": "sphinx-doc/sphinx",
+      "gold": [
+        "sphinx/ext/autosummary/generate.py"
+      ],
+      "ranked": [
+        "sphinx/ext/autosummary/generate.py",
+        "sphinx/ext/autosummary/__init__.py",
+        "sphinx/ext/autodoc/__init__.py",
+        "sphinx/ext/autodoc/importer.py",
+        "sphinx/ext/viewcode.py",
+        "doc/usage/extensions/example_numpy.py",
+        "doc/usage/extensions/example_google.py",
+        "sphinx/ext/napoleon/__init__.py",
+        "sphinx/ext/apidoc.py",
+        "sphinx/domains/python.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "sphinx-doc__sphinx-7738",
+      "repo": "sphinx-doc/sphinx",
+      "gold": [
+        "sphinx/ext/napoleon/docstring.py"
+      ],
+      "ranked": [
+        "doc/usage/extensions/example_google.py",
+        "sphinx/ext/napoleon/__init__.py",
+        "sphinx/ext/napoleon/docstring.py",
+        "doc/usage/extensions/example_numpy.py",
+        "sphinx/ext/autodoc/__init__.py",
+        "sphinx/ext/apidoc.py",
+        "sphinx/builders/_epub_base.py",
+        "sphinx/ext/autosummary/__init__.py",
+        "sphinx/ext/autosummary/generate.py",
+        "sphinx/domains/python.py"
+      ],
+      "first_rank": 3
+    },
+    {
+      "instance_id": "sphinx-doc__sphinx-7975",
+      "repo": "sphinx-doc/sphinx",
+      "gold": [
+        "sphinx/environment/adapters/indexentries.py"
+      ],
+      "ranked": [
+        "sphinx/environment/adapters/indexentries.py",
+        "sphinx/writers/latex.py",
+        "sphinx/writers/texinfo.py",
+        "sphinx/domains/python.py",
+        "sphinx/domains/index.py",
+        "sphinx/roles.py",
+        "sphinx/domains/cpp.py",
+        "sphinx/util/nodes.py",
+        "sphinx/domains/__init__.py",
+        "sphinx/builders/latex/transforms.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "sphinx-doc__sphinx-8273",
+      "repo": "sphinx-doc/sphinx",
+      "gold": [
+        "sphinx/builders/manpage.py"
+      ],
+      "ranked": [
+        "sphinx/builders/manpage.py",
+        "sphinx/writers/manpage.py",
+        "sphinx/ext/graphviz.py",
+        "sphinx/transforms/__init__.py",
+        "sphinx/application.py",
+        "sphinx/ext/autosummary/__init__.py",
+        "sphinx/writers/html.py",
+        "sphinx/builders/html/__init__.py",
+        "sphinx/addnodes.py",
+        "sphinx/setup_command.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "sphinx-doc__sphinx-8282",
+      "repo": "sphinx-doc/sphinx",
+      "gold": [
+        "sphinx/ext/autodoc/__init__.py"
+      ],
+      "ranked": [
+        "sphinx/ext/autodoc/typehints.py",
+        "sphinx/ext/autodoc/__init__.py",
+        "sphinx/util/inspect.py",
+        "sphinx/ext/autosummary/__init__.py",
+        "sphinx/pycode/parser.py",
+        "sphinx/domains/python.py",
+        "sphinx/ext/autosummary/generate.py",
+        "sphinx/application.py",
+        "sphinx/ext/autodoc/directive.py",
+        "sphinx/ext/napoleon/__init__.py"
+      ],
+      "first_rank": 2
+    },
+    {
+      "instance_id": "sphinx-doc__sphinx-8435",
+      "repo": "sphinx-doc/sphinx",
+      "gold": [
+        "sphinx/ext/autodoc/__init__.py"
+      ],
+      "ranked": [
+        "sphinx/ext/autodoc/__init__.py",
+        "sphinx/ext/napoleon/__init__.py",
+        "sphinx/ext/autodoc/mock.py",
+        "sphinx/ext/autodoc/typehints.py",
+        "sphinx/util/inspect.py",
+        "sphinx/util/typing.py",
+        "sphinx/ext/napoleon/docstring.py",
+        "sphinx/application.py",
+        "sphinx/ext/autosummary/generate.py",
+        "sphinx/domains/python.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "sphinx-doc__sphinx-8474",
+      "repo": "sphinx-doc/sphinx",
+      "gold": [
+        "sphinx/domains/std.py"
+      ],
+      "ranked": [
+        "sphinx/domains/std.py",
+        "sphinx/writers/latex.py",
+        "sphinx/environment/collectors/toctree.py",
+        "sphinx/writers/html.py",
+        "sphinx/writers/html5.py",
+        "sphinx/transforms/__init__.py",
+        "sphinx/ext/autosummary/__init__.py",
+        "sphinx/config.py",
+        "sphinx/domains/math.py",
+        "sphinx/domains/python.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "sphinx-doc__sphinx-8506",
+      "repo": "sphinx-doc/sphinx",
+      "gold": [
+        "sphinx/domains/std.py"
+      ],
+      "ranked": [
+        "sphinx/domains/std.py",
+        "sphinx/domains/rst.py",
+        "sphinx/directives/code.py",
+        "sphinx/ext/autodoc/__init__.py",
+        "sphinx/setup_command.py",
+        "sphinx/ext/autodoc/directive.py",
+        "sphinx/application.py",
+        "sphinx/writers/texinfo.py",
+        "sphinx/domains/python.py",
+        "sphinx/ext/autosummary/__init__.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "sphinx-doc__sphinx-8595",
+      "repo": "sphinx-doc/sphinx",
+      "gold": [
+        "sphinx/ext/autodoc/__init__.py"
+      ],
+      "ranked": [
+        "sphinx/ext/autodoc/__init__.py",
+        "sphinx/util/inspect.py",
+        "sphinx/ext/autosummary/generate.py",
+        "sphinx/ext/autodoc/importer.py",
+        "sphinx/ext/autosummary/__init__.py",
+        "sphinx/domains/python.py",
+        "sphinx/ext/napoleon/docstring.py",
+        "sphinx/ext/napoleon/__init__.py",
+        "sphinx/util/nodes.py",
+        "sphinx/ext/autodoc/type_comment.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "sphinx-doc__sphinx-8627",
+      "repo": "sphinx-doc/sphinx",
+      "gold": [
+        "sphinx/util/typing.py"
+      ],
+      "ranked": [
+        "sphinx/domains/c.py",
+        "sphinx/ext/autodoc/__init__.py",
+        "sphinx/ext/autodoc/directive.py",
+        "sphinx/ext/autosummary/__init__.py",
+        "sphinx/domains/python.py",
+        "sphinx/ext/autodoc/typehints.py",
+        "sphinx/ext/napoleon/__init__.py",
+        "sphinx/util/inspect.py",
+        "sphinx/ext/napoleon/docstring.py",
+        "sphinx/util/typing.py"
+      ],
+      "first_rank": 10
+    },
+    {
+      "instance_id": "sphinx-doc__sphinx-8713",
+      "repo": "sphinx-doc/sphinx",
+      "gold": [
+        "sphinx/ext/napoleon/docstring.py"
+      ],
+      "ranked": [
+        "sphinx/ext/napoleon/docstring.py",
+        "sphinx/ext/napoleon/__init__.py",
+        "sphinx/ext/autodoc/__init__.py",
+        "doc/usage/extensions/example_google.py",
+        "sphinx/ext/autodoc/typehints.py",
+        "doc/usage/extensions/example_numpy.py",
+        "sphinx/domains/python.py",
+        "sphinx/domains/cpp.py",
+        "sphinx/domains/c.py",
+        "sphinx/util/inspect.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "sphinx-doc__sphinx-8721",
+      "repo": "sphinx-doc/sphinx",
+      "gold": [
+        "sphinx/ext/viewcode.py"
+      ],
+      "ranked": [
+        "sphinx/ext/viewcode.py",
+        "sphinx/builders/epub3.py",
+        "sphinx/builders/_epub_base.py",
+        "sphinx/builders/html/__init__.py",
+        "sphinx/ext/autodoc/__init__.py",
+        "sphinx/cmd/quickstart.py",
+        "doc/conf.py",
+        "sphinx/writers/html.py",
+        "sphinx/application.py",
+        "sphinx/ext/linkcode.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "sphinx-doc__sphinx-8801",
+      "repo": "sphinx-doc/sphinx",
+      "gold": [
+        "sphinx/ext/autodoc/importer.py"
+      ],
+      "ranked": [
+        "sphinx/ext/autodoc/__init__.py",
+        "sphinx/ext/autodoc/importer.py",
+        "sphinx/ext/napoleon/__init__.py",
+        "sphinx/ext/autosummary/generate.py",
+        "sphinx/ext/napoleon/docstring.py",
+        "doc/usage/extensions/example_google.py",
+        "sphinx/ext/autosummary/__init__.py",
+        "sphinx/ext/autodoc/directive.py",
+        "sphinx/util/inspect.py",
+        "doc/usage/extensions/example_numpy.py"
+      ],
+      "first_rank": 2
+    },
+    {
+      "instance_id": "sympy__sympy-11400",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/printing/ccode.py"
+      ],
+      "ranked": [
+        "sympy/printing/octave.py",
+        "sympy/functions/elementary/trigonometric.py",
+        "sympy/printing/ccode.py",
+        "sympy/functions/special/spherical_harmonics.py",
+        "sympy/functions/special/error_functions.py",
+        "sympy/integrals/trigonometry.py",
+        "sympy/printing/julia.py",
+        "sympy/integrals/manualintegrate.py",
+        "sympy/integrals/meijerint.py",
+        "sympy/utilities/codegen.py"
+      ],
+      "first_rank": 3
+    },
+    {
+      "instance_id": "sympy__sympy-11870",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/functions/elementary/trigonometric.py"
+      ],
+      "ranked": [
+        "sympy/simplify/trigsimp.py",
+        "sympy/functions/elementary/trigonometric.py",
+        "sympy/simplify/simplify.py",
+        "sympy/functions/elementary/exponential.py",
+        "sympy/simplify/fu.py",
+        "sympy/integrals/rubi/utility_function.py",
+        "sympy/core/expr.py",
+        "sympy/vector/basisdependent.py",
+        "sympy/core/evalf.py",
+        "sympy/integrals/transforms.py"
+      ],
+      "first_rank": 2
+    },
+    {
+      "instance_id": "sympy__sympy-11897",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/printing/latex.py"
+      ],
+      "ranked": [
+        "sympy/printing/latex.py",
+        "sympy/interactive/printing.py",
+        "sympy/physics/vector/printing.py",
+        "sympy/printing/pretty/pretty.py",
+        "sympy/physics/quantum/qexpr.py",
+        "sympy/physics/vector/dyadic.py",
+        "sympy/physics/quantum/state.py",
+        "sympy/physics/quantum/tensorproduct.py",
+        "sympy/physics/quantum/hilbert.py",
+        "sympy/physics/secondquant.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "sympy__sympy-12171",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/printing/mathematica.py"
+      ],
+      "ranked": [
+        "sympy/physics/vector/printing.py",
+        "sympy/printing/latex.py",
+        "sympy/printing/mathematica.py",
+        "sympy/printing/str.py",
+        "sympy/printing/lambdarepr.py",
+        "sympy/printing/theanocode.py",
+        "sympy/core/function.py",
+        "sympy/printing/fcode.py",
+        "sympy/printing/codeprinter.py",
+        "sympy/printing/pretty/pretty.py"
+      ],
+      "first_rank": 3
+    },
+    {
+      "instance_id": "sympy__sympy-12236",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/polys/domains/polynomialring.py"
+      ],
+      "ranked": [
+        "sympy/core/expr.py",
+        "sympy/polys/partfrac.py",
+        "sympy/integrals/risch.py",
+        "sympy/core/add.py",
+        "sympy/core/mul.py",
+        "sympy/series/formal.py",
+        "sympy/core/function.py",
+        "sympy/concrete/summations.py",
+        "sympy/integrals/manualintegrate.py",
+        "sympy/simplify/simplify.py"
+      ],
+      "first_rank": null
+    },
+    {
+      "instance_id": "sympy__sympy-12419",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/matrices/expressions/matexpr.py"
+      ],
+      "ranked": [
+        "sympy/matrices/matrices.py",
+        "sympy/assumptions/ask.py",
+        "sympy/matrices/expressions/matexpr.py",
+        "sympy/matrices/expressions/blockmatrix.py",
+        "sympy/polys/fglmtools.py",
+        "sympy/assumptions/handlers/matrices.py",
+        "sympy/matrices/expressions/trace.py",
+        "sympy/matrices/sparse.py",
+        "sympy/matrices/dense.py",
+        "sympy/matrices/expressions/matmul.py"
+      ],
+      "first_rank": 3
+    },
+    {
+      "instance_id": "sympy__sympy-12454",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/matrices/matrices.py"
+      ],
+      "ranked": [
+        "sympy/matrices/matrices.py",
+        "sympy/matrices/dense.py",
+        "sympy/matrices/sparse.py",
+        "sympy/tensor/indexed.py",
+        "sympy/physics/secondquant.py",
+        "sympy/assumptions/handlers/matrices.py",
+        "sympy/assumptions/ask.py",
+        "sympy/matrices/expressions/matexpr.py",
+        "sympy/matrices/densesolve.py",
+        "sympy/physics/matrices.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "sympy__sympy-12481",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/combinatorics/permutations.py"
+      ],
+      "ranked": [
+        "sympy/combinatorics/permutations.py",
+        "sympy/combinatorics/perm_groups.py",
+        "sympy/utilities/iterables.py",
+        "sympy/combinatorics/polyhedron.py",
+        "sympy/combinatorics/util.py",
+        "sympy/combinatorics/generators.py",
+        "sympy/sets/sets.py",
+        "sympy/combinatorics/named_groups.py",
+        "sympy/printing/str.py",
+        "sympy/printing/latex.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "sympy__sympy-13031",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/matrices/sparse.py"
+      ],
+      "ranked": [
+        "sympy/matrices/common.py",
+        "sympy/matrices/matrices.py",
+        "sympy/holonomic/linearsolver.py",
+        "sympy/physics/quantum/matrixutils.py",
+        "sympy/matrices/expressions/matexpr.py",
+        "sympy/matrices/expressions/matadd.py",
+        "sympy/physics/quantum/pauli.py",
+        "sympy/matrices/dense.py",
+        "sympy/matrices/sparse.py",
+        "sympy/polys/agca/homomorphisms.py"
+      ],
+      "first_rank": 9
+    },
+    {
+      "instance_id": "sympy__sympy-13043",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/integrals/intpoly.py"
+      ],
+      "ranked": [
+        "sympy/integrals/intpoly.py",
+        "sympy/polys/polytools.py",
+        "sympy/polys/rings.py",
+        "sympy/polys/polyclasses.py",
+        "sympy/polys/densetools.py",
+        "sympy/solvers/solveset.py",
+        "sympy/solvers/decompogen.py",
+        "sympy/polys/polyroots.py",
+        "sympy/core/exprtools.py",
+        "sympy/polys/polyutils.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "sympy__sympy-13146",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/core/operations.py"
+      ],
+      "ranked": [
+        "sympy/simplify/simplify.py",
+        "sympy/core/expr.py",
+        "sympy/simplify/trigsimp.py",
+        "sympy/core/function.py",
+        "sympy/integrals/transforms.py",
+        "sympy/polys/polyroots.py",
+        "sympy/series/gruntz.py",
+        "sympy/polys/numberfields.py",
+        "sympy/core/mul.py",
+        "sympy/printing/latex.py"
+      ],
+      "first_rank": null
+    },
+    {
+      "instance_id": "sympy__sympy-13177",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/core/mod.py"
+      ],
+      "ranked": [
+        "sympy/core/mod.py",
+        "sympy/core/numbers.py",
+        "sympy/core/power.py",
+        "sympy/ntheory/residue_ntheory.py",
+        "sympy/simplify/hyperexpand.py",
+        "sympy/core/expr.py",
+        "sympy/printing/latex.py",
+        "sympy/assumptions/refine.py",
+        "sympy/functions/elementary/complexes.py",
+        "sympy/polys/galoistools.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "sympy__sympy-13437",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/functions/combinatorial/numbers.py"
+      ],
+      "ranked": [
+        "sympy/functions/combinatorial/numbers.py",
+        "sympy/utilities/iterables.py",
+        "sympy/series/limitseq.py",
+        "sympy/core/numbers.py",
+        "sympy/core/evalf.py",
+        "sympy/core/power.py",
+        "sympy/series/gruntz.py",
+        "sympy/functions/special/bessel.py",
+        "sympy/series/limits.py",
+        "sympy/functions/combinatorial/factorials.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "sympy__sympy-13471",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/core/numbers.py"
+      ],
+      "ranked": [
+        "sympy/core/numbers.py",
+        "sympy/core/sympify.py",
+        "sympy/core/function.py",
+        "sympy/codegen/ast.py",
+        "sympy/physics/quantum/represent.py",
+        "sympy/printing/python.py",
+        "sympy/core/expr.py",
+        "sympy/utilities/runtests.py",
+        "sympy/interactive/printing.py",
+        "sympy/core/evalf.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "sympy__sympy-13480",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/functions/elementary/hyperbolic.py"
+      ],
+      "ranked": [
+        "sympy/functions/elementary/hyperbolic.py",
+        "sympy/functions/elementary/trigonometric.py",
+        "sympy/integrals/rubi/utility_function.py",
+        "sympy/integrals/manualintegrate.py",
+        "sympy/integrals/risch.py",
+        "sympy/simplify/fu.py",
+        "sympy/integrals/rubi/rules/hyperbolic.py",
+        "sympy/solvers/solvers.py",
+        "sympy/simplify/trigsimp.py",
+        "sympy/core/function.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "sympy__sympy-13647",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/matrices/common.py"
+      ],
+      "ranked": [
+        "sympy/matrices/common.py",
+        "sympy/matrices/sparse.py",
+        "sympy/matrices/matrices.py",
+        "sympy/matrices/dense.py",
+        "sympy/polys/subresultants_qq_zz.py",
+        "sympy/simplify/hyperexpand.py",
+        "sympy/matrices/normalforms.py",
+        "sympy/holonomic/linearsolver.py",
+        "sympy/categories/diagram_drawing.py",
+        "sympy/matrices/expressions/matexpr.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "sympy__sympy-13773",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/matrices/common.py"
+      ],
+      "ranked": [
+        "sympy/matrices/common.py",
+        "sympy/matrices/expressions/matexpr.py",
+        "sympy/matrices/expressions/matmul.py",
+        "sympy/matrices/matrices.py",
+        "sympy/matrices/dense.py",
+        "sympy/matrices/expressions/blockmatrix.py",
+        "sympy/tensor/array/ndim_array.py",
+        "sympy/matrices/expressions/hadamard.py",
+        "sympy/matrices/expressions/dotproduct.py",
+        "sympy/printing/latex.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "sympy__sympy-13895",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/core/numbers.py"
+      ],
+      "ranked": [
+        "sympy/simplify/trigsimp.py",
+        "sympy/simplify/simplify.py",
+        "sympy/core/power.py",
+        "sympy/simplify/fu.py",
+        "sympy/core/add.py",
+        "sympy/polys/numberfields.py",
+        "sympy/simplify/gammasimp.py",
+        "sympy/core/expr.py",
+        "sympy/functions/combinatorial/numbers.py",
+        "sympy/simplify/powsimp.py"
+      ],
+      "first_rank": null
+    },
+    {
+      "instance_id": "sympy__sympy-13915",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/core/mul.py"
+      ],
+      "ranked": [
+        "sympy/core/function.py",
+        "sympy/core/basic.py",
+        "sympy/core/power.py",
+        "sympy/core/add.py",
+        "sympy/core/mul.py",
+        "sympy/functions/elementary/piecewise.py",
+        "sympy/concrete/expr_with_limits.py",
+        "sympy/core/expr.py",
+        "sympy/solvers/solveset.py",
+        "sympy/core/numbers.py"
+      ],
+      "first_rank": 5
+    },
+    {
+      "instance_id": "sympy__sympy-13971",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/printing/latex.py"
+      ],
+      "ranked": [
+        "sympy/series/sequences.py",
+        "sympy/printing/pretty/pretty.py",
+        "sympy/printing/latex.py",
+        "sympy/series/fourier.py",
+        "sympy/physics/quantum/qexpr.py",
+        "sympy/physics/quantum/state.py",
+        "sympy/tensor/indexed.py",
+        "sympy/printing/fcode.py",
+        "sympy/series/formal.py",
+        "sympy/printing/str.py"
+      ],
+      "first_rank": 3
+    },
+    {
+      "instance_id": "sympy__sympy-14024",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/core/numbers.py"
+      ],
+      "ranked": [
+        "sympy/simplify/simplify.py",
+        "sympy/core/power.py",
+        "sympy/core/expr.py",
+        "sympy/assumptions/refine.py",
+        "sympy/core/add.py",
+        "sympy/simplify/cse_opts.py",
+        "sympy/integrals/transforms.py",
+        "sympy/simplify/trigsimp.py",
+        "sympy/simplify/powsimp.py",
+        "sympy/solvers/ode.py"
+      ],
+      "first_rank": null
+    },
+    {
+      "instance_id": "sympy__sympy-14308",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/printing/pretty/pretty.py"
+      ],
+      "ranked": [
+        "sympy/physics/vector/vector.py",
+        "sympy/printing/pretty/pretty.py",
+        "sympy/physics/vector/printing.py",
+        "sympy/vector/coordsysrect.py",
+        "sympy/vector/vector.py",
+        "sympy/printing/latex.py",
+        "sympy/printing/str.py",
+        "sympy/physics/vector/dyadic.py",
+        "sympy/printing/octave.py",
+        "sympy/diffgeom/diffgeom.py"
+      ],
+      "first_rank": 2
+    },
+    {
+      "instance_id": "sympy__sympy-14317",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/printing/latex.py"
+      ],
+      "ranked": [
+        "sympy/printing/latex.py",
+        "sympy/printing/pretty/pretty.py",
+        "sympy/physics/quantum/tensorproduct.py",
+        "sympy/interactive/printing.py",
+        "sympy/physics/vector/vector.py",
+        "sympy/physics/vector/printing.py",
+        "sympy/printing/str.py",
+        "sympy/physics/secondquant.py",
+        "sympy/physics/vector/dyadic.py",
+        "sympy/polys/rings.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "sympy__sympy-14396",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/polys/polyoptions.py"
+      ],
+      "ranked": [
+        "sympy/polys/polyoptions.py",
+        "sympy/polys/polytools.py",
+        "sympy/polys/domains/domain.py",
+        "sympy/polys/rings.py",
+        "sympy/polys/constructor.py",
+        "sympy/polys/domains/polynomialring.py",
+        "sympy/polys/fields.py",
+        "sympy/core/basic.py",
+        "sympy/polys/polyerrors.py",
+        "sympy/solvers/solveset.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "sympy__sympy-14774",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/printing/latex.py"
+      ],
+      "ranked": [
+        "sympy/printing/latex.py",
+        "sympy/functions/elementary/trigonometric.py",
+        "sympy/physics/vector/printing.py",
+        "sympy/integrals/rubi/rules/inverse_trig.py",
+        "sympy/integrals/rubi/utility_function.py",
+        "sympy/integrals/manualintegrate.py",
+        "sympy/printing/octave.py",
+        "sympy/simplify/fu.py",
+        "sympy/printing/pretty/pretty.py",
+        "sympy/functions/elementary/hyperbolic.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "sympy__sympy-14817",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/printing/pretty/pretty.py"
+      ],
+      "ranked": [
+        "sympy/printing/pretty/pretty.py",
+        "sympy/printing/latex.py",
+        "sympy/core/sympify.py",
+        "sympy/printing/str.py",
+        "sympy/parsing/sympy_parser.py",
+        "sympy/printing/printer.py",
+        "sympy/printing/pretty/stringpict.py",
+        "sympy/printing/glsl.py",
+        "sympy/matrices/expressions/matadd.py",
+        "sympy/physics/vector/vector.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "sympy__sympy-15011",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/utilities/lambdify.py"
+      ],
+      "ranked": [
+        "sympy/utilities/lambdify.py",
+        "sympy/plotting/experimental_lambdify.py",
+        "sympy/matrices/expressions/matexpr.py",
+        "sympy/printing/latex.py",
+        "sympy/parsing/sympy_parser.py",
+        "sympy/printing/pretty/pretty.py",
+        "sympy/printing/lambdarepr.py",
+        "sympy/printing/str.py",
+        "sympy/printing/ccode.py",
+        "sympy/printing/julia.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "sympy__sympy-15308",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/printing/latex.py"
+      ],
+      "ranked": [
+        "sympy/printing/latex.py",
+        "sympy/interactive/printing.py",
+        "sympy/physics/vector/printing.py",
+        "sympy/matrices/expressions/trace.py",
+        "sympy/physics/quantum/qexpr.py",
+        "sympy/physics/quantum/tensorproduct.py",
+        "sympy/printing/preview.py",
+        "sympy/physics/vector/vector.py",
+        "sympy/printing/pretty/pretty.py",
+        "sympy/parsing/latex/_parse_latex_antlr.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "sympy__sympy-15345",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/printing/mathematica.py"
+      ],
+      "ranked": [
+        "sympy/printing/mathematica.py",
+        "sympy/printing/ccode.py",
+        "sympy/parsing/mathematica.py",
+        "sympy/functions/elementary/miscellaneous.py",
+        "sympy/printing/octave.py",
+        "sympy/printing/cxxcode.py",
+        "sympy/printing/lambdarepr.py",
+        "sympy/printing/pycode.py",
+        "sympy/polys/monomials.py",
+        "sympy/printing/latex.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "sympy__sympy-15346",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/simplify/trigsimp.py"
+      ],
+      "ranked": [
+        "sympy/functions/elementary/trigonometric.py",
+        "sympy/functions/elementary/exponential.py",
+        "sympy/polys/ring_series.py",
+        "sympy/core/expr.py",
+        "sympy/simplify/fu.py",
+        "sympy/integrals/rubi/utility_function.py",
+        "sympy/simplify/simplify.py",
+        "sympy/core/basic.py",
+        "sympy/simplify/trigsimp.py",
+        "sympy/core/numbers.py"
+      ],
+      "first_rank": 9
+    },
+    {
+      "instance_id": "sympy__sympy-15609",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/printing/latex.py"
+      ],
+      "ranked": [
+        "sympy/printing/latex.py",
+        "sympy/printing/pretty/pretty.py",
+        "sympy/physics/vector/vector.py",
+        "sympy/printing/ccode.py",
+        "sympy/matrices/matrices.py",
+        "sympy/physics/vector/dyadic.py",
+        "sympy/printing/str.py",
+        "sympy/tensor/array/ndim_array.py",
+        "sympy/core/basic.py",
+        "sympy/interactive/printing.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "sympy__sympy-15678",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/geometry/util.py"
+      ],
+      "ranked": [
+        "sympy/geometry/util.py",
+        "sympy/core/function.py",
+        "sympy/solvers/ode.py",
+        "sympy/core/expr.py",
+        "sympy/solvers/solvers.py",
+        "sympy/logic/boolalg.py",
+        "sympy/core/basic.py",
+        "sympy/geometry/ellipse.py",
+        "sympy/polys/rings.py",
+        "sympy/integrals/manualintegrate.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "sympy__sympy-16106",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/printing/mathml.py"
+      ],
+      "ranked": [
+        "sympy/printing/mathml.py",
+        "sympy/printing/printer.py",
+        "sympy/printing/latex.py",
+        "sympy/printing/rcode.py",
+        "sympy/tensor/indexed.py",
+        "sympy/printing/fcode.py",
+        "sympy/printing/octave.py",
+        "sympy/printing/julia.py",
+        "sympy/printing/ccode.py",
+        "sympy/printing/rust.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "sympy__sympy-16281",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/printing/pretty/pretty.py"
+      ],
+      "ranked": [
+        "sympy/printing/pretty/pretty.py",
+        "sympy/printing/latex.py",
+        "sympy/physics/quantum/tensorproduct.py",
+        "sympy/physics/quantum/hilbert.py",
+        "sympy/physics/quantum/state.py",
+        "sympy/physics/quantum/innerproduct.py",
+        "sympy/concrete/products.py",
+        "sympy/functions/elementary/complexes.py",
+        "sympy/printing/fcode.py",
+        "sympy/printing/str.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "sympy__sympy-16503",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/printing/pretty/pretty.py"
+      ],
+      "ranked": [
+        "sympy/printing/pretty/pretty.py",
+        "sympy/printing/latex.py",
+        "sympy/printing/str.py",
+        "sympy/printing/mathml.py",
+        "sympy/concrete/summations.py",
+        "sympy/physics/quantum/hilbert.py",
+        "sympy/simplify/simplify.py",
+        "sympy/functions/elementary/complexes.py",
+        "sympy/physics/vector/vector.py",
+        "sympy/tensor/tensor.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "sympy__sympy-16792",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/utilities/codegen.py"
+      ],
+      "ranked": [
+        "sympy/utilities/autowrap.py",
+        "sympy/utilities/codegen.py",
+        "sympy/utilities/lambdify.py",
+        "sympy/core/function.py",
+        "sympy/codegen/array_utils.py",
+        "sympy/printing/llvmjitcode.py",
+        "sympy/plotting/experimental_lambdify.py",
+        "sympy/printing/ccode.py",
+        "sympy/core/operations.py",
+        "sympy/core/expr.py"
+      ],
+      "first_rank": 2
+    },
+    {
+      "instance_id": "sympy__sympy-16988",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/sets/sets.py"
+      ],
+      "ranked": [
+        "sympy/sets/sets.py",
+        "sympy/sets/handlers/intersection.py",
+        "sympy/logic/boolalg.py",
+        "sympy/solvers/solveset.py",
+        "sympy/calculus/util.py",
+        "sympy/geometry/util.py",
+        "sympy/geometry/entity.py",
+        "sympy/sets/fancysets.py",
+        "sympy/geometry/polygon.py",
+        "sympy/sets/conditionset.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "sympy__sympy-17022",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/printing/pycode.py"
+      ],
+      "ranked": [
+        "sympy/utilities/lambdify.py",
+        "sympy/matrices/expressions/matexpr.py",
+        "sympy/printing/octave.py",
+        "sympy/plotting/experimental_lambdify.py",
+        "sympy/printing/julia.py",
+        "sympy/matrices/matrices.py",
+        "sympy/printing/pretty/pretty.py",
+        "sympy/stats/rv.py",
+        "sympy/printing/latex.py",
+        "sympy/core/function.py"
+      ],
+      "first_rank": null
+    },
+    {
+      "instance_id": "sympy__sympy-17139",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/simplify/fu.py"
+      ],
+      "ranked": [
+        "sympy/simplify/trigsimp.py",
+        "sympy/simplify/fu.py",
+        "sympy/core/expr.py",
+        "sympy/core/numbers.py",
+        "sympy/simplify/simplify.py",
+        "sympy/functions/elementary/exponential.py",
+        "sympy/core/power.py",
+        "sympy/functions/elementary/trigonometric.py",
+        "sympy/strategies/core.py",
+        "sympy/core/relational.py"
+      ],
+      "first_rank": 2
+    },
+    {
+      "instance_id": "sympy__sympy-17630",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/matrices/expressions/matexpr.py"
+      ],
+      "ranked": [
+        "sympy/matrices/expressions/blockmatrix.py",
+        "sympy/assumptions/handlers/matrices.py",
+        "sympy/matrices/expressions/matmul.py",
+        "sympy/matrices/matrices.py",
+        "sympy/matrices/dense.py",
+        "sympy/matrices/common.py",
+        "sympy/matrices/expressions/matexpr.py",
+        "sympy/core/add.py",
+        "sympy/strategies/core.py",
+        "sympy/printing/str.py"
+      ],
+      "first_rank": 7
+    },
+    {
+      "instance_id": "sympy__sympy-17655",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/geometry/point.py"
+      ],
+      "ranked": [
+        "sympy/geometry/point.py",
+        "sympy/geometry/line.py",
+        "sympy/geometry/entity.py",
+        "sympy/physics/vector/point.py",
+        "sympy/vector/point.py",
+        "sympy/geometry/ellipse.py",
+        "sympy/geometry/polygon.py",
+        "sympy/geometry/plane.py",
+        "sympy/core/sympify.py",
+        "sympy/geometry/parabola.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "sympy__sympy-18057",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/core/expr.py"
+      ],
+      "ranked": [
+        "sympy/parsing/sympy_parser.py",
+        "sympy/core/sympify.py",
+        "sympy/core/expr.py",
+        "sympy/core/basic.py",
+        "sympy/core/function.py",
+        "sympy/parsing/ast_parser.py",
+        "sympy/core/power.py",
+        "sympy/core/relational.py",
+        "sympy/codegen/ast.py",
+        "sympy/polys/polytools.py"
+      ],
+      "first_rank": 3
+    },
+    {
+      "instance_id": "sympy__sympy-18087",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/core/exprtools.py"
+      ],
+      "ranked": [
+        "sympy/simplify/trigsimp.py",
+        "sympy/simplify/fu.py",
+        "sympy/core/expr.py",
+        "sympy/solvers/solveset.py",
+        "sympy/simplify/simplify.py",
+        "sympy/functions/elementary/trigonometric.py",
+        "sympy/solvers/solvers.py",
+        "sympy/integrals/manualintegrate.py",
+        "sympy/integrals/integrals.py",
+        "sympy/core/relational.py"
+      ],
+      "first_rank": null
+    },
+    {
+      "instance_id": "sympy__sympy-18189",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/solvers/diophantine.py"
+      ],
+      "ranked": [
+        "sympy/solvers/diophantine.py",
+        "sympy/solvers/solveset.py",
+        "sympy/solvers/solvers.py",
+        "sympy/polys/factortools.py",
+        "sympy/polys/compatibility.py",
+        "sympy/matrices/matrices.py",
+        "sympy/series/formal.py",
+        "sympy/utilities/iterables.py",
+        "sympy/polys/polyclasses.py",
+        "sympy/integrals/risch.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "sympy__sympy-18199",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/ntheory/residue_ntheory.py"
+      ],
+      "ranked": [
+        "sympy/ntheory/residue_ntheory.py",
+        "sympy/core/mod.py",
+        "sympy/core/numbers.py",
+        "sympy/solvers/solveset.py",
+        "sympy/simplify/simplify.py",
+        "sympy/core/power.py",
+        "sympy/core/expr.py",
+        "sympy/polys/galoistools.py",
+        "sympy/functions/elementary/miscellaneous.py",
+        "sympy/simplify/hyperexpand.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "sympy__sympy-18532",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/core/basic.py"
+      ],
+      "ranked": [
+        "sympy/core/basic.py",
+        "sympy/core/expr.py",
+        "sympy/matrices/common.py",
+        "sympy/core/function.py",
+        "sympy/parsing/latex/_antlr/latexparser.py",
+        "sympy/functions/elementary/piecewise.py",
+        "sympy/simplify/simplify.py",
+        "sympy/logic/boolalg.py",
+        "sympy/utilities/lambdify.py",
+        "sympy/tensor/indexed.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "sympy__sympy-18621",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/matrices/expressions/blockmatrix.py"
+      ],
+      "ranked": [
+        "sympy/matrices/expressions/blockmatrix.py",
+        "sympy/matrices/matrices.py",
+        "sympy/matrices/dense.py",
+        "sympy/matrices/expressions/matexpr.py",
+        "sympy/matrices/expressions/permutation.py",
+        "sympy/matrices/common.py",
+        "sympy/matrices/expressions/diagonal.py",
+        "sympy/matrices/sparse.py",
+        "sympy/matrices/immutable.py",
+        "sympy/printing/pycode.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "sympy__sympy-18698",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/polys/polytools.py"
+      ],
+      "ranked": [
+        "sympy/polys/polytools.py",
+        "sympy/polys/polyclasses.py",
+        "sympy/polys/rings.py",
+        "sympy/polys/galoistools.py",
+        "sympy/polys/factortools.py",
+        "sympy/polys/compatibility.py",
+        "sympy/polys/rootoftools.py",
+        "sympy/polys/sqfreetools.py",
+        "sympy/integrals/rationaltools.py",
+        "sympy/solvers/diophantine/diophantine.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "sympy__sympy-18835",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/utilities/iterables.py"
+      ],
+      "ranked": [
+        "sympy/utilities/iterables.py",
+        "sympy/tensor/index_methods.py",
+        "sympy/combinatorics/permutations.py",
+        "sympy/utilities/_compilation/util.py",
+        "sympy/benchmarks/bench_symbench.py",
+        "sympy/core/compatibility.py",
+        "sympy/sets/fancysets.py",
+        "sympy/utilities/autowrap.py",
+        "sympy/crypto/crypto.py",
+        "sympy/sets/sets.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "sympy__sympy-19007",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/matrices/expressions/blockmatrix.py"
+      ],
+      "ranked": [
+        "sympy/matrices/expressions/blockmatrix.py",
+        "sympy/matrices/expressions/matexpr.py",
+        "sympy/matrices/common.py",
+        "sympy/matrices/dense.py",
+        "sympy/printing/ccode.py",
+        "sympy/printing/latex.py",
+        "sympy/matrices/matrices.py",
+        "sympy/printing/pretty/pretty.py",
+        "sympy/printing/str.py",
+        "sympy/printing/rust.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "sympy__sympy-19254",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/polys/factortools.py"
+      ],
+      "ranked": [
+        "sympy/polys/factortools.py",
+        "sympy/polys/compatibility.py",
+        "sympy/polys/rootisolation.py",
+        "sympy/polys/densebasic.py",
+        "sympy/polys/modulargcd.py",
+        "sympy/integrals/rde.py",
+        "sympy/polys/sqfreetools.py",
+        "sympy/polys/polyclasses.py",
+        "sympy/polys/densearith.py",
+        "sympy/polys/euclidtools.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "sympy__sympy-19487",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/functions/elementary/complexes.py"
+      ],
+      "ranked": [
+        "sympy/functions/elementary/complexes.py",
+        "sympy/functions/special/delta_functions.py",
+        "sympy/printing/fcode.py",
+        "sympy/functions/elementary/miscellaneous.py",
+        "sympy/assumptions/refine.py",
+        "sympy/core/numbers.py",
+        "sympy/series/gruntz.py",
+        "sympy/simplify/simplify.py",
+        "sympy/functions/elementary/trigonometric.py",
+        "sympy/core/evalf.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "sympy__sympy-20049",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/physics/vector/point.py"
+      ],
+      "ranked": [
+        "sympy/physics/vector/point.py",
+        "sympy/physics/vector/frame.py",
+        "sympy/physics/vector/functions.py",
+        "sympy/physics/vector/vector.py",
+        "sympy/physics/mechanics/particle.py",
+        "sympy/physics/mechanics/rigidbody.py",
+        "sympy/physics/mechanics/functions.py",
+        "sympy/physics/mechanics/kane.py",
+        "sympy/physics/vector/dyadic.py",
+        "sympy/parsing/autolev/_listener_autolev_antlr.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "sympy__sympy-20154",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/utilities/iterables.py"
+      ],
+      "ranked": [
+        "sympy/utilities/iterables.py",
+        "sympy/combinatorics/partitions.py",
+        "sympy/utilities/enumerative.py",
+        "sympy/functions/combinatorial/numbers.py",
+        "sympy/solvers/diophantine/diophantine.py",
+        "sympy/ntheory/partitions_.py",
+        "sympy/sets/sets.py",
+        "sympy/combinatorics/permutations.py",
+        "sympy/combinatorics/perm_groups.py",
+        "sympy/utilities/autowrap.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "sympy__sympy-20212",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/core/power.py"
+      ],
+      "ranked": [
+        "sympy/core/numbers.py",
+        "sympy/core/power.py",
+        "sympy/core/add.py",
+        "sympy/core/expr.py",
+        "sympy/functions/elementary/exponential.py",
+        "sympy/core/mul.py",
+        "sympy/printing/str.py",
+        "sympy/functions/elementary/trigonometric.py",
+        "sympy/assumptions/ask.py",
+        "sympy/series/limits.py"
+      ],
+      "first_rank": 2
+    },
+    {
+      "instance_id": "sympy__sympy-20322",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/core/mul.py"
+      ],
+      "ranked": [
+        "sympy/functions/elementary/integers.py",
+        "sympy/core/sympify.py",
+        "sympy/core/numbers.py",
+        "sympy/core/evalf.py",
+        "sympy/simplify/simplify.py",
+        "sympy/core/expr.py",
+        "sympy/core/basic.py",
+        "sympy/functions/elementary/complexes.py",
+        "sympy/core/mul.py",
+        "sympy/functions/elementary/exponential.py"
+      ],
+      "first_rank": 9
+    },
+    {
+      "instance_id": "sympy__sympy-20442",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/physics/units/util.py"
+      ],
+      "ranked": [
+        "sympy/physics/units/util.py",
+        "sympy/physics/units/__init__.py",
+        "sympy/physics/units/quantities.py",
+        "sympy/physics/units/unitsystem.py",
+        "sympy/polys/domains/domain.py",
+        "sympy/simplify/simplify.py",
+        "sympy/core/sympify.py",
+        "sympy/polys/agca/modules.py",
+        "sympy/physics/units/dimensions.py",
+        "sympy/simplify/powsimp.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "sympy__sympy-20590",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/core/_print_helpers.py"
+      ],
+      "ranked": [
+        "sympy/core/containers.py",
+        "sympy/core/sympify.py",
+        "sympy/core/symbol.py",
+        "sympy/polys/rootoftools.py",
+        "sympy/core/singleton.py",
+        "sympy/core/basic.py",
+        "sympy/integrals/risch.py",
+        "sympy/parsing/sympy_parser.py",
+        "sympy/stats/rv.py",
+        "sympy/solvers/solvers.py"
+      ],
+      "first_rank": null
+    },
+    {
+      "instance_id": "sympy__sympy-20639",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/printing/pretty/pretty.py"
+      ],
+      "ranked": [
+        "sympy/printing/latex.py",
+        "sympy/printing/pretty/pretty.py",
+        "sympy/printing/str.py",
+        "sympy/functions/elementary/exponential.py",
+        "sympy/printing/mathml.py",
+        "sympy/core/numbers.py",
+        "sympy/interactive/printing.py",
+        "sympy/printing/julia.py",
+        "sympy/printing/rcode.py",
+        "sympy/printing/octave.py"
+      ],
+      "first_rank": 2
+    },
+    {
+      "instance_id": "sympy__sympy-21055",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/assumptions/refine.py"
+      ],
+      "ranked": [
+        "sympy/assumptions/refine.py",
+        "sympy/core/basic.py",
+        "sympy/simplify/simplify.py",
+        "sympy/matrices/common.py",
+        "sympy/functions/elementary/exponential.py",
+        "sympy/functions/elementary/complexes.py",
+        "sympy/functions/elementary/piecewise.py",
+        "sympy/polys/polytools.py",
+        "sympy/core/function.py",
+        "sympy/core/power.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "sympy__sympy-21171",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/printing/latex.py"
+      ],
+      "ranked": [
+        "sympy/printing/latex.py",
+        "sympy/printing/pretty/pretty.py",
+        "sympy/printing/printer.py",
+        "sympy/interactive/printing.py",
+        "sympy/physics/vector/printing.py",
+        "sympy/printing/mathml.py",
+        "sympy/printing/str.py",
+        "sympy/printing/pycode.py",
+        "sympy/printing/octave.py",
+        "sympy/printing/lambdarepr.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "sympy__sympy-21379",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/core/mod.py"
+      ],
+      "ranked": [
+        "sympy/polys/polytools.py",
+        "sympy/core/mul.py",
+        "sympy/core/function.py",
+        "sympy/functions/elementary/piecewise.py",
+        "sympy/core/basic.py",
+        "sympy/core/power.py",
+        "sympy/core/add.py",
+        "sympy/solvers/solvers.py",
+        "sympy/solvers/solveset.py",
+        "sympy/sets/conditionset.py"
+      ],
+      "first_rank": null
+    },
+    {
+      "instance_id": "sympy__sympy-21612",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/printing/str.py"
+      ],
+      "ranked": [
+        "sympy/printing/latex.py",
+        "sympy/parsing/latex/__init__.py",
+        "sympy/parsing/latex/_parse_latex_antlr.py",
+        "sympy/parsing/latex/_antlr/latexparser.py",
+        "sympy/physics/secondquant.py",
+        "sympy/printing/str.py",
+        "sympy/physics/quantum/qexpr.py",
+        "sympy/printing/pretty/pretty.py",
+        "sympy/printing/tableform.py",
+        "sympy/physics/quantum/tensorproduct.py"
+      ],
+      "first_rank": 6
+    },
+    {
+      "instance_id": "sympy__sympy-21614",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/core/function.py"
+      ],
+      "ranked": [
+        "sympy/core/symbol.py",
+        "sympy/core/kind.py",
+        "sympy/tensor/array/ndim_array.py",
+        "sympy/core/function.py",
+        "sympy/matrices/matrices.py",
+        "sympy/core/add.py",
+        "sympy/core/mul.py",
+        "sympy/core/basic.py",
+        "sympy/matrices/common.py",
+        "sympy/functions/special/bessel.py"
+      ],
+      "first_rank": 4
+    },
+    {
+      "instance_id": "sympy__sympy-21627",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/functions/elementary/complexes.py"
+      ],
+      "ranked": [
+        "sympy/functions/elementary/hyperbolic.py",
+        "sympy/core/sympify.py",
+        "sympy/simplify/sqrtdenest.py",
+        "sympy/functions/elementary/trigonometric.py",
+        "sympy/plotting/experimental_lambdify.py",
+        "sympy/solvers/solveset.py",
+        "sympy/core/numbers.py",
+        "sympy/plotting/plot.py",
+        "sympy/simplify/fu.py",
+        "sympy/functions/special/hyper.py"
+      ],
+      "first_rank": null
+    },
+    {
+      "instance_id": "sympy__sympy-21847",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/polys/monomials.py"
+      ],
+      "ranked": [
+        "sympy/polys/monomials.py",
+        "sympy/polys/multivariate_resultants.py",
+        "sympy/polys/orderings.py",
+        "sympy/polys/polytools.py",
+        "sympy/polys/rings.py",
+        "sympy/polys/polyclasses.py",
+        "sympy/polys/distributedmodules.py",
+        "sympy/integrals/intpoly.py",
+        "sympy/functions/elementary/miscellaneous.py",
+        "sympy/logic/boolalg.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "sympy__sympy-22005",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/solvers/polysys.py"
+      ],
+      "ranked": [
+        "sympy/solvers/polysys.py",
+        "sympy/solvers/solveset.py",
+        "sympy/solvers/solvers.py",
+        "sympy/matrices/solvers.py",
+        "sympy/solvers/inequalities.py",
+        "sympy/polys/solvers.py",
+        "sympy/solvers/diophantine/diophantine.py",
+        "sympy/solvers/ode/riccati.py",
+        "sympy/solvers/ode/ode.py",
+        "sympy/polys/matrices/linsolve.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "sympy__sympy-22714",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/geometry/point.py"
+      ],
+      "ranked": [
+        "sympy/parsing/sympy_parser.py",
+        "sympy/geometry/point.py",
+        "sympy/core/sympify.py",
+        "sympy/core/expr.py",
+        "sympy/parsing/ast_parser.py",
+        "sympy/geometry/line.py",
+        "sympy/functions/elementary/complexes.py",
+        "sympy/geometry/ellipse.py",
+        "sympy/core/function.py",
+        "sympy/geometry/entity.py"
+      ],
+      "first_rank": 2
+    },
+    {
+      "instance_id": "sympy__sympy-22840",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/simplify/cse_main.py"
+      ],
+      "ranked": [
+        "sympy/simplify/cse_main.py",
+        "sympy/codegen/ast.py",
+        "sympy/matrices/expressions/matexpr.py",
+        "sympy/matrices/expressions/blockmatrix.py",
+        "sympy/utilities/lambdify.py",
+        "sympy/polys/benchmarks/bench_solvers.py",
+        "sympy/utilities/codegen.py",
+        "sympy/functions/elementary/trigonometric.py",
+        "sympy/core/function.py",
+        "sympy/solvers/ode/ode.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "sympy__sympy-23117",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/tensor/array/ndim_array.py"
+      ],
+      "ranked": [
+        "sympy/tensor/array/ndim_array.py",
+        "sympy/tensor/array/dense_ndim_array.py",
+        "sympy/tensor/array/expressions/array_expressions.py",
+        "sympy/tensor/array/sparse_ndim_array.py",
+        "sympy/tensor/array/array_derivatives.py",
+        "sympy/matrices/matrices.py",
+        "sympy/tensor/array/arrayop.py",
+        "sympy/core/sympify.py",
+        "sympy/tensor/functions.py",
+        "sympy/tensor/indexed.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "sympy__sympy-23191",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/printing/pretty/pretty.py"
+      ],
+      "ranked": [
+        "sympy/physics/vector/vector.py",
+        "sympy/printing/pretty/pretty.py",
+        "sympy/vector/vector.py",
+        "sympy/physics/vector/printing.py",
+        "sympy/printing/latex.py",
+        "sympy/interactive/printing.py",
+        "sympy/printing/str.py",
+        "sympy/physics/vector/functions.py",
+        "sympy/physics/vector/dyadic.py",
+        "sympy/vector/deloperator.py"
+      ],
+      "first_rank": 2
+    },
+    {
+      "instance_id": "sympy__sympy-23262",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/utilities/lambdify.py"
+      ],
+      "ranked": [
+        "sympy/utilities/lambdify.py",
+        "sympy/printing/pycode.py",
+        "sympy/printing/julia.py",
+        "sympy/printing/maple.py",
+        "sympy/printing/codeprinter.py",
+        "sympy/printing/c.py",
+        "sympy/codegen/ast.py",
+        "sympy/core/containers.py",
+        "sympy/printing/octave.py",
+        "sympy/printing/str.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "sympy__sympy-24066",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/physics/units/unitsystem.py"
+      ],
+      "ranked": [
+        "sympy/physics/units/unitsystem.py",
+        "sympy/physics/units/quantities.py",
+        "sympy/physics/units/dimensions.py",
+        "sympy/physics/units/util.py",
+        "sympy/physics/units/__init__.py",
+        "sympy/core/expr.py",
+        "sympy/physics/quantum/hilbert.py",
+        "sympy/solvers/solveset.py",
+        "sympy/physics/units/prefixes.py",
+        "sympy/solvers/ode/systems.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "sympy__sympy-24102",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/parsing/mathematica.py"
+      ],
+      "ranked": [
+        "sympy/parsing/mathematica.py",
+        "sympy/printing/mathematica.py",
+        "sympy/integrals/rubi/parsetools/parse.py",
+        "sympy/parsing/sympy_parser.py",
+        "sympy/parsing/latex/_parse_latex_antlr.py",
+        "sympy/printing/pretty/pretty.py",
+        "sympy/core/sympify.py",
+        "sympy/printing/mathml.py",
+        "sympy/printing/codeprinter.py",
+        "sympy/parsing/latex/__init__.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "sympy__sympy-24152",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/physics/quantum/tensorproduct.py"
+      ],
+      "ranked": [
+        "sympy/physics/quantum/tensorproduct.py",
+        "sympy/diffgeom/diffgeom.py",
+        "sympy/tensor/functions.py",
+        "sympy/tensor/tensor.py",
+        "sympy/physics/quantum/qapply.py",
+        "sympy/physics/quantum/density.py",
+        "sympy/physics/quantum/spin.py",
+        "sympy/tensor/array/arrayop.py",
+        "sympy/tensor/array/expressions/array_expressions.py",
+        "sympy/core/mul.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "sympy__sympy-24213",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/physics/units/unitsystem.py"
+      ],
+      "ranked": [
+        "sympy/physics/units/unitsystem.py",
+        "sympy/physics/units/quantities.py",
+        "sympy/physics/units/util.py",
+        "sympy/physics/units/dimensions.py",
+        "sympy/physics/units/__init__.py",
+        "sympy/physics/units/prefixes.py",
+        "sympy/geometry/point.py",
+        "sympy/vector/basisdependent.py",
+        "sympy/tensor/tensor.py",
+        "sympy/simplify/simplify.py"
+      ],
+      "first_rank": 1
+    },
+    {
+      "instance_id": "sympy__sympy-24909",
+      "repo": "sympy/sympy",
+      "gold": [
+        "sympy/physics/units/prefixes.py"
+      ],
+      "ranked": [
+        "sympy/physics/units/prefixes.py",
+        "sympy/physics/units/__init__.py",
+        "sympy/physics/units/util.py",
+        "sympy/polys/numberfields/modules.py",
+        "sympy/physics/units/quantities.py",
+        "sympy/physics/units/dimensions.py",
+        "sympy/printing/str.py",
+        "sympy/tensor/tensor.py",
+        "sympy/physics/units/unitsystem.py",
+        "sympy/core/expr.py"
+      ],
+      "first_rank": 1
+    }
+  ],
+  "provenance": {
+    "timestamp": "2026-10-13T12:57:24+00:00",
+    "git_commit": "23f4d8c59b6a170e7acdf43327502358522b9b41",
+    "git_dirty": false,
+    "python": "3.11.16",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "packages": {
+      "numpy": "2.4.6",
+      "scipy": "1.17.1",
+      "tree-sitter": "0.26.0",
+      "lightgbm": "4.7.0",
+      "torch": "2.14.0+cu130",
+      "sentence-transformers": "6.1.0"
+    },
+    "models": {
+      "models\\ltr_file.txt": "81963bfcb59d6e77",
+      "models\\ltr_function.txt": "edd32e017d4799eb"
+    },
+    "argv": [
+      "eval",
+      "--retriever",
+      "ltr-notests",
+      "--level",
+      "file",
+      "--dataset",
+      "lite",
+      "--split",
+      "test",
+      "--out",
+      "results/ties/ltr-notests_file_lite_test.json"
+    ],
+    "gold_file": "data\\gold\\swebench_lite_test.jsonl",
+    "fusion": "zsum w_dense=0.8"
+  }
+}

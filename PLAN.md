@@ -4,6 +4,15 @@ Target claim, once the work is done:
 
 > Odin localizes bugs with near-agent accuracy at a small fraction of an agent's cost and latency, holds up on projects it has never seen, and measurably improves downstream issue resolution.
 
+**Reframed target, 2026-10-13. A hypothesis, not a result.** SweRank already published the claim that ranking matches agents at a fraction of their cost, with better numbers than Odin's ([docs/comparison.md](docs/comparison.md)). What the measurements so far suggest Odin could claim instead, for odin-fast only:
+
+> odin-fast (BM25, the 0.5B `jina-code-embeddings-0.5b` embedding model, a LambdaMART ranker and two LoRA adapters on the 0.6B `Qwen3-Reranker-0.6B`) localizes bugs at function level as accurately as the agents of the LocAgent paper running Claude 3.5 Sonnet, on a 6 GB laptop GPU, for about a quarter of a cent per issue, and keeps that accuracy on issues created after every one of its models was published.
+
+- It is not smaller than every published ranking system: SweRankEmbed-Small is 137M parameters. It is smaller than SweRank's 7B retriever and its 7B and 32B rerankers, and those are the comparisons to name.
+- It says nothing about odin-max, which will use large models.
+- The last clause is untested: nothing has been evaluated on the sealed holdout.
+- The README keeps stating only what is measured. The wording is revisited after the SweRank reproduction explains the gap between its paper and its score in Odin's index, and the owner sees the proposed sentence before it goes into the README.
+
 Odin will ship two named operating points on one accuracy-versus-cost frontier: **odin-fast**, the current cascade, and **odin-max**, the best accuracy at any compute, with the phase 6 escalation curve between them.
 
 ## Status
@@ -87,6 +96,9 @@ Each lever is an ablation on top of the previous best, with a paired bootstrap a
 | 2026-10-13 | The 13 result files without provenance are run again into new files; the old ones are kept. |
 | 2026-10-13 | The two reranker adapters are published on Hugging Face, private at first, with checksums and a download step. |
 | 2026-10-13 | The repository is prepared to go public after the audit follow-ups; the owner makes the call. |
+| 2026-10-13 | Ties at a top-k cut-off are broken by index in Python as in the browser; all 17 Lite rows were re-run and no metric changed ([ADR 0016](docs/decisions/0016-deterministic-ties.md)). |
+| 2026-10-13 | The error analysis uses the 250-issue validation split, not Lite. |
+| 2026-10-13 | The headline claim is reframed as a hypothesis in this file; the README changes only after the holdout result and the owner's review of the sentence. |
 | 2026-10-13 | Where a baseline reports results with an open model, it is reproduced on PACE with the same model in preference to quoting the paper. |
 
 ## Constraints

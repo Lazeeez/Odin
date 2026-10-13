@@ -34,8 +34,10 @@ BROWSER_STAGES = {
 
 def result_file(retriever: str, level: str) -> Path:
     name = f"{retriever}_{level}_lite_test.json"
-    rerun = RESULTS / "provenance" / name
-    return rerun if rerun.exists() else RESULTS / name
+    for folder in ("ties", "provenance"):
+        if (RESULTS / folder / name).exists():
+            return RESULTS / folder / name
+    return RESULTS / name
 
 
 def load(retriever: str, level: str) -> dict:
@@ -355,10 +357,12 @@ def check_prose(text: str, report: Report) -> None:
     report.expect("prose gold module-only", float(match.group(3)), module_only, 0)
     report.expect("prose one file per patch", 1, max(len(g["files"]) for g in gold), 0)
 
-    parity = json.loads((RESULTS / "parity_pinned.json").read_text(encoding="utf-8"))["totals"]
+    parity = json.loads((RESULTS / "parity_pinned_2026-10-13b.json").read_text(encoding="utf-8"))[
+        "totals"
+    ]
     match = re.search(
         r"([\d,]+) files and ([\d,]+) units chunk identically, scores agree to within 1e-5, "
-        r"and (\d+) of (\d+) queries return the same top 10\. The other (\d+) differ only",
+        r"and (\d+) of (\d+) queries return the same top 10",
         text,
     )
     shown = [float(group.replace(",", "")) for group in match.groups()]
@@ -367,7 +371,6 @@ def check_prose(text: str, report: Report) -> None:
     report.expect("prose parity units", shown[1], parity["units"], 0)
     report.expect("prose parity same top 10", shown[2], same, 0)
     report.expect("prose parity queries", shown[3], parity["queries"], 0)
-    report.expect("prose parity ties", shown[4], parity["of_which_only_ties_at_the_cutoff"], 0)
     report.checked += 2
     if parity["files_with_different_units"]:
         report.mismatches.append("prose parity: README says every file chunks identically")

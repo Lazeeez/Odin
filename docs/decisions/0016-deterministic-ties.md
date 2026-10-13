@@ -30,3 +30,32 @@ Fixed before running:
 
 - Python and the browser now agree on the pinned check with no exceptions: 46 of 46 top-10 lists identical, where two differed by tied units before.
 - One difference remains and is not a tie in the same sense: the browser scores in 64-bit floats and Python in 32-bit, so two units whose scores agree to seven digits can swap adjacent ranks. The parity test accepts a rank difference only between units whose scores agree to that precision, and nothing else.
+
+## Outcome
+
+All 17 rows were run again on 2026-10-13 at commit `23f4d8c`, from a clean tree, into `results/ties/`. Each is compared with the most recent earlier file of the same row.
+
+| Row | Rankings changed | Same ten items, new order | One item replaced | First correct rank moved | Metrics changed |
+|---|---|---|---|---|---|
+| `bm25-code-notests-graph`, function | 4 of 291 | 0 | 4 | 0 | none |
+| `bm25-code-notests`, file | 0 of 300 | 0 | 0 | 0 | none |
+| `bm25-code-notests`, function | 3 of 291 | 0 | 3 | 0 | none |
+| `bm25-code`, file | 0 of 300 | 0 | 0 | 0 | none |
+| `bm25-code`, function | 4 of 291 | 0 | 4 | 0 | none |
+| `bm25-naive`, file | 0 of 300 | 0 | 0 | 0 | none |
+| `bm25-naive`, function | 2 of 291 | 0 | 2 | 0 | none |
+| `dense-notests`, file | 1 of 300 | 0 | 1 | 0 | none |
+| `dense-notests`, function | 6 of 291 | 0 | 6 | 0 | none |
+| `hybrid-notests`, file | 0 of 300 | 0 | 0 | 0 | none |
+| `hybrid-notests`, function | 0 of 291 | 0 | 0 | 0 | none |
+| `ltr-ce-notests`, file | 3 of 300 | 3 | 0 | 0 | none |
+| `ltr-ce-notests`, function | 3 of 291 | 3 | 0 | 0 | none |
+| `ltr-notests`, file | 3 of 300 | 2 | 1 | 0 | none |
+| `ltr-notests`, function | 4 of 291 | 2 | 2 | 0 | none |
+| `oracle`, file | 0 of 300 | 0 | 0 | 0 | none |
+| `random`, file | 0 of 300 | 0 | 0 | 0 | none |
+
+- **33 of 5,019 rankings changed, and no metric changed in any file**: recall, hit and all at 1, 5 and 10, and MRR, are identical to four decimals in all 17.
+- **No result in the README changed.** `scripts/check_readme.py` now reads the new files and passes with every metric, paired-bootstrap delta and p-value as it was. Two README statements did change: the parity sentence (44 of 46 identical top-10 lists became 46 of 46) and the count of Lite evaluations (52 became 69, the 17 re-runs).
+- **Where one item was replaced**, the pattern is a unit tied at the tenth score giving way to another with the same score and a lower index. **Where the ten items are the same in a new order**, the likely cause is a tie moving a candidate across a pool boundary upstream; this was not traced issue by issue. In no file did a correct location enter or leave a top 10 or change its rank.
+- **The pinned browser-against-Python check** was run again into `results/parity_pinned_2026-10-13b.json`: 46 of 46 top-10 lists identical.
