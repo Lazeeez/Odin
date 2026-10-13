@@ -30,6 +30,7 @@ jobs:
       - run: npm run typecheck && npm test && npm run build
         working-directory: web
       - run: uv run pytest -q
+      - run: uv run python scripts/check_readme.py
 
   e2e:
     # The production build in a real browser: pages, search on a fixture repository, phone layout.

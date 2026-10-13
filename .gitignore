@@ -2,7 +2,12 @@
 __pycache__/
 *.pyc
 .cache/
-results/
+results/*
+!results/README.md
+!results/*_lite_test.json
+!results/browser_old_vs_new.json
+!results/cache_cold.json
+!results/cache_warm.json
 .pytest_cache/
 .ruff_cache/
 dist/
