@@ -1,0 +1,78 @@
+{
+  "what": "bm25-code-notests indexing every SWE-bench Lite snapshot and answering its issue, timed without scoring: no metric is computed, so this is not a test-set evaluation",
+  "modes": {
+    "no-cache": "no on-disk analysis cache; blobs are reused in memory only",
+    "cold-cache": "an empty on-disk analysis cache, filled during the run",
+    "warm-cache": "the cache the cold run filled"
+  },
+  "identical_rankings": true,
+  "hardware": {
+    "processor": "Intel64 Family 6 Model 186 Stepping 2, GenuineIntel",
+    "logical_cores": 12,
+    "platform": "Windows-10-10.0.26200-SP0"
+  },
+  "runs": {
+    "no-cache": {
+      "snapshots": 291,
+      "wall_s": 109.9,
+      "warmup_s": 9.5,
+      "index_ms_p50": 276.4,
+      "index_ms_p95": 629.7,
+      "query_ms_p50": 0.43,
+      "query_ms_p99": 1.14,
+      "files_indexed": 188880,
+      "blobs_parsed": 26159,
+      "blobs_from_disk_cache": 0,
+      "blob_reuse": 0.8615,
+      "rankings_sha256": "67708c0032107a0d60d1368c3823c8349a362f8a4bd2cbcd71c1ad18535cdfa0"
+    },
+    "cold-cache": {
+      "snapshots": 291,
+      "wall_s": 119.1,
+      "warmup_s": 8.7,
+      "index_ms_p50": 304.2,
+      "index_ms_p95": 762.2,
+      "query_ms_p50": 0.39,
+      "query_ms_p99": 0.89,
+      "files_indexed": 188880,
+      "blobs_parsed": 26148,
+      "blobs_from_disk_cache": 11,
+      "blob_reuse": 0.8616,
+      "rankings_sha256": "67708c0032107a0d60d1368c3823c8349a362f8a4bd2cbcd71c1ad18535cdfa0"
+    },
+    "warm-cache": {
+      "snapshots": 291,
+      "wall_s": 43.1,
+      "warmup_s": 8.4,
+      "index_ms_p50": 101.0,
+      "index_ms_p95": 215.6,
+      "query_ms_p50": 0.38,
+      "query_ms_p99": 0.96,
+      "files_indexed": 188880,
+      "blobs_parsed": 0,
+      "blobs_from_disk_cache": 26159,
+      "blob_reuse": 1.0,
+      "rankings_sha256": "67708c0032107a0d60d1368c3823c8349a362f8a4bd2cbcd71c1ad18535cdfa0"
+    }
+  },
+  "provenance": {
+    "timestamp": "2026-10-13T09:58:40+00:00",
+    "git_commit": "b8a77c43719a04fbf3a49e1702b907d01f0ea4f3",
+    "git_dirty": true,
+    "python": "3.11.16",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "packages": {
+      "numpy": "2.4.6",
+      "scipy": "1.17.1",
+      "tree-sitter": "0.26.0",
+      "lightgbm": "4.7.0",
+      "torch": "2.14.0+cu130",
+      "sentence-transformers": "6.1.0"
+    },
+    "models": {},
+    "argv": [
+      "--label",
+      "2026-10-13"
+    ]
+  }
+}

@@ -87,23 +87,25 @@ Reproduce any row: `make eval RETRIEVER=bm25-code-notests LEVEL=function`, then 
 
 ## Performance
 
-Full Lite evaluation at function level (291 snapshots, 451k files) on a 12-core laptop:
+Indexing every Lite snapshot at function level and answering its issue with `bm25-code-notests`: 291 snapshots, 188,880 files. Measured on 2026-10-13 on a laptop (Core i5-13420H, 12 logical cores, 32 GB, Windows 11) by `benchmarks/bench_lite_index.py`; the output is [results/perf/lite_index_2026-10-13.json](results/perf/lite_index_2026-10-13.json).
 
-| | First working version | Now |
-|---|---|---|
-| End-to-end wall time | 273 s | **153 s** |
-| Index build p50 / p95 | 595 / 2852 ms | **420 / 995 ms** |
-| Query latency p50 / p99 | 0.58 / 1.44 ms | 0.60 / 1.33 ms |
-| Files indexed / blobs actually parsed | 451k / 45k | 451k / 45k (**90% reuse**) |
+| | No disk cache | Cold disk cache | Warm disk cache |
+|---|---|---|---|
+| End-to-end wall time | 110 s | 119 s | **43 s** |
+| Index build p50 / p95 | 276 / 630 ms | 304 / 762 ms | **101 / 216 ms** |
+| Query latency p50 / p99 | 0.43 / 1.14 ms | 0.39 / 0.89 ms | 0.38 / 0.96 ms |
+| Blobs parsed | 26,159 | 26,148 | 0 |
 
-Ranked output is byte-identical across every optimization; the eval harness checks this.
+- **Within one run, 86% of files are never parsed.** They are byte-identical to a file in a snapshot already indexed, so 188,880 files cost 26,159 parses.
+- **The analysis cache** (SQLite, keyed by blob id plus a fingerprint of the parser and tokenizer *source code*, so editing either invalidates exactly the stale entries) carries that reuse across runs: a repeat run takes 43 s.
+- **The ranked output is identical in all three runs.** The benchmark hashes every ranking and compares.
 
-A persistent **analysis cache** (SQLite, keyed by blob id plus a fingerprint of the parser and tokenizer *source code*, so editing either invalidates exactly the stale entries) takes a repeat evaluation from 146 s to **43 s**, and index build p95 from 755 ms to 209 ms, again with identical output.
+An earlier version of this table compared against the project's first working version. That code predates the git history and cannot be run again, so the comparison was removed rather than kept unverifiable.
 
 Where the time went, and what fixed it:
 
-- **Git reads: 377× faster.** One long-lived `git cat-file --batch` process instead of two subprocesses per file (400 files: 20.3 s → 0.05 s).
-- **Content addressing: 10× less parsing.** Work is memoized by blob id. 90% of the files in any snapshot are byte-identical to a snapshot already indexed.
+- **Git reads.** One long-lived `git cat-file --batch` process instead of two subprocesses per file.
+- **Content addressing: 7× less parsing.** Work is memoized by blob id, and most files in a snapshot are byte-identical to a file in a snapshot already indexed.
 - **Bulk fetch.** Each repository's missing blobs for every needed commit are found with one `cat-file --batch-check` (lazy fetch disabled) and downloaded with one `git fetch --stdin`, instead of one lazy round trip per object.
 - **No Python loop over documents.** BM25 weights are precomputed into a scipy CSC matrix, so a query is a column slice plus one sparse mat-vec. Path terms are added to every chunk with a single sparse product, and the call graph is resolved with sorted-array joins.
 - **Tokenization collapses repeats in C.** `Counter(re.findall(...))` runs first, so each distinct identifier is split once, not once per occurrence.
@@ -113,32 +115,32 @@ Where the time went, and what fixed it:
 
 | | |
 |---|---|
-| Unit slots across all 698 evaluated snapshots | 6.79M |
-| Distinct unit texts actually embedded (content-hash store) | **185k (36.7× fewer)** |
-| GPU time to embed everything (RTX 4050, fp16) | ~15 min, instead of ~9.5 h |
+| Unit slots across the 684 snapshots evaluated at function level (291 Lite, 393 dev) | 6.67M |
+| Distinct unit texts actually embedded (content-hash store) | **185k (36.1× fewer)** |
+| GPU time to embed them at the 204 units/s measured below (RTX 4050, fp16) | about 15 min, instead of about 9 h |
 | Units that needed embedding for the Lite run after dev tuning | 8.5k |
 
-Batching (4000 django units, `benchmarks/bench_batching.py`):
+Batching (4000 django units, `benchmarks/bench_batching.py`, output in [results/perf/bench_batching_2026-10-13.json](results/perf/bench_batching_2026-10-13.json)):
 
 | Strategy | Units/s | Real / padded tokens |
 |---|---|---|
-| Fixed batches of 32 in file order | 43 | 21% |
-| Length-sorted, batches of 32 | 201 | 98% |
-| **Length-sorted, 4096-token budget** | **208** | 98% |
+| Fixed batches of 32 in file order | 42 | 21% |
+| Length-sorted, batches of 32 | 199 | 98% |
+| **Length-sorted, 4096-token budget** | **204** | 98% |
 
-Sorting is nearly all of the 4.8× gain. Budget packing adds about 3%, and larger budgets are slower once the GPU is saturated.
+Sorting is nearly all of the 4.9× gain. Budget packing adds about 3%, and larger budgets are slower once the GPU is saturated.
 
-**Why not A\*, WAND or HNSW?** Pruning search (best-first graph search in HNSW, admissible upper bounds in WAND/MaxScore) buys cheaper scoring with extra build work. On a django snapshot (`benchmarks/bench_search.py`):
+**Why not A\*, WAND or HNSW?** Pruning search (best-first graph search in HNSW, admissible upper bounds in WAND/MaxScore) buys cheaper scoring with extra build work. On a django snapshot of 8,863 units (`benchmarks/bench_search.py`, output in [results/perf/bench_search_2026-10-13.json](results/perf/bench_search_2026-10-13.json)):
 
 | Step | ms |
 |---|---|
-| Encode the issue text (GPU) | 25 |
-| BM25 over all units | 0.05 |
-| Exact dense search, GPU / CPU | 0.10 / 0.47 |
-| HNSW build (FAISS, M=16/32) | ~650 |
-| HNSW query | 0.05 to 0.2 |
+| Encode the issue text (GPU) | 27 |
+| BM25 over all units | 0.06 |
+| Exact dense search, GPU / CPU | 0.14 / 0.49 |
+| HNSW build (FAISS, M=16 / M=32) | 639 / 666 |
+| HNSW query | 0.07 to 0.24 |
 
-Each snapshot answers one query, so HNSW would need about 13,000 queries on the same commit to repay its build. Exact search is both faster and lossless here. The time that matters is query encoding and indexing new code, which is where the optimization went.
+Each snapshot answers one query, so HNSW would need about 10,000 queries on the same commit to repay its build against exact search on the GPU (639 ms of build for 0.06 ms saved per query). Exact search is both faster and lossless here. The time that matters is query encoding and indexing new code, which is where the optimization went.
 
 ## Architecture
 

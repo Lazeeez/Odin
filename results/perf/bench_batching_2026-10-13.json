@@ -1,0 +1,40 @@
+{
+  "script": "benchmarks/bench_batching.py",
+  "output": [
+    "4000 django chunks, tokens p50=54 max=512",
+    "strategy                        chunks/s  real/padded tokens",
+    "arrival order, batch 32               42               21.1%",
+    "length-sorted, batch 32              199               98.0%",
+    "token budget 4096                    204               97.9%",
+    "token budget 8192                    191               96.2%",
+    "token budget 16384                   182               93.1%",
+    "token budget 32768                   176               87.8%"
+  ],
+  "hardware": {
+    "processor": "Intel64 Family 6 Model 186 Stepping 2, GenuineIntel",
+    "logical_cores": 12,
+    "gpu": "NVIDIA GeForce RTX 4050 Laptop GPU",
+    "platform": "Windows-10-10.0.26200-SP0"
+  },
+  "provenance": {
+    "timestamp": "2026-10-13T10:04:03+00:00",
+    "git_commit": "b8a77c43719a04fbf3a49e1702b907d01f0ea4f3",
+    "git_dirty": true,
+    "python": "3.11.16",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "packages": {
+      "numpy": "2.4.6",
+      "scipy": "1.17.1",
+      "tree-sitter": "0.26.0",
+      "lightgbm": "4.7.0",
+      "torch": "2.14.0+cu130",
+      "sentence-transformers": "6.1.0"
+    },
+    "models": {},
+    "argv": [
+      "benchmarks/bench_batching.py",
+      "--label",
+      "2026-10-13"
+    ]
+  }
+}

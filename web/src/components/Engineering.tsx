@@ -2,11 +2,11 @@ import type { Summary } from "../lib/data.ts";
 import { inlineCode, pct } from "../lib/format.ts";
 
 const CARDS: [string, string, string][] = [
-  ["377×", "faster git reads", "One long-lived `git cat-file --batch` process instead of two subprocesses per file."],
-  ["36.7×", "fewer embeddings", "6.79M function slots across 698 commits, 185k distinct: each function is embedded once, keyed by content hash."],
-  ["90%", "of files never re-parsed", "Parsing is memoized by git blob id; a persistent cache keyed by the parser's own source makes re-runs 3.4× faster."],
-  ["4.8×", "embedding throughput", "Length-sorted, token-budgeted batches: padding waste falls from 79% to 2%."],
-  ["~10 ms", "git-history features", "The commit DAG lives in memory, replacing a 100 ms `git rev-list` per query with an identical walk."],
+  ["1", "git process per repository", "One long-lived `git cat-file --batch` process reads every file, instead of two subprocesses per file."],
+  ["36×", "fewer embeddings", "6.67M function slots across 684 commits, 185k distinct: each function is embedded once, keyed by content hash."],
+  ["86%", "of files never re-parsed", "Parsing is memoized by git blob id; a persistent cache keyed by the parser's own source makes re-runs 2.8× faster."],
+  ["4.9×", "embedding throughput", "Length-sorted, token-budgeted batches: padding waste falls from 79% to 2%."],
+  ["0", "git calls per query for history", "The commit DAG lives in memory, replacing a `git rev-list` subprocess per query with an identical walk."],
   ["0", "Python/browser mismatches", "The browser's chunker, BM25 and ranker features are tested against the Python engine, value for value."],
 ];
 

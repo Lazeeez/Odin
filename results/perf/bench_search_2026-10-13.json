@@ -1,0 +1,44 @@
+{
+  "script": "benchmarks/bench_search.py",
+  "output": [
+    "snapshot: 8863 units, build (all cached) 0.99 s",
+    "step                                                ms",
+    "encode query (GPU, fp16)                         27.36",
+    "BM25 score, all units (sparse mat-vec)            0.06",
+    "dense exact, CPU fp32                             0.49",
+    "dense exact, GPU fp16                             0.14",
+    "HNSW M=16 build                                    639",
+    "HNSW M=16 ef=32 query (recall@10 1.0)             0.08",
+    "HNSW M=16 ef=128 query (recall@10 1.0)            0.24",
+    "HNSW M=32 build                                    666",
+    "HNSW M=32 ef=32 query (recall@10 1.0)             0.07",
+    "HNSW M=32 ef=128 query (recall@10 1.0)            0.22"
+  ],
+  "hardware": {
+    "processor": "Intel64 Family 6 Model 186 Stepping 2, GenuineIntel",
+    "logical_cores": 12,
+    "gpu": "NVIDIA GeForce RTX 4050 Laptop GPU",
+    "platform": "Windows-10-10.0.26200-SP0"
+  },
+  "provenance": {
+    "timestamp": "2026-10-13T10:04:28+00:00",
+    "git_commit": "b8a77c43719a04fbf3a49e1702b907d01f0ea4f3",
+    "git_dirty": true,
+    "python": "3.11.16",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "packages": {
+      "numpy": "2.4.6",
+      "scipy": "1.17.1",
+      "tree-sitter": "0.26.0",
+      "lightgbm": "4.7.0",
+      "torch": "2.14.0+cu130",
+      "sentence-transformers": "6.1.0"
+    },
+    "models": {},
+    "argv": [
+      "benchmarks/bench_search.py",
+      "--label",
+      "2026-10-13"
+    ]
+  }
+}

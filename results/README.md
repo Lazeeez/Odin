@@ -24,7 +24,10 @@ Function-level files score 291 of the 300 Lite issues: the 9 whose fix touches o
 | `ltr-ce-distilled-notests_*` | the distilled single reranker, tried and not adopted |
 | `ltr-v1_*` | the learned ranker measured on the corrupted embedding store; superseded, kept as the record for [ADR 0008](../docs/decisions/0008-embedding-store-corruption.md) |
 | `browser_old_vs_new.json` | paired bootstrap of the website's rankers against the ones they replaced ([ADR 0011](../docs/decisions/0011-website-at-scale.md)) |
-| `cache_cold.json`, `cache_warm.json` | the analysis-cache timings in the README's Performance section |
+| `cache_cold.json`, `cache_warm.json` | earlier analysis-cache timings, written without provenance; superseded by `perf/lite_index_2026-10-13.json` and no longer cited |
+| `perf/lite_index_2026-10-13.json` | the README's Performance table: indexing every Lite snapshot with no, a cold and a warm analysis cache (`benchmarks/bench_lite_index.py`). No metric is computed, so it is not a test-set evaluation |
+| `perf/bench_batching_2026-10-13.json`, `perf/bench_search_2026-10-13.json` | the printed output of the batching and exact-versus-HNSW benchmarks, saved with hardware and provenance (`benchmarks/save_output.py`) |
+| `perf/unit_slots_2026-10-13.json` | unit slots and distinct unit texts over the evaluated snapshots (`benchmarks/count_unit_slots.py`) |
 | `parity_pinned.json` | the website's TypeScript chunker and BM25 against the Python engine on pinned commits of django, sympy and requests (`scripts/parity_run.py`) |
 
 Each `*` stands for `_file_lite_test.json` and `_function_lite_test.json`.

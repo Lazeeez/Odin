@@ -153,6 +153,81 @@ def check_per_repo(rows: list[list[str]], report: Report) -> None:
         report.expect(f"{where} hybrid mrr", numbers(row[5])[0], hybrid[repo]["mrr"], 2)
 
 
+PERF = RESULTS / "perf" / "lite_index_2026-10-13.json"
+PERF_ROWS = {
+    "End-to-end wall time": (("wall_s",), 0),
+    "Index build p50 / p95": (("index_ms_p50", "index_ms_p95"), 0),
+    "Query latency p50 / p99": (("query_ms_p50", "query_ms_p99"), 2),
+    "Blobs parsed": (("blobs_parsed",), 0),
+}
+
+
+def check_performance(rows: list[list[str]], text: str, report: Report) -> None:
+    measured = json.loads(PERF.read_text(encoding="utf-8"))
+    runs = [measured["runs"][mode] for mode in ("no-cache", "cold-cache", "warm-cache")]
+    for row in rows:
+        if row[0] not in PERF_ROWS:
+            continue
+        keys, places = PERF_ROWS[row[0]]
+        for cell, run in zip(row[1:], runs, strict=True):
+            for shown, key in zip(numbers(cell.replace(",", "")), keys, strict=True):
+                report.expect(f"performance {row[0]} {key}", shown, run[key], places)
+    first = runs[0]
+    stated = re.search(r"so ([\d,]+) files cost ([\d,]+) parses", text)
+    files, parses = (float(g.replace(",", "")) for g in stated.groups())
+    report.expect("performance files", files, first["files_indexed"], 0)
+    report.expect("performance parses", parses, first["blobs_parsed"], 0)
+    reuse = float(re.search(r"Within one run, (\d+)% of files are never parsed", text).group(1))
+    report.expect("performance reuse", reuse, 100 * first["blob_reuse"], 0)
+    report.checked += 1
+    if not measured["identical_rankings"]:
+        report.mismatches.append("performance: rankings differ between cache modes")
+
+
+def check_dense_costs(text: str, report: Report) -> None:
+    perf = RESULTS / "perf"
+    slots = json.loads((perf / "unit_slots_2026-10-13.json").read_text(encoding="utf-8"))
+    row = re.search(
+        r"Unit slots across the (\d+) snapshots .*?\((\d+) Lite, (\d+) dev\) \| ([\d.]+)M", text
+    )
+    lite, dev = slots["sets"]["lite test"], slots["sets"]["dev (verified minus lite)"]
+    for shown, actual, places in zip(
+        row.groups(),
+        (slots["snapshots"], lite["snapshots"], dev["snapshots"], slots["unit_slots"] / 1e6),
+        (0, 0, 0, 2),
+        strict=True,
+    ):
+        report.expect("unit slots", float(shown), actual, places)
+    distinct = re.search(r"\*\*(\d+)k \(([\d.]+)× fewer\)\*\*", text)
+    report.expect("distinct units", float(distinct.group(1)), slots["distinct_unit_texts"] / 1e3, 0)
+    report.expect(
+        "embedding reuse",
+        float(distinct.group(2)),
+        slots["unit_slots"] / slots["distinct_unit_texts"],
+        1,
+    )
+    batching = json.loads((perf / "bench_batching_2026-10-13.json").read_text(encoding="utf-8"))
+    measured = {}
+    for line in batching["output"]:
+        cells = line.split()
+        if line.endswith("%") and len(cells) >= 3:
+            measured[" ".join(cells[:-2])] = float(cells[-2])
+    for label, key in (
+        ("Fixed batches of 32 in file order", "arrival order, batch 32"),
+        ("Length-sorted, batches of 32", "length-sorted, batch 32"),
+        ("Length-sorted, 4096-token budget", "token budget 4096"),
+    ):
+        shown = re.search(re.escape(label) + r"\W* \| \W*(\d+)", text)
+        report.expect(f"batching {key}", float(shown.group(1)), measured[key], 0)
+    gain = float(re.search(r"nearly all of the ([\d.]+)× gain", text).group(1))
+    report.expect(
+        "batching gain",
+        gain,
+        measured["token budget 4096"] / measured["arrival order, batch 32"],
+        1,
+    )
+
+
 def check_prose(text: str, report: Report) -> None:
     ce_fn_mrr, _ = paired("ltr-notests", "ltr-ce-notests", "function", "mrr")
     ce_fn_r1, _ = paired("ltr-notests", "ltr-ce-notests", "function", "recall@1")
@@ -280,6 +355,8 @@ def main() -> int:
         report,
     )
     check_per_repo(found["Evaluation methodology"], report)
+    check_performance(found["Performance"], text, report)
+    check_dense_costs(text, report)
     check_prose(text, report)
     for line in report.mismatches:
         print("MISMATCH", line)

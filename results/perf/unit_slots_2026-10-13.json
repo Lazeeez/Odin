@@ -1,0 +1,36 @@
+{
+  "what": "function and class units, excluding tests, summed over every evaluated snapshot",
+  "sets": {
+    "lite test": {
+      "snapshots": 291,
+      "unit_slots": 3165499
+    },
+    "dev (verified minus lite)": {
+      "snapshots": 393,
+      "unit_slots": 3508129
+    }
+  },
+  "snapshots": 684,
+  "unit_slots": 6673628,
+  "distinct_unit_texts": 184872,
+  "provenance": {
+    "timestamp": "2026-10-13T10:06:18+00:00",
+    "git_commit": "b8a77c43719a04fbf3a49e1702b907d01f0ea4f3",
+    "git_dirty": true,
+    "python": "3.11.16",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "packages": {
+      "numpy": "2.4.6",
+      "scipy": "1.17.1",
+      "tree-sitter": "0.26.0",
+      "lightgbm": "4.7.0",
+      "torch": "2.14.0+cu130",
+      "sentence-transformers": "6.1.0"
+    },
+    "models": {},
+    "argv": [
+      "--label",
+      "2026-10-13"
+    ]
+  }
+}
