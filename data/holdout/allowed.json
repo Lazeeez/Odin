@@ -1,0 +1,20 @@
+{
+ "rules": "docs/decisions/0013-sealed-holdout.md",
+ "configs": {
+  "odin-fast": {
+   "retriever": null,
+   "frozen_at": null,
+   "newest_model_published": null
+  },
+  "odin-max": {
+   "retriever": null,
+   "frozen_at": null,
+   "newest_model_published": null
+  },
+  "odin-escalation": {
+   "retriever": null,
+   "frozen_at": null,
+   "newest_model_published": null
+  }
+ }
+}

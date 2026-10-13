@@ -40,6 +40,10 @@ def _rows(dataset: str, split: str, parts: int = 1) -> list[dict]:
 
 
 def load_instances(name: str = "lite", split: str = "test") -> list[Instance]:
+    if name == "holdout":
+        from odin.eval.holdout import sealed_instances
+
+        return sealed_instances()
     if name == "rebench":
         rows = _rows(DATASETS[name], "test", parts=2)  # all ~21k; "filtered" is a subset
         if split in ("train", "test"):

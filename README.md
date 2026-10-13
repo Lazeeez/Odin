@@ -178,7 +178,7 @@ The same cascade in the browser, with no server of its own:
 ```mermaid
 flowchart LR
     U["repository link<br/>+ bug report"] --> W[search worker]
-    W -->|"tree API, then files<br/>or one .tar.gz via the relay"| GH[(GitHub)]
+    W -->|"one .tar.gz via the relay,<br/>or tree API, then files"| GH[(GitHub)]
     W --> PT["parser threads<br/>Tree-sitter WASM"]
     PT --> BM[code-aware BM25]
     PT --> SE["static embeddings<br/>every function, int8"]
@@ -208,6 +208,7 @@ flowchart LR
 - **Unseen projects for the website.** The browser's rankers are cross-validated with whole projects as folds, and scored on 30 SWE-rebench projects that appear in no training fold, so the reported numbers are what a visitor's new repository gets.
 - **Held-out tuning.** Anything with a knob is tuned off Lite: fusion and expansion on SWE-bench Verified minus Lite (407 issues, `odin tune`), learned rankers on SWE-bench test minus Lite (1,941 issues, `odin ltr`, 5-fold CV grouped by query), and the reranker's depth and weights on 250 issues held out from its training (`odin ce-tune`), with the selection rule written down before looking.
 - **How often Lite has been looked at.** No number here was trained or tuned on Lite, but Lite is not untouched: it has been scored 33 times, and [results/test-evals.log](results/test-evals.log) lists each one with what was decided from it. Most are one run per reported row. The exceptions: the early browser pipeline was scored on Lite at several rerank depths and with two stage-2 models (its settings were chosen on dev data and cross-validation, but Lite was looked at each time), and the distilled reranker was rejected on a Lite result, a decision taken on the test set, in the conservative direction. Every later evaluation appends to the log.
+- **A sealed holdout for what comes next.** 324 issues created on or after 2025-09-01, after the cascade's models were published, from 189 projects that appear in no training, dev or test data here; 311 of them have a function-level target. Nothing has been evaluated on it. Only three final configurations ever will be, each once per level, and `odin eval` refuses anything else ([ADR 0013](docs/decisions/0013-sealed-holdout.md)).
 - **No leakage through features.** Git history uses only strict ancestors of the base commit (`git rev-list`). Earlier-issue features only see issues opened at least 30 days before the query. Both boundaries have tests.
 - **Reproducibility.** Cached features and trained models carry a fingerprint of the source code that produced them, and a model refuses to load against different feature code. Every result file records the git commit, library versions, model hashes and command line.
 - **Significance.** `odin compare` runs a paired bootstrap over queries (10k resamples) and reports Δ, a 95% CI, a two-sided p-value and win/loss counts. A difference that isn't significant is reported as such.
@@ -282,7 +283,7 @@ The page is 38 KB of JavaScript and 13 KB of CSS (gzipped); the map, the game an
 
 One-time setup for Pages: repository Settings → Pages → Source: GitHub Actions.
 
-**Archive relay (optional, recommended).** `proxy/cloudflare-worker.js` passes GitHub's repository archives through with CORS headers, so a repository downloads as one `.tar.gz` instead of one request per file: Django is ready in 3.5 s instead of 13.8 s, transformers in 5.8 s instead of about a minute. It serves only the origins in `proxy/wrangler.toml`. Deploy with `npx wrangler deploy` in `proxy/` (free Cloudflare plan), then set the repository variable `ARCHIVE_PROXY` to the worker's URL; the next Pages build uses it. Without it, or if it is down, the site loads file by file.
+**Archive relay (optional, recommended).** `proxy/cloudflare-worker.js` passes GitHub's repository archives through with CORS headers, so a repository downloads as one `.tar.gz` instead of one request per file: Django is ready in 3.5 s instead of 13.8 s, transformers in 5.8 s instead of about a minute. It serves only the origins in `proxy/wrangler.toml`. Deploy with `npx wrangler deploy` in `proxy/` (free Cloudflare plan), then set the repository variable `ARCHIVE_PROXY` to the worker's URL; the next Pages build uses it. With the relay on, the file list and the commit also come from the archive, so loading makes no call to GitHub's API and its limit of 60 requests an hour does not apply ([ADR 0012](docs/decisions/0012-archive-file-list.md)). Without it, or if it is down, the site lists files through the API and loads them one by one.
 
 ## How ground truth is built
 
@@ -359,6 +360,8 @@ docs/decisions/               why things are the way they are
 9. [The first two stages, running in the visitor's browser on any repository](docs/decisions/0009-in-browser-search.md)
 10. [A learned ranker in the browser](docs/decisions/0010-browser-ranker.md)
 11. [The website at scale: 150 more projects, semantic search, faster loading](docs/decisions/0011-website-at-scale.md)
+12. [Take the file list from the archive, not from GitHub's API](docs/decisions/0012-archive-file-list.md)
+13. [A sealed holdout for the headline claims](docs/decisions/0013-sealed-holdout.md)
 
 ## Adding a retriever
 

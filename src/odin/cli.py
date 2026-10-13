@@ -10,9 +10,14 @@ from pathlib import Path
 DEFAULT_CACHE = Path(".cache/repos")
 DEFAULT_GOLD_DIR = Path("data/gold")
 DATASET_NAMES = ["lite", "verified", "full", "rebench"]
+HOLDOUT = "holdout"
 
 
 def _gold_path(dataset: str, split: str) -> Path:
+    if dataset == HOLDOUT:
+        from odin.eval.holdout import GOLD
+
+        return GOLD
     return DEFAULT_GOLD_DIR / f"swebench_{dataset}_{split}.jsonl"
 
 
@@ -29,6 +34,8 @@ def cmd_gold(args: argparse.Namespace) -> None:
     start = time.perf_counter()
     entries = build_gold(instances, RepoCache(args.cache), workers=args.workers)
     out = args.out or _gold_path(args.dataset, args.split)
+    if args.dataset == HOLDOUT and out.exists():
+        sys.exit(f"{out} exists; the holdout's ground truth is built once")
     write_gold(entries, out)
     n = len(entries)
     stats = {
@@ -73,13 +80,44 @@ def _load_eval_set(args: argparse.Namespace):
     return gold, queries
 
 
+def _load_holdout(args: argparse.Namespace):
+    from odin.eval import holdout
+    from odin.eval.ground_truth import read_gold
+
+    if args.repo or args.exclude or args.gold or args.out:
+        sys.exit("the holdout is evaluated whole: no --repo, --exclude, --gold or --out")
+    try:
+        queries, seal = holdout.unseal(args.config, args.unseal, args.level, args.retriever)
+    except holdout.HoldoutRefused as refusal:
+        sys.exit(f"refused: {refusal}")
+    gold = [g for g in read_gold(holdout.GOLD) if g.instance_id in queries]
+    return gold, queries, seal
+
+
 def cmd_eval(args: argparse.Namespace) -> None:
     from odin.eval.runner import RETRIEVERS, run_eval
 
-    gold, queries = _load_eval_set(args)
+    seal = None
+    if args.dataset == HOLDOUT:
+        gold, queries, seal = _load_holdout(args)
+    else:
+        gold, queries = _load_eval_set(args)
     retriever = RETRIEVERS[args.retriever]()
     report = run_eval(retriever, gold, queries, ks=args.k, level=args.level, progress=_progress)
     from odin.eval.provenance import provenance
+
+    if seal:
+        from odin.eval import holdout
+
+        args.out = holdout.result_path(seal["config"], args.level)
+        report["holdout"] = seal
+        holdout.record(
+            seal["config"],
+            args.retriever,
+            args.level,
+            len(gold),
+            seal["issues_created_on_or_after"],
+        )
 
     models = sorted(Path("models").glob("*.txt")) if args.retriever.startswith("ltr") else []
     report["provenance"] = provenance(models) | {
@@ -343,7 +381,7 @@ def main(argv: list[str] | None = None) -> None:
     sub = parser.add_subparsers(dest="command", required=True)
 
     gold = sub.add_parser("gold", help="build ground truth from SWE-bench gold patches")
-    gold.add_argument("--dataset", default="lite", choices=DATASET_NAMES)
+    gold.add_argument("--dataset", default="lite", choices=[*DATASET_NAMES, HOLDOUT])
     gold.add_argument("--split", default="test")
     gold.add_argument("--repo")
     gold.add_argument("--limit", type=int)
@@ -355,7 +393,9 @@ def main(argv: list[str] | None = None) -> None:
     ev = sub.add_parser("eval", help="score a retriever against ground truth")
     ev.add_argument("--retriever", required=True)
     ev.add_argument("--level", default="file", choices=["file", "function"])
-    ev.add_argument("--dataset", default="lite", choices=DATASET_NAMES)
+    ev.add_argument("--dataset", default="lite", choices=[*DATASET_NAMES, HOLDOUT])
+    ev.add_argument("--unseal", action="store_true")
+    ev.add_argument("--config")
     ev.add_argument("--split", default="test")
     ev.add_argument("--repo", help="only evaluate issues from this repository")
     ev.add_argument("--exclude", nargs="+", choices=DATASET_NAMES, help="hold out")

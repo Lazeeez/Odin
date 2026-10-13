@@ -1,0 +1,2017 @@
+{
+ "name": "odin-holdout",
+ "rules": "docs/decisions/0013-sealed-holdout.md",
+ "source": "nebius/SWE-rebench-leaderboard",
+ "source_licence": "CC-BY-4.0",
+ "revision": "34d5a58864acf91613740a09ec5d205228dcfa39",
+ "files": [
+  "data/2025_01-00000-of-00001.parquet",
+  "data/2025_02-00000-of-00001.parquet",
+  "data/2025_03-00000-of-00001.parquet",
+  "data/2025_04-00000-of-00001.parquet",
+  "data/2025_05-00000-of-00001.parquet",
+  "data/2025_06-00000-of-00001.parquet",
+  "data/2025_07-00000-of-00001.parquet",
+  "data/2025_08-00000-of-00001.parquet",
+  "data/2025_09-00000-of-00001.parquet",
+  "data/2025_10-00000-of-00001.parquet",
+  "data/2025_11-00000-of-00001.parquet",
+  "data/2025_12-00000-of-00001.parquet",
+  "data/2026_01-00000-of-00001.parquet",
+  "data/2026_02-00000-of-00001.parquet",
+  "data/2026_03-00000-of-00001.parquet",
+  "data/test-00000-of-00001.parquet"
+ ],
+ "cutoff": "2025-09-01",
+ "selection": "every instance created on or after 2025-09-01 whose project appears in no other Odin training, dev or test data",
+ "counts": {
+  "source_instances": 860,
+  "created_on_or_after_cutoff": 411,
+  "dropped_for_a_used_project": 87,
+  "instances": 324,
+  "projects": 189,
+  "largest_project": 19,
+  "by_month": {
+   "2025-09": 41,
+   "2025-10": 37,
+   "2025-11": 38,
+   "2025-12": 41,
+   "2026-01": 34,
+   "2026-02": 47,
+   "2026-03": 29,
+   "2026-04": 38,
+   "2026-05": 19
+  }
+ },
+ "projects_excluded": {
+  "swebench_full_test.jsonl": 12,
+  "swebench_lite_test.jsonl": 12,
+  "swebench_rebench_test.jsonl": 30,
+  "swebench_rebench_train.jsonl": 120,
+  "swebench_verified_test.jsonl": 12,
+  "rebench_sample.json": 150
+ },
+ "projects_excluded_total": 162,
+ "provenance": {
+  "timestamp": "2026-10-13T06:08:42+00:00",
+  "git_commit": "6fd03d5b3014677b24ed0900e83801750eb22eee",
+  "git_dirty": true,
+  "python": "3.11.16",
+  "platform": "Windows-10-10.0.26200-SP0",
+  "packages": {
+   "numpy": "2.4.6",
+   "scipy": "1.17.1",
+   "tree-sitter": "0.26.0",
+   "lightgbm": "4.7.0",
+   "torch": "2.14.0+cu130",
+   "sentence-transformers": "6.1.0"
+  },
+  "models": {}
+ },
+ "instances": [
+  {
+   "instance_id": "a2aproject__a2a-python-472",
+   "repo": "a2aproject/a2a-python",
+   "base_commit": "5ec078830eccf2a72c4a467e520de70c3cbca68e",
+   "created_at": "2025-09-13 08:41:21"
+  },
+  {
+   "instance_id": "a2aproject__a2a-python-576",
+   "repo": "a2aproject/a2a-python",
+   "base_commit": "3bfbea9ec8d7982fa73eb12d8352a581307355dc",
+   "created_at": "2025-12-03 10:42:24"
+  },
+  {
+   "instance_id": "a2aproject__a2a-python-682_interface",
+   "repo": "a2aproject/a2a-python",
+   "base_commit": "c91d4fba517190d8f7c76b42ea26914a4275f1d5",
+   "created_at": "2026-02-11 08:01:42"
+  },
+  {
+   "instance_id": "aallan__vera-662_interface",
+   "repo": "aallan/vera",
+   "base_commit": "01281f9c2a0a42e28209a28b956d8e9b308cc10c",
+   "created_at": "2026-05-12 08:07:53"
+  },
+  {
+   "instance_id": "AbsaOSS__generate-release-notes-207",
+   "repo": "AbsaOSS/generate-release-notes",
+   "base_commit": "dcf920a9f86605820ee5304dccb9ace9bf7b26e9",
+   "created_at": "2025-11-06 11:22:51"
+  },
+  {
+   "instance_id": "adrn__gala-495",
+   "repo": "adrn/gala",
+   "base_commit": "5da512bf3421cc846de02a202fa22c72d06fb71c",
+   "created_at": "2025-10-20 21:33:15"
+  },
+  {
+   "instance_id": "aeye-lab__pymovements-1408",
+   "repo": "aeye-lab/pymovements",
+   "base_commit": "c5f09cd5bcba560c8e1e36ede2a5548217daff6b",
+   "created_at": "2025-12-08 09:48:43"
+  },
+  {
+   "instance_id": "ag2ai__faststream-2701",
+   "repo": "ag2ai/faststream",
+   "base_commit": "6ac6f967e847212803c119f3092a121ac7d9afef",
+   "created_at": "2025-12-02 14:22:26"
+  },
+  {
+   "instance_id": "agentscope-ai__qwenpaw-3278",
+   "repo": "agentscope-ai/QwenPaw",
+   "base_commit": "4302189c43142b819f18b7ac7938d91ea05001f7",
+   "created_at": "2026-04-12 04:51:22"
+  },
+  {
+   "instance_id": "aiidateam__aiida-quantumespresso-1136",
+   "repo": "aiidateam/aiida-quantumespresso",
+   "base_commit": "75223dc319f0743bea5472c93cfee80888539ba9",
+   "created_at": "2025-09-17 01:18:13"
+  },
+  {
+   "instance_id": "aiidateam__aiida-quantumespresso-1142",
+   "repo": "aiidateam/aiida-quantumespresso",
+   "base_commit": "9f490185f525482d1851b8d91d7d5ce468d546f9",
+   "created_at": "2025-09-18 01:24:49"
+  },
+  {
+   "instance_id": "alibaba__opensandbox-426",
+   "repo": "alibaba/OpenSandbox",
+   "base_commit": "f7bcd355ca9804654b014a2117ffc0d438653a4a",
+   "created_at": "2026-03-11 12:47:51"
+  },
+  {
+   "instance_id": "alibaba__opensandbox-816",
+   "repo": "alibaba/OpenSandbox",
+   "base_commit": "fb78091f947f62ae2c71a372af42425a764aacee",
+   "created_at": "2026-04-29 07:35:36"
+  },
+  {
+   "instance_id": "All-Hands-AI__OpenHands-10867",
+   "repo": "All-Hands-AI/OpenHands",
+   "base_commit": "989a4e662bb8d388f73a6ec731985b7bbaea8942",
+   "created_at": "2025-09-07 13:33:54"
+  },
+  {
+   "instance_id": "All-Hands-AI__OpenHands-11914",
+   "repo": "All-Hands-AI/OpenHands",
+   "base_commit": "f7c3a36745faaf5c3fc8b21abd8f3fea322e2c08",
+   "created_at": "2025-12-05 12:57:02"
+  },
+  {
+   "instance_id": "allenneuraldynamics__aind-data-schema-1677",
+   "repo": "AllenNeuralDynamics/aind-data-schema",
+   "base_commit": "c1d1457d99927bdf79dbbdc6194e6449561c57e9",
+   "created_at": "2026-01-05 22:24:41"
+  },
+  {
+   "instance_id": "apache__iceberg-python-2797",
+   "repo": "apache/iceberg-python",
+   "base_commit": "454c17f56f0f4c117c62f298bfade38f2ff67b6f",
+   "created_at": "2025-12-08 10:17:14"
+  },
+  {
+   "instance_id": "apache__iceberg-python-3295",
+   "repo": "apache/iceberg-python",
+   "base_commit": "b67b7241690e05413f3cfea69287f897b0b2410e",
+   "created_at": "2026-04-28 22:03:47"
+  },
+  {
+   "instance_id": "ardupilot__methodicconfigurator-1201",
+   "repo": "ArduPilot/MethodicConfigurator",
+   "base_commit": "3b385c0df0d2fde99f44ecae7f76374a50f6ba48",
+   "created_at": "2026-01-22 20:37:40"
+  },
+  {
+   "instance_id": "astronomer__astronomer-cosmos-2332",
+   "repo": "astronomer/astronomer-cosmos",
+   "base_commit": "98dc74bd269ce2ba8fb84fd84b871a657b27bbf8",
+   "created_at": "2026-02-05 17:46:35"
+  },
+  {
+   "instance_id": "astronomy-commons__hats-648",
+   "repo": "astronomy-commons/hats",
+   "base_commit": "3017cc4086087356ef9f5893200b79bdcbeddc3b",
+   "created_at": "2026-03-06 10:12:00"
+  },
+  {
+   "instance_id": "astronomy-commons__lsdb-1349",
+   "repo": "astronomy-commons/lsdb",
+   "base_commit": "ba11985ca7940dabb77d4f7db731d516e6527d47",
+   "created_at": "2026-04-29 20:36:11"
+  },
+  {
+   "instance_id": "avaiga__taipy-2797",
+   "repo": "Avaiga/taipy",
+   "base_commit": "b340f8f971eb7c22e7dc7d7b628d166626e7b363",
+   "created_at": "2026-01-29 12:16:37"
+  },
+  {
+   "instance_id": "aws-cloudformation__cfn-python-lint-4368",
+   "repo": "aws-cloudformation/cfn-python-lint",
+   "base_commit": "e52850cf757a93a58d0535e775810a9e3f752792",
+   "created_at": "2026-02-10 20:18:02"
+  },
+  {
+   "instance_id": "aws-powertools__powertools-lambda-python-7315",
+   "repo": "aws-powertools/powertools-lambda-python",
+   "base_commit": "997607ae62eac1c418d1c4e5f23d3a27867aeec9",
+   "created_at": "2025-09-04 13:09:32"
+  },
+  {
+   "instance_id": "aws__bedrock-agentcore-sdk-python-279_interface",
+   "repo": "aws/bedrock-agentcore-sdk-python",
+   "base_commit": "1bd22b7e51c152aba0f9e322699d06102b707026",
+   "created_at": "2026-02-23 17:33:52"
+  },
+  {
+   "instance_id": "azure-samples__azure-search-openai-demo-3025",
+   "repo": "Azure-Samples/azure-search-openai-demo",
+   "base_commit": "7f704ea62ab717dd88b42fd5aabb05cbd09d92ff",
+   "created_at": "2026-04-06 23:17:47"
+  },
+  {
+   "instance_id": "bas-amop__PolarRoute-server-159",
+   "repo": "bas-amop/PolarRoute-server",
+   "base_commit": "df1e112fa8425868773b29151c7e7841e27eaae8",
+   "created_at": "2025-11-14 18:15:03"
+  },
+  {
+   "instance_id": "basicmachines-co__basic-memory-295",
+   "repo": "basicmachines-co/basic-memory",
+   "base_commit": "0499319ded34fadc6b2b289ea563420313ed4fcb",
+   "created_at": "2025-09-11 14:11:40"
+  },
+  {
+   "instance_id": "basicmachines-co__basic-memory-334",
+   "repo": "basicmachines-co/basic-memory",
+   "base_commit": "7616b2bb086779a6f618102b16ce78b8a6484e65",
+   "created_at": "2025-10-05 15:30:07"
+  },
+  {
+   "instance_id": "basicmachines-co__basic-memory-341",
+   "repo": "basicmachines-co/basic-memory",
+   "base_commit": "1fa93ecbd2a23304b19475f29fa094b04d4aaeed",
+   "created_at": "2025-10-08 05:26:44"
+  },
+  {
+   "instance_id": "basicmachines-co__basic-memory-484",
+   "repo": "basicmachines-co/basic-memory",
+   "base_commit": "48e6e84beb74c86584e8238aa6323037a09ddf9c",
+   "created_at": "2025-12-29 23:54:18"
+  },
+  {
+   "instance_id": "beever-ai__beever-atlas-102",
+   "repo": "Beever-AI/beever-atlas",
+   "base_commit": "f5e3777b2b441909b558a27b9ac24a6940268a5f",
+   "created_at": "2026-04-29 16:56:35"
+  },
+  {
+   "instance_id": "BerriAI__litellm-14715",
+   "repo": "BerriAI/litellm",
+   "base_commit": "80bd8e007fd7960659e2cf5124bcc136b0b18473",
+   "created_at": "2025-09-19 06:08:44"
+  },
+  {
+   "instance_id": "BerriAI__litellm-15753",
+   "repo": "BerriAI/litellm",
+   "base_commit": "5ce2be732e9b69a94f08a2bfc654f3c355e58747",
+   "created_at": "2025-10-21 00:28:04"
+  },
+  {
+   "instance_id": "BerriAI__litellm-16275",
+   "repo": "BerriAI/litellm",
+   "base_commit": "9b925c7e47a5a2dc0eead5ba4d3122a85d2af08f",
+   "created_at": "2025-11-05 16:40:36"
+  },
+  {
+   "instance_id": "BerriAI__litellm-16315",
+   "repo": "BerriAI/litellm",
+   "base_commit": "11508c03391305296a8938a83de33a0ca52d9a61",
+   "created_at": "2025-11-06 11:32:12"
+  },
+  {
+   "instance_id": "BerriAI__litellm-16320",
+   "repo": "BerriAI/litellm",
+   "base_commit": "11508c03391305296a8938a83de33a0ca52d9a61",
+   "created_at": "2025-11-06 12:37:01"
+  },
+  {
+   "instance_id": "BerriAI__litellm-16429",
+   "repo": "BerriAI/litellm",
+   "base_commit": "c088483da9c89261d6c773f9ed35ef5df541478f",
+   "created_at": "2025-11-10 02:39:39"
+  },
+  {
+   "instance_id": "BerriAI__litellm-16487",
+   "repo": "BerriAI/litellm",
+   "base_commit": "aff1060512f59206ea76f18d246aeaea1a217438",
+   "created_at": "2025-11-11 12:33:48"
+  },
+  {
+   "instance_id": "BerriAI__litellm-16526",
+   "repo": "BerriAI/litellm",
+   "base_commit": "63445f2f374c1591c55d85799ab721c3a5983ced",
+   "created_at": "2025-11-12 12:28:12"
+  },
+  {
+   "instance_id": "BerriAI__litellm-16550",
+   "repo": "BerriAI/litellm",
+   "base_commit": "c6d2714c520f3e27051bbc0468bd79a2dc62837b",
+   "created_at": "2025-11-12 21:43:47"
+  },
+  {
+   "instance_id": "BerriAI__litellm-16852",
+   "repo": "BerriAI/litellm",
+   "base_commit": "ffe00f4034ae2bde535226522b84a144746ba716",
+   "created_at": "2025-11-19 22:44:09"
+  },
+  {
+   "instance_id": "BerriAI__litellm-16864",
+   "repo": "BerriAI/litellm",
+   "base_commit": "2d7365c7952dd966e7cafda4a0356b6838b27d71",
+   "created_at": "2025-11-20 02:50:43"
+  },
+  {
+   "instance_id": "BerriAI__litellm-16899",
+   "repo": "BerriAI/litellm",
+   "base_commit": "7225fc066ff5985053b7ea94b809dd8cac0c9c35",
+   "created_at": "2025-11-21 00:28:57"
+  },
+  {
+   "instance_id": "BerriAI__litellm-16943",
+   "repo": "BerriAI/litellm",
+   "base_commit": "01ea6c8948cc8bf10692b7bf6dc4752e5578c483",
+   "created_at": "2025-11-21 22:52:03"
+  },
+  {
+   "instance_id": "BerriAI__litellm-16997",
+   "repo": "BerriAI/litellm",
+   "base_commit": "90850bf6d55864dfe2ea4e6d4b43c41480f33f99",
+   "created_at": "2025-11-23 10:54:24"
+  },
+  {
+   "instance_id": "BerriAI__litellm-17027",
+   "repo": "BerriAI/litellm",
+   "base_commit": "760bce24bdc2470dda2c03c898879352d558b7c3",
+   "created_at": "2025-11-24 14:49:20"
+  },
+  {
+   "instance_id": "bluesky__ophyd-async-1164",
+   "repo": "bluesky/ophyd-async",
+   "base_commit": "d381c3b434b8b1a38a1325920efda1f6666658ba",
+   "created_at": "2025-12-16 11:08:19"
+  },
+  {
+   "instance_id": "bluesky__ophyd-async-1165",
+   "repo": "bluesky/ophyd-async",
+   "base_commit": "9b567b2141ffe40810fa5e180bf3074b2e51de49",
+   "created_at": "2025-12-17 09:56:07"
+  },
+  {
+   "instance_id": "BrianPugh__cyclopts-609",
+   "repo": "BrianPugh/cyclopts",
+   "base_commit": "06d8f0ec532d147e974cd729c9bd8ed1db196478",
+   "created_at": "2025-10-16 13:05:59"
+  },
+  {
+   "instance_id": "BrianPugh__cyclopts-633",
+   "repo": "BrianPugh/cyclopts",
+   "base_commit": "23fed053c63ca13e7ab28ca54e94804012d23946",
+   "created_at": "2025-10-24 14:47:44"
+  },
+  {
+   "instance_id": "BrianPugh__cyclopts-701",
+   "repo": "BrianPugh/cyclopts",
+   "base_commit": "9d8e082b8e09316db8b5f294ca1d0224adc908be",
+   "created_at": "2025-11-22 02:24:34"
+  },
+  {
+   "instance_id": "cal-itp__benefits-3198",
+   "repo": "cal-itp/benefits",
+   "base_commit": "f9203e4c17f1aa1ba475776752681f9a70d27088",
+   "created_at": "2025-09-23 21:11:24"
+  },
+  {
+   "instance_id": "cal-itp__benefits-3330",
+   "repo": "cal-itp/benefits",
+   "base_commit": "2949c7d90b91830543d0a69c1bcbff8ddfcddc86",
+   "created_at": "2025-11-20 18:02:03"
+  },
+  {
+   "instance_id": "calliope-project__calliope-854",
+   "repo": "calliope-project/calliope",
+   "base_commit": "07d9af46160ef01029d6fa47aeb8031b577aad1a",
+   "created_at": "2025-12-05 16:26:57"
+  },
+  {
+   "instance_id": "Cambridge-ICCS__TCTrack-118",
+   "repo": "Cambridge-ICCS/TCTrack",
+   "base_commit": "482a888b7942797040073de632ce0a40477a4b71",
+   "created_at": "2025-12-04 11:09:49"
+  },
+  {
+   "instance_id": "Cambridge-ICCS__TCTrack-119",
+   "repo": "Cambridge-ICCS/TCTrack",
+   "base_commit": "9de221b0a8e64ef3aa442553499c71cd032873dd",
+   "created_at": "2025-12-08 12:00:43"
+  },
+  {
+   "instance_id": "canopen-python__canopen-613",
+   "repo": "canopen-python/canopen",
+   "base_commit": "593f0621f41ce3f94c09322ca8414c7e649b128e",
+   "created_at": "2025-09-04 22:26:16"
+  },
+  {
+   "instance_id": "careamics__careamics-688",
+   "repo": "CAREamics/careamics",
+   "base_commit": "ec072264d09de701a1d6d9ca81e6d531ac8c6002",
+   "created_at": "2026-01-20 14:30:22"
+  },
+  {
+   "instance_id": "celestoai__smolvm-172",
+   "repo": "CelestoAI/SmolVM",
+   "base_commit": "34d68c5f960e283aca7ad0c31519bdbcab99800d",
+   "created_at": "2026-04-18 11:06:08"
+  },
+  {
+   "instance_id": "chaoss__augur-3512",
+   "repo": "chaoss/augur",
+   "base_commit": "c547710ec91e90626f475a492b93ef551f8979a7",
+   "created_at": "2026-01-06 18:59:42"
+  },
+  {
+   "instance_id": "collective__icalendar-921",
+   "repo": "collective/icalendar",
+   "base_commit": "8e3d091c880a9465f5347204e3bc9a46774a277e",
+   "created_at": "2025-10-19 06:59:58"
+  },
+  {
+   "instance_id": "con__nwb2bids-347_interface",
+   "repo": "con/nwb2bids",
+   "base_commit": "f25c84d5cad92cb44ae4c3822d113e0315022fc2",
+   "created_at": "2026-03-18 18:16:27"
+  },
+  {
+   "instance_id": "containers__ramalama-2487",
+   "repo": "containers/ramalama",
+   "base_commit": "e0e961e651c8112b56d9b0d097050a4539075b69",
+   "created_at": "2026-03-05 10:57:45"
+  },
+  {
+   "instance_id": "copier-org__copier-2646",
+   "repo": "copier-org/copier",
+   "base_commit": "e05ddfec08bc580d3e7b6a2a3e7cb18b6c761ba5",
+   "created_at": "2026-04-30 11:21:38"
+  },
+  {
+   "instance_id": "cpp-linter__cpp-linter-hooks-142",
+   "repo": "cpp-linter/cpp-linter-hooks",
+   "base_commit": "96fbc91db4870834da0332b8a933490a8ce92664",
+   "created_at": "2025-11-04 17:20:52"
+  },
+  {
+   "instance_id": "cpp-linter__cpp-linter-hooks-206_interface",
+   "repo": "cpp-linter/cpp-linter-hooks",
+   "base_commit": "ed85e29cde3d36ac5399930d2467f6d6b2c91abf",
+   "created_at": "2026-04-05 20:19:31"
+  },
+  {
+   "instance_id": "CQCL__guppylang-1259",
+   "repo": "CQCL/guppylang",
+   "base_commit": "e257b6fc2fe3793d6d8f63feca83bf5ed6643673",
+   "created_at": "2025-09-11 13:31:28"
+  },
+  {
+   "instance_id": "cs-si__eodag-2176",
+   "repo": "CS-SI/eodag",
+   "base_commit": "a058e6c2c7fb082c80bc5015e495dade6c87ae1b",
+   "created_at": "2026-05-11 10:01:25"
+  },
+  {
+   "instance_id": "cubed-dev__cubed-799",
+   "repo": "cubed-dev/cubed",
+   "base_commit": "de56acf751e5bf41bf2159466bb2fdc1bb89b3f0",
+   "created_at": "2025-09-09 15:30:19"
+  },
+  {
+   "instance_id": "dagster-io__dagster-33605",
+   "repo": "dagster-io/dagster",
+   "base_commit": "f8430dc7bf76bfab4f026165e5c5f821104298df",
+   "created_at": "2026-03-15 15:42:33"
+  },
+  {
+   "instance_id": "databricks__dbt-databricks-1428",
+   "repo": "databricks/dbt-databricks",
+   "base_commit": "80e486c6dce6d10b13ef1705a8e9255bbc4a521b",
+   "created_at": "2026-04-27 19:20:43"
+  },
+  {
+   "instance_id": "deepset-ai__haystack-10029",
+   "repo": "deepset-ai/haystack",
+   "base_commit": "b88493ac79e1b5e073922ca63e2eb31252041f0a",
+   "created_at": "2025-11-06 11:04:24"
+  },
+  {
+   "instance_id": "deepset-ai__haystack-10171",
+   "repo": "deepset-ai/haystack",
+   "base_commit": "050c25cee48d93b268dca78367145cd499468f2b",
+   "created_at": "2025-12-01 16:13:39"
+  },
+  {
+   "instance_id": "deepset-ai__haystack-10189",
+   "repo": "deepset-ai/haystack",
+   "base_commit": "e4ca3ef14971cee951900c5ab80610a8e7e1eec6",
+   "created_at": "2025-12-03 15:28:12"
+  },
+  {
+   "instance_id": "deepset-ai__haystack-10547",
+   "repo": "deepset-ai/haystack",
+   "base_commit": "02b86ce990b61ae1661738e39b49d15520df0c5f",
+   "created_at": "2026-02-10 10:52:48"
+  },
+  {
+   "instance_id": "delgan__loguru-1425",
+   "repo": "Delgan/loguru",
+   "base_commit": "36da8cca14457f6e1d1bbca25fb29ba42b2d70cb",
+   "created_at": "2026-01-04 15:16:08"
+  },
+  {
+   "instance_id": "delgan__loguru-1451",
+   "repo": "Delgan/loguru",
+   "base_commit": "2abeb0fa6d7be4b0455c6e0b580b1e9dab19005e",
+   "created_at": "2026-03-25 02:34:06"
+  },
+  {
+   "instance_id": "deltares__hydrolib-core-1049_interface",
+   "repo": "Deltares/HYDROLIB-core",
+   "base_commit": "d46486ed3c6bedb6ef63e803da6e2e4851d1d48b",
+   "created_at": "2026-04-13 09:42:06"
+  },
+  {
+   "instance_id": "destine-climate-dt__aqua-2768",
+   "repo": "DestinE-Climate-DT/AQUA",
+   "base_commit": "5b4681052abf8179571637466b45c49623858473",
+   "created_at": "2026-03-12 01:12:01"
+  },
+  {
+   "instance_id": "DiamondLightSource__mx-bluesky-1519",
+   "repo": "DiamondLightSource/mx-bluesky",
+   "base_commit": "65537a8ac82d96a69765931ec22b0060e8b828ee",
+   "created_at": "2025-12-11 14:26:05"
+  },
+  {
+   "instance_id": "django-guardian__django-guardian-904",
+   "repo": "django-guardian/django-guardian",
+   "base_commit": "d9f15f2249ec75316723f34b3659ad0ff2822d91",
+   "created_at": "2025-09-06 23:39:28"
+  },
+  {
+   "instance_id": "docling-project__docling-2983",
+   "repo": "docling-project/docling",
+   "base_commit": "0967a4d908009e2dd68b1798370ef8b9b623cf5b",
+   "created_at": "2026-02-12 00:31:36"
+  },
+  {
+   "instance_id": "docling-project__docling-2998",
+   "repo": "docling-project/docling",
+   "base_commit": "684f59f263094622ee976886d0ce229d1952dd41",
+   "created_at": "2026-02-16 01:14:19"
+  },
+  {
+   "instance_id": "dstackai__gpuhunt-197",
+   "repo": "dstackai/gpuhunt",
+   "base_commit": "acfbc4744138e5ee4ba2926bcea25cc55e2d4eb1",
+   "created_at": "2025-11-04 08:51:41"
+  },
+  {
+   "instance_id": "elementsinteractive__twyn-317",
+   "repo": "elementsinteractive/twyn",
+   "base_commit": "640e122012020a269f3793743c2a812ff89af259",
+   "created_at": "2025-09-10 12:30:56"
+  },
+  {
+   "instance_id": "equinor__ert-11988",
+   "repo": "equinor/ert",
+   "base_commit": "90acfd0b4a1a15bcbbda56927cacf8e24e1fa728",
+   "created_at": "2025-10-02 12:03:52"
+  },
+  {
+   "instance_id": "equinor__ert-12275",
+   "repo": "equinor/ert",
+   "base_commit": "4e4d78472782796eab53c0a4e97c58bd1c5e28df",
+   "created_at": "2025-11-12 12:49:56"
+  },
+  {
+   "instance_id": "equinor__ert-12491",
+   "repo": "equinor/ert",
+   "base_commit": "b6358c9792a0c618dc5eda5e75ac218177fe1816",
+   "created_at": "2025-12-11 07:05:40"
+  },
+  {
+   "instance_id": "fsspec__universal_pathlib-495",
+   "repo": "fsspec/universal_pathlib",
+   "base_commit": "3d0bb4ccf4058c6c8f9607b5a8a7fca56affa284",
+   "created_at": "2025-12-02 22:50:06"
+  },
+  {
+   "instance_id": "fsspec__universal_pathlib-529",
+   "repo": "fsspec/universal_pathlib",
+   "base_commit": "fb7703d7883e5bdc5f3eda6caab3a7b974dd806e",
+   "created_at": "2026-01-04 23:27:20"
+  },
+  {
+   "instance_id": "gammapy__gammapy-6409",
+   "repo": "gammapy/gammapy",
+   "base_commit": "31b2a1a126325f34c86c4230536885dc3e61a3ba",
+   "created_at": "2026-02-18 02:04:56"
+  },
+  {
+   "instance_id": "geopython__pygeoapi-2338",
+   "repo": "geopython/pygeoapi",
+   "base_commit": "a1770a775133a8f131f1d0691d3cb7a93140011a",
+   "created_at": "2026-05-11 03:12:03"
+  },
+  {
+   "instance_id": "getmoto__moto-9350",
+   "repo": "getmoto/moto",
+   "base_commit": "5397d3a86f6f399d55b46a9835ff793ad426199b",
+   "created_at": "2025-10-08 21:04:53"
+  },
+  {
+   "instance_id": "getmoto__moto-9356",
+   "repo": "getmoto/moto",
+   "base_commit": "5e8fb164fbc35080e3a8a07f9b666334d4d04943",
+   "created_at": "2025-10-10 19:39:21"
+  },
+  {
+   "instance_id": "getmoto__moto-9440",
+   "repo": "getmoto/moto",
+   "base_commit": "0d4bc173263913b289a77ed0f046532597c4e46e",
+   "created_at": "2025-11-04 01:20:26"
+  },
+  {
+   "instance_id": "getmoto__moto-9549",
+   "repo": "getmoto/moto",
+   "base_commit": "7162cdc6845bbfaece5e9007b4d1e850bfa6fe6a",
+   "created_at": "2025-12-14 05:48:10"
+  },
+  {
+   "instance_id": "getmoto__moto-9590",
+   "repo": "getmoto/moto",
+   "base_commit": "8d4f40cdce23605b65e091c686bc6111a16ee299",
+   "created_at": "2025-12-27 01:25:00"
+  },
+  {
+   "instance_id": "getmoto__moto-9727",
+   "repo": "getmoto/moto",
+   "base_commit": "205025bdfc302aec5e2f2eed20f1b58830b24914",
+   "created_at": "2026-02-09 16:57:30"
+  },
+  {
+   "instance_id": "getmoto__moto-9841",
+   "repo": "getmoto/moto",
+   "base_commit": "830a798c567bcdded2447efb7e98ca6d89b6a8c5",
+   "created_at": "2026-03-09 23:11:49"
+  },
+  {
+   "instance_id": "getmoto__moto-9903",
+   "repo": "getmoto/moto",
+   "base_commit": "ee7a095c75c83ef407ff2a0bc33769efb72666a5",
+   "created_at": "2026-03-23 19:41:08"
+  },
+  {
+   "instance_id": "gitpython-developers__GitPython-2075",
+   "repo": "gitpython-developers/GitPython",
+   "base_commit": "963b6f8bbe0410f11a41839c22affccf6e80a743",
+   "created_at": "2025-10-07 19:21:31"
+  },
+  {
+   "instance_id": "google__adk-python-3088",
+   "repo": "google/adk-python",
+   "base_commit": "b17c8f19e5fc67180d1bdc621f84cd43e357571c",
+   "created_at": "2025-10-03 21:08:25"
+  },
+  {
+   "instance_id": "google__secops-wrapper-119",
+   "repo": "google/secops-wrapper",
+   "base_commit": "08f4655248d62340e0aa4d22f044c5a30d665872",
+   "created_at": "2025-09-17 09:26:19"
+  },
+  {
+   "instance_id": "graphistry__pygraphistry-1107_interface",
+   "repo": "graphistry/pygraphistry",
+   "base_commit": "38d8507564fd38971fbe16d603d8226892d2e8fc",
+   "created_at": "2026-04-08 23:33:51"
+  },
+  {
+   "instance_id": "graphistry__pygraphistry-1277",
+   "repo": "graphistry/pygraphistry",
+   "base_commit": "8687aeaf91235259fa6f5fe0d9b16884ad6cd73b",
+   "created_at": "2026-05-04 02:58:43"
+  },
+  {
+   "instance_id": "harumiweb__exstruct-113",
+   "repo": "harumiWeb/exstruct",
+   "base_commit": "c0c8c52d0a3b507ac13feb4b700e5d858f2a81dc",
+   "created_at": "2026-03-21 08:53:23"
+  },
+  {
+   "instance_id": "hdmf-dev__hdmf-1374",
+   "repo": "hdmf-dev/hdmf",
+   "base_commit": "a21f308c40f5fb35505120aeae12ef43a2b9672a",
+   "created_at": "2026-01-09 23:03:31"
+  },
+  {
+   "instance_id": "hiero-ledger__hiero-sdk-python-1914_interface",
+   "repo": "hiero-ledger/hiero-sdk-python",
+   "base_commit": "93eed7c340fb65356c3a06ac78f74402c3a169af",
+   "created_at": "2026-03-06 14:12:44"
+  },
+  {
+   "instance_id": "hiero-ledger__hiero-sdk-python-2007_interface",
+   "repo": "hiero-ledger/hiero-sdk-python",
+   "base_commit": "f639c82eb509a540c1d9ebaf42ba14a835a15ca5",
+   "created_at": "2026-03-20 10:52:28"
+  },
+  {
+   "instance_id": "hkuds__openharness-217",
+   "repo": "HKUDS/OpenHarness",
+   "base_commit": "1bcdc62a50db14c2f0bf5dbee05b2bdc369dffb3",
+   "created_at": "2026-04-30 00:28:27"
+  },
+  {
+   "instance_id": "holoviz__holoviews-6783",
+   "repo": "holoviz/holoviews",
+   "base_commit": "776ba030b46ad2f140619ff461dd0e64d0b8ad8a",
+   "created_at": "2026-01-22 08:49:37"
+  },
+  {
+   "instance_id": "holoviz__param-1073",
+   "repo": "holoviz/param",
+   "base_commit": "bbaea5b8a64452d346afa05f6b18ba9cdd41f5a7",
+   "created_at": "2025-09-23 19:16:59"
+  },
+  {
+   "instance_id": "holoviz__param-1117",
+   "repo": "holoviz/param",
+   "base_commit": "833c8f05f7a47fa1476620307ef7fd447c45e6fb",
+   "created_at": "2026-03-25 14:50:38"
+  },
+  {
+   "instance_id": "huggingface__huggingface_hub-4056",
+   "repo": "huggingface/huggingface_hub",
+   "base_commit": "6983a4d3d2bdcbd09c6ea08acae64cdf83ccb2e4",
+   "created_at": "2026-04-06 15:39:13"
+  },
+  {
+   "instance_id": "huggingface__transformers-43721_interface",
+   "repo": "huggingface/transformers",
+   "base_commit": "8ead2903d5ea3799cc3bb43670fddccac1d80f23",
+   "created_at": "2026-02-03 20:01:08"
+  },
+  {
+   "instance_id": "huggingface__transformers-44080",
+   "repo": "huggingface/transformers",
+   "base_commit": "16a3bea3b88e0530f78d4d7a2fcc0f6387ac72b9",
+   "created_at": "2026-02-17 09:53:36"
+  },
+  {
+   "instance_id": "huggingface__trl-5135",
+   "repo": "huggingface/trl",
+   "base_commit": "c3ead5b556d9ea588b4a95cae1775913118ddbc6",
+   "created_at": "2026-02-20 10:46:54"
+  },
+  {
+   "instance_id": "hynek__svcs-140",
+   "repo": "hynek/svcs",
+   "base_commit": "f8585ce9f8fe6df9da4cf405cec1e03f4708be26",
+   "created_at": "2025-09-10 14:10:27"
+  },
+  {
+   "instance_id": "idaholab__MontePy-850",
+   "repo": "idaholab/MontePy",
+   "base_commit": "c9b335be270677708431fe575f830352cfbbeede",
+   "created_at": "2025-11-04 15:00:09"
+  },
+  {
+   "instance_id": "idaholab__montepy-882",
+   "repo": "idaholab/MontePy",
+   "base_commit": "736f09ffb94f3b102cd1f0b33ac246160289ce87",
+   "created_at": "2026-01-18 01:51:09"
+  },
+  {
+   "instance_id": "idaholab__montepy-933_interface",
+   "repo": "idaholab/MontePy",
+   "base_commit": "fbc03d10eb552cf82acc788ef70d120adec8130c",
+   "created_at": "2026-03-20 15:47:06"
+  },
+  {
+   "instance_id": "iluvcapra__pycmx-15",
+   "repo": "iluvcapra/pycmx",
+   "base_commit": "81997c763eb2610c75319d3b7ecf72895ae79452",
+   "created_at": "2025-12-15 23:35:35"
+  },
+  {
+   "instance_id": "ImperialCollegeLondon__proCAT-503",
+   "repo": "ImperialCollegeLondon/proCAT",
+   "base_commit": "4c95c6846271f3a53fb0fde8c05136dbcad05481",
+   "created_at": "2025-12-18 14:32:19"
+  },
+  {
+   "instance_id": "imperialcollegelondon__pyrealm-593",
+   "repo": "ImperialCollegeLondon/pyrealm",
+   "base_commit": "83686e7af6c6e6802f12319430bbd314bcf503d6",
+   "created_at": "2026-01-19 13:54:15"
+  },
+  {
+   "instance_id": "ImperialCollegeLondon__virtual_ecosystem-1232",
+   "repo": "ImperialCollegeLondon/virtual_ecosystem",
+   "base_commit": "eb1cb98025eff192c5087283236040b42e08dd21",
+   "created_at": "2025-12-17 10:49:57"
+  },
+  {
+   "instance_id": "ipython__ipython-14982",
+   "repo": "ipython/ipython",
+   "base_commit": "10c8e9cf375f41a3bc27bbcfe45be21f37bdb947",
+   "created_at": "2025-09-03 12:09:11"
+  },
+  {
+   "instance_id": "itsdnns__docsight-437",
+   "repo": "itsDNNS/docsight",
+   "base_commit": "f478c6eeded6e97b3b1dafc55108522b6c693c3b",
+   "created_at": "2026-05-06 09:32:16"
+  },
+  {
+   "instance_id": "Jc2k__aiohomekit-500",
+   "repo": "Jc2k/aiohomekit",
+   "base_commit": "8bbef58665d18f370d508d50271b1a7b8861dbf0",
+   "created_at": "2025-09-14 12:40:04"
+  },
+  {
+   "instance_id": "jlowin__fastmcp-3235",
+   "repo": "jlowin/fastmcp",
+   "base_commit": "3f2090f10a72f36772ce8872671d2ac195df2ad2",
+   "created_at": "2026-02-19 16:16:53"
+  },
+  {
+   "instance_id": "jlowin__fastmcp-3237_interface",
+   "repo": "jlowin/fastmcp",
+   "base_commit": "390a11d7d2307dbe555a86d4f6f54ff049bd55cc",
+   "created_at": "2026-02-19 17:18:11"
+  },
+  {
+   "instance_id": "jmcgeheeiv__pyfakefs-1286",
+   "repo": "jmcgeheeiv/pyfakefs",
+   "base_commit": "50579559c7957f5350a5d2408e2827b355e1017c",
+   "created_at": "2026-02-22 08:19:23"
+  },
+  {
+   "instance_id": "joke2k__django-environ-592",
+   "repo": "joke2k/django-environ",
+   "base_commit": "e2e50deaa5ffcb06ad39c352a99c226a19968e43",
+   "created_at": "2026-02-21 01:09:29"
+  },
+  {
+   "instance_id": "joshuadavidthomas__django-bird-239",
+   "repo": "joshuadavidthomas/django-bird",
+   "base_commit": "337ab6d4341e04ac3f048eabbd295546519ccef0",
+   "created_at": "2026-02-11 06:20:26"
+  },
+  {
+   "instance_id": "jsonpickle__jsonpickle-587",
+   "repo": "jsonpickle/jsonpickle",
+   "base_commit": "f0a02c4dd46c5919669767ad84462937f3fbebf7",
+   "created_at": "2026-01-11 19:48:21"
+  },
+  {
+   "instance_id": "jsonpickle__jsonpickle-588",
+   "repo": "jsonpickle/jsonpickle",
+   "base_commit": "8fcc1a7a0d22943d8343453b6532aaed45d445d3",
+   "created_at": "2026-01-12 16:20:27"
+  },
+  {
+   "instance_id": "keras-team__keras-22138",
+   "repo": "keras-team/keras",
+   "base_commit": "ed77fa1bccb8fbc2b4a4098e521ef5b278076d24",
+   "created_at": "2026-02-09 16:28:44"
+  },
+  {
+   "instance_id": "keras-team__keras-22316",
+   "repo": "keras-team/keras",
+   "base_commit": "34e55d4561ba2a61bbc72562e88b3704e0a43081",
+   "created_at": "2026-03-01 00:54:12"
+  },
+  {
+   "instance_id": "keras-team__keras-22330",
+   "repo": "keras-team/keras",
+   "base_commit": "e0698d2c3351dfabf80bb0e3b867576c1e06c874",
+   "created_at": "2026-03-02 18:17:38"
+  },
+  {
+   "instance_id": "keras-team__keras-22642",
+   "repo": "keras-team/keras",
+   "base_commit": "2b176bc33233762863fa5f3d60e060de3be934e5",
+   "created_at": "2026-04-06 21:57:28"
+  },
+  {
+   "instance_id": "koxudaxi__datamodel-code-generator-2993",
+   "repo": "koxudaxi/datamodel-code-generator",
+   "base_commit": "0f1bc0f41d758cfda02d4438cdbbd3c3b4265102",
+   "created_at": "2026-02-14 04:01:06"
+  },
+  {
+   "instance_id": "koxudaxi__datamodel-code-generator-2996",
+   "repo": "koxudaxi/datamodel-code-generator",
+   "base_commit": "34b7d29a52765b2c6f3da920bc525bf37f0db624",
+   "created_at": "2026-02-14 06:19:51"
+  },
+  {
+   "instance_id": "koxudaxi__datamodel-code-generator-2998",
+   "repo": "koxudaxi/datamodel-code-generator",
+   "base_commit": "2b659f001e744e1e95e464ab0d613fae0122bc01",
+   "created_at": "2026-02-14 06:35:10"
+  },
+  {
+   "instance_id": "koxudaxi__datamodel-code-generator-3046",
+   "repo": "koxudaxi/datamodel-code-generator",
+   "base_commit": "f3f391271adacdab12a460e1c88f42c61181c25e",
+   "created_at": "2026-03-10 16:48:04"
+  },
+  {
+   "instance_id": "koxudaxi__datamodel-code-generator-3070",
+   "repo": "koxudaxi/datamodel-code-generator",
+   "base_commit": "5dcbc09a9086febf62e92f11b88215584d3a5c45",
+   "created_at": "2026-04-04 06:59:19"
+  },
+  {
+   "instance_id": "koxudaxi__datamodel-code-generator-3071",
+   "repo": "koxudaxi/datamodel-code-generator",
+   "base_commit": "5a8cd0da7a6d17bfd70c5c2623699ffc6aa818fd",
+   "created_at": "2026-04-04 07:33:36"
+  },
+  {
+   "instance_id": "kubeflow__pipelines-13112",
+   "repo": "kubeflow/pipelines",
+   "base_commit": "98f5b7a300ee52d6c530b429558b718ade9fdb7a",
+   "created_at": "2026-03-23 23:40:27"
+  },
+  {
+   "instance_id": "line__line-bot-sdk-python-981_interface",
+   "repo": "line/line-bot-sdk-python",
+   "base_commit": "f0d222be1a25553005bff35c2ace82424a683fd9",
+   "created_at": "2026-04-01 07:44:57"
+  },
+  {
+   "instance_id": "linkml__linkml-3098",
+   "repo": "linkml/linkml",
+   "base_commit": "6971be8c409e364ec5e0ff2f0b80d925b81d8260",
+   "created_at": "2026-01-26 15:40:05"
+  },
+  {
+   "instance_id": "litestar-org__advanced-alchemy-673_interface",
+   "repo": "litestar-org/advanced-alchemy",
+   "base_commit": "7c015d31e68bea7726079e943eb900e37205d42d",
+   "created_at": "2026-02-06 21:58:50"
+  },
+  {
+   "instance_id": "macbre__sql-metadata-625_interface",
+   "repo": "macbre/sql-metadata",
+   "base_commit": "425b46326d4a7b7e937f3ef19b321df0512b9163",
+   "created_at": "2026-05-07 20:17:44"
+  },
+  {
+   "instance_id": "marimo-team__marimo-6629",
+   "repo": "marimo-team/marimo",
+   "base_commit": "cf07633a02fba9c40cd4c4e82d4b014c89771aab",
+   "created_at": "2025-10-01 16:31:09"
+  },
+  {
+   "instance_id": "marimo-team__marimo-6819",
+   "repo": "marimo-team/marimo",
+   "base_commit": "e1006ded30c75c04b395b93cb70f5396d60ca25f",
+   "created_at": "2025-10-16 23:02:23"
+  },
+  {
+   "instance_id": "marimo-team__marimo-8387_interface",
+   "repo": "marimo-team/marimo",
+   "base_commit": "7bde0e61b63abdce5011a60c79315e3f9570b087",
+   "created_at": "2026-02-20 06:55:43"
+  },
+  {
+   "instance_id": "marimo-team__marimo-8401",
+   "repo": "marimo-team/marimo",
+   "base_commit": "ba84c0f362524945984df58ce94715737e967794",
+   "created_at": "2026-02-20 22:10:54"
+  },
+  {
+   "instance_id": "Marker-Inc-Korea__AutoRAG-1147",
+   "repo": "Marker-Inc-Korea/AutoRAG",
+   "base_commit": "f6bd7da1ab75966f8f18f1a81aa532251e573da6",
+   "created_at": "2025-09-20 02:30:14"
+  },
+  {
+   "instance_id": "Marker-Inc-Korea__AutoRAG-1150",
+   "repo": "Marker-Inc-Korea/AutoRAG",
+   "base_commit": "e4689ad6aaff1c60bfa8d130b04bc3740f636c19",
+   "created_at": "2025-09-23 05:07:14"
+  },
+  {
+   "instance_id": "marshmallow-code__marshmallow-2925_interface",
+   "repo": "marshmallow-code/marshmallow",
+   "base_commit": "546be2f728faca68a88130a6406c20994355c853",
+   "created_at": "2026-03-25 16:50:58"
+  },
+  {
+   "instance_id": "materialsproject__fireworks-548",
+   "repo": "materialsproject/fireworks",
+   "base_commit": "cbc2a5a4285d7f7478b24aff09b43975d821659c",
+   "created_at": "2025-09-02 10:16:10"
+  },
+  {
+   "instance_id": "meltano__meltano-9929",
+   "repo": "meltano/meltano",
+   "base_commit": "ce63b6beccbfd4880d84ed7a4f8f09f40aed5261",
+   "created_at": "2026-04-04 02:15:27"
+  },
+  {
+   "instance_id": "meltano__meltano-9950",
+   "repo": "meltano/meltano",
+   "base_commit": "2a7a073b14a54011caaaea2ea40d36e5d97220d6",
+   "created_at": "2026-04-10 20:30:39"
+  },
+  {
+   "instance_id": "mempalace__mempalace-1004",
+   "repo": "MemPalace/mempalace",
+   "base_commit": "ba30ab6951c0e19f3d23828d371dd2f5af0be783",
+   "created_at": "2026-04-18 17:52:28"
+  },
+  {
+   "instance_id": "microsoft__Agents-for-python-264",
+   "repo": "microsoft/Agents-for-python",
+   "base_commit": "319d84eb43273614d4fffeef85ab45b8313a9dc5",
+   "created_at": "2025-12-01 18:05:40"
+  },
+  {
+   "instance_id": "microsoft__fabric-cicd-670",
+   "repo": "microsoft/fabric-cicd",
+   "base_commit": "f0e1c5042cfe0601c979f4aa49197ccbb6eef104",
+   "created_at": "2025-12-07 07:20:38"
+  },
+  {
+   "instance_id": "microsoft__qcodes-8039",
+   "repo": "microsoft/Qcodes",
+   "base_commit": "fb48ab0c58eb2c144ab634d0b4209e70334c89ab",
+   "created_at": "2026-04-13 10:36:33"
+  },
+  {
+   "instance_id": "milvus-io__pymilvus-3273",
+   "repo": "milvus-io/pymilvus",
+   "base_commit": "921e74b94e6fbb7ea80aba3b8080e25a3ca2b0ba",
+   "created_at": "2026-02-10 05:14:07"
+  },
+  {
+   "instance_id": "mlte-team__mlte-809",
+   "repo": "mlte-team/mlte",
+   "base_commit": "e76d1e8e58a386f1bc13dbb0e7fc3b50ba3a5a28",
+   "created_at": "2025-11-13 17:49:43"
+  },
+  {
+   "instance_id": "mmornati__home-assistant-csnet-home-132",
+   "repo": "mmornati/home-assistant-csnet-home",
+   "base_commit": "2d7f57aeeef61b14efbf4db5dd3d61db61c59b74",
+   "created_at": "2025-11-15 06:55:12"
+  },
+  {
+   "instance_id": "modelcontextprotocol__python-sdk-1864",
+   "repo": "modelcontextprotocol/python-sdk",
+   "base_commit": "edf0950a6a8afa48ae2dd99f02d56d383c5904bb",
+   "created_at": "2026-01-15 15:40:41"
+  },
+  {
+   "instance_id": "narwhals-dev__narwhals-3251",
+   "repo": "narwhals-dev/narwhals",
+   "base_commit": "92147754155dbf13de61b051418919f10012b89d",
+   "created_at": "2025-10-28 20:02:27"
+  },
+  {
+   "instance_id": "narwhals-dev__narwhals-3478",
+   "repo": "narwhals-dev/narwhals",
+   "base_commit": "9ba58053305673582706004813777dfb260885fa",
+   "created_at": "2026-02-16 11:02:59"
+  },
+  {
+   "instance_id": "narwhals-dev__narwhals-3480",
+   "repo": "narwhals-dev/narwhals",
+   "base_commit": "9ba58053305673582706004813777dfb260885fa",
+   "created_at": "2026-02-19 15:51:39"
+  },
+  {
+   "instance_id": "ncar__geocat-comp-807",
+   "repo": "NCAR/geocat-comp",
+   "base_commit": "004f90d7dd9c18e2528f45db5a0eafe2b92ab117",
+   "created_at": "2026-01-13 22:46:44"
+  },
+  {
+   "instance_id": "ncar__geocat-comp-811",
+   "repo": "NCAR/geocat-comp",
+   "base_commit": "ac744837f2366554f0c4dc235fcf36879b4c1345",
+   "created_at": "2026-01-17 01:44:24"
+  },
+  {
+   "instance_id": "nesquena__hermes-webui-330_interface",
+   "repo": "nesquena/hermes-webui",
+   "base_commit": "9c44d0cf3e7623937dc9c81f3f0562bafa668c6a",
+   "created_at": "2026-04-12 21:10:36"
+  },
+  {
+   "instance_id": "nesquena__hermes-webui-1818",
+   "repo": "nesquena/hermes-webui",
+   "base_commit": "a8de4e7c0a29750fc9a2e83e2ad8eed324b0467e",
+   "created_at": "2026-05-07 13:43:28"
+  },
+  {
+   "instance_id": "nesquena__hermes-webui-2056",
+   "repo": "nesquena/hermes-webui",
+   "base_commit": "b766b7f7596e931f141d3ad26a507807baa69774",
+   "created_at": "2026-05-11 05:49:36"
+  },
+  {
+   "instance_id": "networkx__networkx-8369",
+   "repo": "networkx/networkx",
+   "base_commit": "3dacd1bdcbd976b9e148a60ddebafd868c0a52f3",
+   "created_at": "2025-12-05 17:39:56"
+  },
+  {
+   "instance_id": "newton-physics__newton-1582",
+   "repo": "newton-physics/newton",
+   "base_commit": "31c5ba425da2b3443998402dedfbb9dc9cfca5e3",
+   "created_at": "2026-02-09 12:19:04"
+  },
+  {
+   "instance_id": "newton-physics__newton-1653",
+   "repo": "newton-physics/newton",
+   "base_commit": "36e8adacaf011705ea57e995a713d6e77c85e280",
+   "created_at": "2026-02-16 14:47:26"
+  },
+  {
+   "instance_id": "niconoe__pyinaturalist-643",
+   "repo": "niconoe/pyinaturalist",
+   "base_commit": "279e153e7af1f2a749b89d6191ca965362b3ec23",
+   "created_at": "2026-01-07 19:16:42"
+  },
+  {
+   "instance_id": "nolar__kopf-1225",
+   "repo": "nolar/kopf",
+   "base_commit": "5c55b89a16354595239234a12fb439db4195f9e0",
+   "created_at": "2026-01-30 16:28:51"
+  },
+  {
+   "instance_id": "octodns__octodns-1300",
+   "repo": "octodns/octodns",
+   "base_commit": "a938ac822225a9159f7a0ffab178f9b804a823d7",
+   "created_at": "2025-09-08 20:30:54"
+  },
+  {
+   "instance_id": "oemof__tespy-921",
+   "repo": "oemof/tespy",
+   "base_commit": "28670b60d89b48d1879ada9056c37b982836e51d",
+   "created_at": "2026-03-26 06:19:08"
+  },
+  {
+   "instance_id": "olofk__fusesoc-776_interface",
+   "repo": "olofk/fusesoc",
+   "base_commit": "d2e6e720222f57cb66d6c303a326d336c582aade",
+   "created_at": "2026-05-07 12:05:49"
+  },
+  {
+   "instance_id": "oOo0oOo__leanclient-24",
+   "repo": "oOo0oOo/leanclient",
+   "base_commit": "2343b4ef41e8cf82676c2a999b61981e2b57c244",
+   "created_at": "2025-12-14 17:48:36"
+  },
+  {
+   "instance_id": "open-telemetry__opentelemetry-python-4891",
+   "repo": "open-telemetry/opentelemetry-python",
+   "base_commit": "76ea42f46e66ef71f809c4b79d9b662dd9fb0133",
+   "created_at": "2026-02-01 11:56:11"
+  },
+  {
+   "instance_id": "openai__openai-agents-python-1782",
+   "repo": "openai/openai-agents-python",
+   "base_commit": "d91e39cd3ae9dbb914fa1c8f096d35177ca0b41b",
+   "created_at": "2025-09-22 08:52:23"
+  },
+  {
+   "instance_id": "openai__openai-agents-python-1965",
+   "repo": "openai/openai-agents-python",
+   "base_commit": "c422030714bc2e90d052fefdca79d551b64124ba",
+   "created_at": "2025-10-21 14:13:20"
+  },
+  {
+   "instance_id": "openai__openai-agents-python-1984",
+   "repo": "openai/openai-agents-python",
+   "base_commit": "a714cf48c312600d02ac8cf41056cacb62897bcc",
+   "created_at": "2025-10-23 10:39:58"
+  },
+  {
+   "instance_id": "openai__openai-agents-python-2144",
+   "repo": "openai/openai-agents-python",
+   "base_commit": "509ddda77841ac1a6ce399e0d5fccde71a0a2f38",
+   "created_at": "2025-12-03 19:21:23"
+  },
+  {
+   "instance_id": "opsmill__infrahub-8407",
+   "repo": "opsmill/infrahub",
+   "base_commit": "e878c556c3e72d866899a15a8523fcf39777a441",
+   "created_at": "2026-02-17 23:38:36"
+  },
+  {
+   "instance_id": "opsmill__infrahub-8423",
+   "repo": "opsmill/infrahub",
+   "base_commit": "266f46058ec88c749810d3561fc12ce7c0fab8c0",
+   "created_at": "2026-02-19 16:08:58"
+  },
+  {
+   "instance_id": "optuna__optuna-6428",
+   "repo": "optuna/optuna",
+   "base_commit": "52f6ef6ffe5a2a4c6386f8d83cd39335d7f3a2ae",
+   "created_at": "2026-02-09 05:12:21"
+  },
+  {
+   "instance_id": "pab1it0__prometheus-mcp-server-76",
+   "repo": "pab1it0/prometheus-mcp-server",
+   "base_commit": "77960b91ec6a2c363656015a39c2057ef8083743",
+   "created_at": "2025-09-21 09:23:33"
+  },
+  {
+   "instance_id": "packit__packit-2684",
+   "repo": "packit/packit",
+   "base_commit": "291d7454fae10517108726f5a773b846a9e2e913",
+   "created_at": "2026-02-10 15:25:33"
+  },
+  {
+   "instance_id": "pallets-eco__wtforms-892_interface",
+   "repo": "pallets-eco/wtforms",
+   "base_commit": "22fb0dc9cc57327e5a7ce620f59d7f6da1788343",
+   "created_at": "2026-05-03 13:17:49"
+  },
+  {
+   "instance_id": "pallets__click-3239",
+   "repo": "pallets/click",
+   "base_commit": "60cad4ad6583bf885c62d6f4597f3555d1ee1a0f",
+   "created_at": "2026-03-02 07:53:49"
+  },
+  {
+   "instance_id": "pasqal-io__Pulser-936",
+   "repo": "pasqal-io/Pulser",
+   "base_commit": "62e0e73b325da128feaffc5a1fe849bc53f87270",
+   "created_at": "2025-09-18 15:55:26"
+  },
+  {
+   "instance_id": "pipecat-ai__pipecat-4283",
+   "repo": "pipecat-ai/pipecat",
+   "base_commit": "a8660aabfe3316b31f36d7c94559012069455f1f",
+   "created_at": "2026-04-13 22:11:49"
+  },
+  {
+   "instance_id": "piskvorky__smart_open-889",
+   "repo": "piskvorky/smart_open",
+   "base_commit": "14acc8c576311660addf6eae306517653ca9743f",
+   "created_at": "2025-10-11 08:27:13"
+  },
+  {
+   "instance_id": "piskvorky__smart_open-892",
+   "repo": "piskvorky/smart_open",
+   "base_commit": "8add46d09b1e4c29b0dbe33dce1602f41a504313",
+   "created_at": "2025-10-11 19:46:17"
+  },
+  {
+   "instance_id": "PlasmaControl__DESC-1901",
+   "repo": "PlasmaControl/DESC",
+   "base_commit": "702ae496397a3703d8b0c0a2586f6754016f5a10",
+   "created_at": "2025-09-08 18:16:58"
+  },
+  {
+   "instance_id": "plone__cookieplone-templates-308",
+   "repo": "plone/cookieplone-templates",
+   "base_commit": "f1a7c13dd20b219da12d5ed60704c528a6ce81db",
+   "created_at": "2025-11-15 01:35:13"
+  },
+  {
+   "instance_id": "plone__cookieplone-templates-322",
+   "repo": "plone/cookieplone-templates",
+   "base_commit": "45e98bbbd680dc833b98d6591eee3497872a0585",
+   "created_at": "2025-12-05 22:21:03"
+  },
+  {
+   "instance_id": "prometheus__client_python-1134",
+   "repo": "prometheus/client_python",
+   "base_commit": "47d2b416d75f5569863e2bb08a15b58218563814",
+   "created_at": "2025-09-11 19:17:48"
+  },
+  {
+   "instance_id": "psd-tools__psd-tools-551",
+   "repo": "psd-tools/psd-tools",
+   "base_commit": "3b96d5344e8ffd5d3bf49022c10b43d1cbc75084",
+   "created_at": "2026-02-24 02:11:01"
+  },
+  {
+   "instance_id": "psd-tools__psd-tools-593",
+   "repo": "psd-tools/psd-tools",
+   "base_commit": "b185d66beb9055b567106e0b90d6d786c62e27b4",
+   "created_at": "2026-03-17 11:04:07"
+  },
+  {
+   "instance_id": "psf__black-4952",
+   "repo": "psf/black",
+   "base_commit": "b41acd6ebbe76e18b49286166924f73f01c3fd02",
+   "created_at": "2026-01-10 22:44:10"
+  },
+  {
+   "instance_id": "py-pdf__pdfly-219",
+   "repo": "py-pdf/pdfly",
+   "base_commit": "b3aad8e327d7a8f0cb79b7e02c2f1e2d26563007",
+   "created_at": "2025-12-19 09:12:18"
+  },
+  {
+   "instance_id": "pyccel__pyccel-2454",
+   "repo": "pyccel/pyccel",
+   "base_commit": "73787ab09d17fc6495bbf2a48b3e31a76b45113b",
+   "created_at": "2025-09-22 21:20:01"
+  },
+  {
+   "instance_id": "pyccel__pyccel-2512",
+   "repo": "pyccel/pyccel",
+   "base_commit": "2d927f2a13a6c8be817040c7a0138e409876b97d",
+   "created_at": "2025-11-19 23:25:08"
+  },
+  {
+   "instance_id": "pycqa__isort-2491",
+   "repo": "PyCQA/isort",
+   "base_commit": "ae91dadf34951e316d5a81ffe7ac086952f1da65",
+   "created_at": "2026-03-12 21:21:11"
+  },
+  {
+   "instance_id": "pydy__pydy-525",
+   "repo": "pydy/pydy",
+   "base_commit": "0d5b4be7357eddb56291586c7b174da774981fa2",
+   "created_at": "2025-09-03 12:56:22"
+  },
+  {
+   "instance_id": "pyfar__pyrato-113",
+   "repo": "pyfar/pyrato",
+   "base_commit": "0fa4e4c7637a17578f1505c4928d12c4aeb10585",
+   "created_at": "2026-01-06 15:24:25"
+  },
+  {
+   "instance_id": "pyinfra-dev__pyinfra-1630",
+   "repo": "pyinfra-dev/pyinfra",
+   "base_commit": "e3f41dca4bd5150eb913199c6e512fe0f776eb1f",
+   "created_at": "2026-03-24 13:55:45"
+  },
+  {
+   "instance_id": "pyinfra-dev__pyinfra-1665",
+   "repo": "pyinfra-dev/pyinfra",
+   "base_commit": "185f7dbec96f8e1d5f7cfefe0f325f99ab73927a",
+   "created_at": "2026-04-14 07:06:21"
+  },
+  {
+   "instance_id": "pyinfra-dev__pyinfra-1679_interface",
+   "repo": "pyinfra-dev/pyinfra",
+   "base_commit": "185f7dbec96f8e1d5f7cfefe0f325f99ab73927a",
+   "created_at": "2026-04-20 07:41:05"
+  },
+  {
+   "instance_id": "pyjanitor-devs__pyjanitor-1593",
+   "repo": "pyjanitor-devs/pyjanitor",
+   "base_commit": "99011fe0f4a994ac13cd040a785a683a2f16e898",
+   "created_at": "2026-02-11 10:41:24"
+  },
+  {
+   "instance_id": "pymc-devs__pytensor-1668",
+   "repo": "pymc-devs/pytensor",
+   "base_commit": "27c21cd65e347f8245012eb65486c26dc341915c",
+   "created_at": "2025-10-15 14:27:07"
+  },
+  {
+   "instance_id": "pymc-devs__pytensor-1701",
+   "repo": "pymc-devs/pytensor",
+   "base_commit": "60ba7c714a714dfbc1ec66cb5c8531dcd3ba1cf1",
+   "created_at": "2025-10-28 10:15:24"
+  },
+  {
+   "instance_id": "pypa__build-1027",
+   "repo": "pypa/build",
+   "base_commit": "27b67b2db1807f2547af670e4d14401a6605bf3b",
+   "created_at": "2026-04-10 18:48:38"
+  },
+  {
+   "instance_id": "pypa__twine-1309",
+   "repo": "pypa/twine",
+   "base_commit": "cab618fb122bb2d1e6c042f5bf0c5a8b8e2573bc",
+   "created_at": "2026-04-17 17:23:13"
+  },
+  {
+   "instance_id": "pypa__virtualenv-3015",
+   "repo": "pypa/virtualenv",
+   "base_commit": "15f475a4f3aceb971b6a435297f0514c2c0c4f36",
+   "created_at": "2026-01-10 06:24:10"
+  },
+  {
+   "instance_id": "PyPSA__linopy-494",
+   "repo": "PyPSA/linopy",
+   "base_commit": "397152d709bcd7e54834bad6c8547b846afdf337",
+   "created_at": "2025-09-07 10:43:10"
+  },
+  {
+   "instance_id": "PyPSA__PyPSA-1404",
+   "repo": "PyPSA/PyPSA",
+   "base_commit": "6772f4bc47c5860183ffc394747e7e379314cec1",
+   "created_at": "2025-10-16 08:18:54"
+  },
+  {
+   "instance_id": "PyPSA__PyPSA-1414",
+   "repo": "PyPSA/PyPSA",
+   "base_commit": "91871cec23accbfe1e314ed10ba6c2d6d3555f14",
+   "created_at": "2025-10-20 07:36:20"
+  },
+  {
+   "instance_id": "PyPSA__PyPSA-1498",
+   "repo": "PyPSA/PyPSA",
+   "base_commit": "608a336c99b5ec3ac56c8925a0609e260c7c3072",
+   "created_at": "2025-12-17 10:25:53"
+  },
+  {
+   "instance_id": "pypsa__pypsa-1653",
+   "repo": "PyPSA/PyPSA",
+   "base_commit": "50bcbb8c1ba6319167a8bf0059cf18114b2f2eac",
+   "created_at": "2026-04-13 08:33:16"
+  },
+  {
+   "instance_id": "pytest-dev__pyfakefs-1269",
+   "repo": "pytest-dev/pyfakefs",
+   "base_commit": "a3685da29db2f185d4793f185ca07dfe36f3d9a9",
+   "created_at": "2026-01-13 00:14:22"
+  },
+  {
+   "instance_id": "pytest-dev__pyfakefs-1286",
+   "repo": "pytest-dev/pyfakefs",
+   "base_commit": "50579559c7957f5350a5d2408e2827b355e1017c",
+   "created_at": "2026-02-22 08:19:23"
+  },
+  {
+   "instance_id": "python-markdown__markdown-1587",
+   "repo": "Python-Markdown/markdown",
+   "base_commit": "9933a0a4699f3dea91f46528a2bf54863f531c08",
+   "created_at": "2026-01-20 20:57:18"
+  },
+  {
+   "instance_id": "python-scim__scim2-models-120",
+   "repo": "python-scim/scim2-models",
+   "base_commit": "0aba144f0e41ce3be76bf74e4c5e2a177c052519",
+   "created_at": "2026-01-25 08:45:09"
+  },
+  {
+   "instance_id": "python-scim__scim2-models-126",
+   "repo": "python-scim/scim2-models",
+   "base_commit": "c6bd77ff9fa383f31360eb9a30b8315ec49d8e97",
+   "created_at": "2026-01-29 18:31:35"
+  },
+  {
+   "instance_id": "python-scim__scim2-models-139_interface",
+   "repo": "python-scim/scim2-models",
+   "base_commit": "88991b8781aa17362b4a6b549120bd03c3d88a14",
+   "created_at": "2026-04-03 08:06:17"
+  },
+  {
+   "instance_id": "python-wheel-build__fromager-1106",
+   "repo": "python-wheel-build/fromager",
+   "base_commit": "f82c1e64a027060c3e25090f6a4a4d7f4e3d985d",
+   "created_at": "2026-05-04 11:13:36"
+  },
+  {
+   "instance_id": "python-wheel-build__fromager-1124",
+   "repo": "python-wheel-build/fromager",
+   "base_commit": "5fd5d20ff117279b938f003a5a0de18292fbbb83",
+   "created_at": "2026-05-07 03:47:42"
+  },
+  {
+   "instance_id": "pytorch__ignite-3532_interface",
+   "repo": "pytorch/ignite",
+   "base_commit": "9c382b41dfd157a8a0845bf13f26d2c67b9c077d",
+   "created_at": "2026-02-12 16:11:39"
+  },
+  {
+   "instance_id": "raullenchai__rapid-mlx-227",
+   "repo": "raullenchai/Rapid-MLX",
+   "base_commit": "1d2474619a707a9bf68a3d6aefb323eb7c359038",
+   "created_at": "2026-05-05 17:39:40"
+  },
+  {
+   "instance_id": "raullenchai__rapid-mlx-228",
+   "repo": "raullenchai/Rapid-MLX",
+   "base_commit": "85f2b2f429556cb59458452119ab657ada8b705c",
+   "created_at": "2026-05-05 17:40:54"
+  },
+  {
+   "instance_id": "raullenchai__rapid-mlx-289",
+   "repo": "raullenchai/Rapid-MLX",
+   "base_commit": "67c49b5bec9a049e361785090a20a17f6085886d",
+   "created_at": "2026-05-07 19:33:12"
+  },
+  {
+   "instance_id": "raullenchai__rapid-mlx-341_interface",
+   "repo": "raullenchai/Rapid-MLX",
+   "base_commit": "5ca439595c96d637764f25d5af0f33afd3641c5a",
+   "created_at": "2026-05-09 17:33:42"
+  },
+  {
+   "instance_id": "run-llama__llama_index-20748_interface",
+   "repo": "run-llama/llama_index",
+   "base_commit": "b7bc643d36e3a6122b153758825d756084fdcd6c",
+   "created_at": "2026-02-19 14:24:24"
+  },
+  {
+   "instance_id": "rwth-i6__returnn-1764",
+   "repo": "rwth-i6/returnn",
+   "base_commit": "58aca86de83f85cf513878d3c48f03c23280181b",
+   "created_at": "2025-09-19 12:26:25"
+  },
+  {
+   "instance_id": "schemathesis__schemathesis-3195",
+   "repo": "schemathesis/schemathesis",
+   "base_commit": "f297ec5aab4f178e36fb74cbbb341c0fd345f23d",
+   "created_at": "2025-10-22 13:54:22"
+  },
+  {
+   "instance_id": "schemathesis__schemathesis-3270",
+   "repo": "schemathesis/schemathesis",
+   "base_commit": "645e2c0078ea86b3bc8cf04730bcba014f67604a",
+   "created_at": "2025-11-05 15:29:10"
+  },
+  {
+   "instance_id": "schemathesis__schemathesis-3291",
+   "repo": "schemathesis/schemathesis",
+   "base_commit": "e18bdf48caa9bd32ab7b2db5984418d5c1f397f2",
+   "created_at": "2025-11-07 16:33:12"
+  },
+  {
+   "instance_id": "schemathesis__schemathesis-3334",
+   "repo": "schemathesis/schemathesis",
+   "base_commit": "93a847d9f75ef383e89569678e9a5d227932f65b",
+   "created_at": "2025-11-18 16:55:45"
+  },
+  {
+   "instance_id": "schemathesis__schemathesis-3388",
+   "repo": "schemathesis/schemathesis",
+   "base_commit": "41391f60e5596b7c89f5d2f714278a6c334ac236",
+   "created_at": "2025-12-06 00:13:34"
+  },
+  {
+   "instance_id": "schemathesis__schemathesis-3405",
+   "repo": "schemathesis/schemathesis",
+   "base_commit": "736305e2a7a9c7596bed33f60635edff18671211",
+   "created_at": "2025-12-10 12:36:40"
+  },
+  {
+   "instance_id": "schemathesis__schemathesis-3778",
+   "repo": "schemathesis/schemathesis",
+   "base_commit": "c8cf82643ab5bc62b8d215c6b39814186107bb43",
+   "created_at": "2026-04-21 11:18:39"
+  },
+  {
+   "instance_id": "schemathesis__schemathesis-3933",
+   "repo": "schemathesis/schemathesis",
+   "base_commit": "9eaf646a5aa944d2be8440872115b4ed9eb587eb",
+   "created_at": "2026-05-04 09:43:10"
+  },
+  {
+   "instance_id": "schemathesis__schemathesis-4087",
+   "repo": "schemathesis/schemathesis",
+   "base_commit": "e5fcd1c8ab5772dbcc3dd92059fe3b0acd88eb3c",
+   "created_at": "2026-05-12 11:45:06"
+  },
+  {
+   "instance_id": "scientific-python__docstub-123",
+   "repo": "scientific-python/docstub",
+   "base_commit": "aa075d9d0cf208ae6658a4c16955ac3c1436f30f",
+   "created_at": "2026-01-14 16:52:44"
+  },
+  {
+   "instance_id": "scikit-rf__scikit-rf-1336",
+   "repo": "scikit-rf/scikit-rf",
+   "base_commit": "48c959d442f7e8189da1cd518ee51e2761a3efc7",
+   "created_at": "2025-10-14 17:06:22"
+  },
+  {
+   "instance_id": "scipy__scipy-24282",
+   "repo": "scipy/scipy",
+   "base_commit": "328ad15aceb98de0f42a5f744195eebed34f601c",
+   "created_at": "2026-01-06 00:20:58"
+  },
+  {
+   "instance_id": "scipy__scipy-24454",
+   "repo": "scipy/scipy",
+   "base_commit": "bf942df3865ad5d0aef33a108fef7ab63e625be9",
+   "created_at": "2026-01-28 00:30:49"
+  },
+  {
+   "instance_id": "SciTools__iris-6719",
+   "repo": "SciTools/iris",
+   "base_commit": "8ed25703a20a57f1ed72fc910c499c93df5e9857",
+   "created_at": "2025-09-22 15:29:05"
+  },
+  {
+   "instance_id": "SciTools__iris-6754",
+   "repo": "SciTools/iris",
+   "base_commit": "9c06cca1b82a4826b0264043bb8497b1d09759f3",
+   "created_at": "2025-10-20 13:56:05"
+  },
+  {
+   "instance_id": "SciTools__iris-6772",
+   "repo": "SciTools/iris",
+   "base_commit": "77dc64948fb7b7518415a4868c1848d202fbd7cc",
+   "created_at": "2025-10-30 10:38:31"
+  },
+  {
+   "instance_id": "sciunto-org__python-bibtexparser-515",
+   "repo": "sciunto-org/python-bibtexparser",
+   "base_commit": "c015d35b8d89055eaadf992801aa6436ec783463",
+   "created_at": "2026-01-17 20:53:02"
+  },
+  {
+   "instance_id": "sdv-dev__SDV-2706",
+   "repo": "sdv-dev/SDV",
+   "base_commit": "ab196b8153d10fb2b3427e4e3d0abdc29f4802bd",
+   "created_at": "2025-10-06 14:54:49"
+  },
+  {
+   "instance_id": "sdv-dev__SDV-2709",
+   "repo": "sdv-dev/SDV",
+   "base_commit": "f7f43453240289347f1256c045838c6aa52953b0",
+   "created_at": "2025-10-06 16:44:48"
+  },
+  {
+   "instance_id": "sigma67__ytmusicapi-909_interface",
+   "repo": "sigma67/ytmusicapi",
+   "base_commit": "86bcd5d8890423240cecb331e19d347ab6b1c63c",
+   "created_at": "2026-04-23 19:52:13"
+  },
+  {
+   "instance_id": "sigstore__sigstore-python-1652",
+   "repo": "sigstore/sigstore-python",
+   "base_commit": "19da9bcd98da4867adb7b5946c35d7abb529f604",
+   "created_at": "2026-01-12 09:37:57"
+  },
+  {
+   "instance_id": "sissbruecker__linkding-1291",
+   "repo": "sissbruecker/linkding",
+   "base_commit": "d52caefe2cae6bb841a71c807715d9aaf63ba919",
+   "created_at": "2026-01-25 10:00:24"
+  },
+  {
+   "instance_id": "skrub-data__skrub-1899",
+   "repo": "skrub-data/skrub",
+   "base_commit": "6ff71712b3fcc7601af07a435a7ee685e2a7d2d6",
+   "created_at": "2026-02-12 13:19:19"
+  },
+  {
+   "instance_id": "sktime__sktime-8921",
+   "repo": "sktime/sktime",
+   "base_commit": "cc66437a89d6be162100b61431c4abc1c0e432ee",
+   "created_at": "2025-10-05 19:27:15"
+  },
+  {
+   "instance_id": "sktime__sktime-8937",
+   "repo": "sktime/sktime",
+   "base_commit": "ef97df5dd1732630546af1d83a48c91ef3b9eba3",
+   "created_at": "2025-10-08 17:19:52"
+  },
+  {
+   "instance_id": "skypilot-org__skypilot-8908",
+   "repo": "skypilot-org/skypilot",
+   "base_commit": "670c026a1bfa9ad930505a01f1e75ebe1bec4d68",
+   "created_at": "2026-02-24 16:48:18"
+  },
+  {
+   "instance_id": "spack__spack-51723",
+   "repo": "spack/spack",
+   "base_commit": "58541c184a94236405dce96948bcd4220b12cdf5",
+   "created_at": "2025-12-09 21:12:05"
+  },
+  {
+   "instance_id": "spack__spack-52244",
+   "repo": "spack/spack",
+   "base_commit": "7c0cc38fac11438c402984215349d4ce6caeaf3c",
+   "created_at": "2026-04-13 07:36:02"
+  },
+  {
+   "instance_id": "Spenhouet__confluence-markdown-exporter-92",
+   "repo": "Spenhouet/confluence-markdown-exporter",
+   "base_commit": "7e08acc485dce32fc637336b877c223e4c6a4a4e",
+   "created_at": "2025-09-05 18:31:28"
+  },
+  {
+   "instance_id": "stanfordnlp__dspy-8890",
+   "repo": "stanfordnlp/dspy",
+   "base_commit": "1eccc38981042027838a69e8b96136406c3fc229",
+   "created_at": "2025-10-02 12:58:52"
+  },
+  {
+   "instance_id": "stanfordnlp__dspy-9478_interface",
+   "repo": "stanfordnlp/dspy",
+   "base_commit": "b7d573b8224b8e2e270523748e13f0836edc0576",
+   "created_at": "2026-03-20 05:25:19"
+  },
+  {
+   "instance_id": "stellarmesh__stellarmesh-51",
+   "repo": "stellarmesh/stellarmesh",
+   "base_commit": "907f1fb8ae18045ebcfeb7663d9ece69d2b42ca0",
+   "created_at": "2025-09-05 00:07:29"
+  },
+  {
+   "instance_id": "strands-agents__sdk-python-994",
+   "repo": "strands-agents/sdk-python",
+   "base_commit": "776fd93751cc26e3d535776b17612c2e3068cc2b",
+   "created_at": "2025-10-07 11:38:49"
+  },
+  {
+   "instance_id": "strands-agents__sdk-python-1719",
+   "repo": "strands-agents/sdk-python",
+   "base_commit": "db6cd98cbc564c5f31622f49e183e1e7544bff40",
+   "created_at": "2026-02-18 20:48:48"
+  },
+  {
+   "instance_id": "strands-agents__sdk-python-1734",
+   "repo": "strands-agents/sdk-python",
+   "base_commit": "029c77acae6f559212906a1ffe09368279ad976f",
+   "created_at": "2026-02-19 17:24:04"
+  },
+  {
+   "instance_id": "stravalib__stravalib-709_interface",
+   "repo": "stravalib/stravalib",
+   "base_commit": "9f68b6aeb75f5042e09851a1b817a99b762f096c",
+   "created_at": "2026-02-01 14:52:01"
+  },
+  {
+   "instance_id": "terrapower__armi-2285",
+   "repo": "terrapower/armi",
+   "base_commit": "ab095e619e15be5f07e456c77e7df84221cde5c8",
+   "created_at": "2025-09-17 21:08:07"
+  },
+  {
+   "instance_id": "tobymao__sqlglot-6067",
+   "repo": "tobymao/sqlglot",
+   "base_commit": "ddc7bd334e8e303e78060839e3a1687dd2d9b2d3",
+   "created_at": "2025-10-09 20:42:31"
+  },
+  {
+   "instance_id": "tobymao__sqlglot-6174",
+   "repo": "tobymao/sqlglot",
+   "base_commit": "74b4e7c311e9d4ff39ce2e4d91940eced96aa32f",
+   "created_at": "2025-10-23 15:38:54"
+  },
+  {
+   "instance_id": "tobymao__sqlglot-6314",
+   "repo": "tobymao/sqlglot",
+   "base_commit": "de11a78a14d0d7ddcd0fd527b87a93c852bba2ed",
+   "created_at": "2025-11-12 09:08:25"
+  },
+  {
+   "instance_id": "tobymao__sqlglot-6346",
+   "repo": "tobymao/sqlglot",
+   "base_commit": "2607a3ad44f039a076626abafb5340e70aa2e18b",
+   "created_at": "2025-11-18 11:03:24"
+  },
+  {
+   "instance_id": "tobymao__sqlglot-6374",
+   "repo": "tobymao/sqlglot",
+   "base_commit": "c94d0ebb383c7d7ab7f38b96586c19f09b921a52",
+   "created_at": "2025-11-20 18:37:57"
+  },
+  {
+   "instance_id": "tobymao__sqlglot-6383",
+   "repo": "tobymao/sqlglot",
+   "base_commit": "ef495aa6bbe5f9243f23abb491548fd29264ee9c",
+   "created_at": "2025-11-21 11:44:11"
+  },
+  {
+   "instance_id": "tobymao__sqlglot-6385",
+   "repo": "tobymao/sqlglot",
+   "base_commit": "b49dfd12ba09c3aa44d84834b09f05089d5613f6",
+   "created_at": "2025-11-21 15:33:48"
+  },
+  {
+   "instance_id": "tobymao__sqlglot-6389",
+   "repo": "tobymao/sqlglot",
+   "base_commit": "f83a5600c32a3877760c9d07d380b4f0890f069d",
+   "created_at": "2025-11-22 03:22:42"
+  },
+  {
+   "instance_id": "tobymao__sqlglot-6409",
+   "repo": "tobymao/sqlglot",
+   "base_commit": "17ce18703248ea3f6f9ce22fb3624be383f2ab96",
+   "created_at": "2025-11-25 12:48:56"
+  },
+  {
+   "instance_id": "tobymao__sqlglot-6413",
+   "repo": "tobymao/sqlglot",
+   "base_commit": "bb4eda1beb68b92de9ab014a63c67797a07df2fa",
+   "created_at": "2025-11-25 20:15:27"
+  },
+  {
+   "instance_id": "tobymao__sqlglot-6556",
+   "repo": "tobymao/sqlglot",
+   "base_commit": "e0b4c81120e0954bb6cda7317e4334f6127a8d98",
+   "created_at": "2025-12-15 11:48:21"
+  },
+  {
+   "instance_id": "tobymao__sqlglot-6563",
+   "repo": "tobymao/sqlglot",
+   "base_commit": "ec1285f1910643fc60dafa6df13295473c1469af",
+   "created_at": "2025-12-15 18:54:17"
+  },
+  {
+   "instance_id": "tobymao__sqlglot-6573",
+   "repo": "tobymao/sqlglot",
+   "base_commit": "c656bab44e47cbc4ec7fe70d25ab0e45d2d36e7f",
+   "created_at": "2025-12-16 17:04:19"
+  },
+  {
+   "instance_id": "tobymao__sqlglot-6610",
+   "repo": "tobymao/sqlglot",
+   "base_commit": "6cb2c5d1c6ad5ccd07a382258ed563f52fee6436",
+   "created_at": "2025-12-19 17:50:12"
+  },
+  {
+   "instance_id": "tobymao__sqlglot-6632",
+   "repo": "tobymao/sqlglot",
+   "base_commit": "3e7e7b2445de2d7a6a7ea40d37ffd4ae09492888",
+   "created_at": "2025-12-24 10:32:13"
+  },
+  {
+   "instance_id": "tobymao__sqlglot-6991",
+   "repo": "tobymao/sqlglot",
+   "base_commit": "fbca7040cd3ae9eb0bc599b5ce656724fccafab1",
+   "created_at": "2026-02-06 14:31:53"
+  },
+  {
+   "instance_id": "tobymao__sqlglot-7187",
+   "repo": "tobymao/sqlglot",
+   "base_commit": "0e8d0824c40ac46c5e7275180cf2eaae6810f805",
+   "created_at": "2026-03-02 15:56:17"
+  },
+  {
+   "instance_id": "tobymao__sqlglot-7457",
+   "repo": "tobymao/sqlglot",
+   "base_commit": "e8bbc8044ac10a550eaf7da762987270fee8d81d",
+   "created_at": "2026-04-05 13:50:52"
+  },
+  {
+   "instance_id": "tobymao__sqlglot-7479",
+   "repo": "tobymao/sqlglot",
+   "base_commit": "38357253ee1f2847bd14e0a7b68baf5a2c0a2228",
+   "created_at": "2026-04-09 12:51:48"
+  },
+  {
+   "instance_id": "tox-dev__sphinx-autodoc-typehints-606",
+   "repo": "tox-dev/sphinx-autodoc-typehints",
+   "base_commit": "11e97e264dba029d8ecb29127033ac79c3a7951a",
+   "created_at": "2026-02-17 21:27:55"
+  },
+  {
+   "instance_id": "tox-dev__sphinx-autodoc-typehints-607",
+   "repo": "tox-dev/sphinx-autodoc-typehints",
+   "base_commit": "dc92a64d636dfe92288dd66298882604a9083fc5",
+   "created_at": "2026-02-17 21:41:44"
+  },
+  {
+   "instance_id": "travisghansen__hass-opnsense-433",
+   "repo": "travisghansen/hass-opnsense",
+   "base_commit": "e1d01fc41d6d7e3e8bc50af8984d9b85c49eb213",
+   "created_at": "2025-09-05 14:44:37"
+  },
+  {
+   "instance_id": "tskit-dev__tskit-3274",
+   "repo": "tskit-dev/tskit",
+   "base_commit": "2710dcc7e071a1c230e7820d9303be9bc771aac8",
+   "created_at": "2025-09-19 11:19:31"
+  },
+  {
+   "instance_id": "Ultraplot__UltraPlot-346",
+   "repo": "Ultraplot/UltraPlot",
+   "base_commit": "4affafd75d9e446ada59ea4e9c8474b1ca2b7318",
+   "created_at": "2025-09-15 07:17:00"
+  },
+  {
+   "instance_id": "Ultraplot__UltraPlot-357",
+   "repo": "Ultraplot/UltraPlot",
+   "base_commit": "c8b48ea02c1cbd6402022950048b76cd881235b9",
+   "created_at": "2025-10-04 06:38:15"
+  },
+  {
+   "instance_id": "ultraplot__ultraplot-696",
+   "repo": "Ultraplot/UltraPlot",
+   "base_commit": "1567aa35dc5669b67babe76a929452e1c6d85fdb",
+   "created_at": "2026-04-16 22:58:14"
+  },
+  {
+   "instance_id": "unit8co__darts-2985",
+   "repo": "unit8co/darts",
+   "base_commit": "892c16d9d3382249672ce2497661f37aab560816",
+   "created_at": "2026-01-08 11:02:52"
+  },
+  {
+   "instance_id": "unit8co__darts-3065",
+   "repo": "unit8co/darts",
+   "base_commit": "6bfda77e4afc9c123740ab6cc52ca39a7ab92d84",
+   "created_at": "2026-04-10 23:06:13"
+  },
+  {
+   "instance_id": "USNavalResearchLaboratory__eispac-124",
+   "repo": "USNavalResearchLaboratory/eispac",
+   "base_commit": "7806dc9918e59863eca66b7faaec986ed8dc3489",
+   "created_at": "2025-09-03 16:36:28"
+  },
+  {
+   "instance_id": "UXARRAY__uxarray-1369",
+   "repo": "UXARRAY/uxarray",
+   "base_commit": "d7431d7f23fef7770746535635ede1c7e482d167",
+   "created_at": "2025-09-15 15:57:47"
+  },
+  {
+   "instance_id": "UXARRAY__uxarray-1423",
+   "repo": "UXARRAY/uxarray",
+   "base_commit": "5578e1272a28ffd5a0a37b52b609072feb0d623b",
+   "created_at": "2025-12-10 18:10:00"
+  },
+  {
+   "instance_id": "vndee__llm-sandbox-101",
+   "repo": "vndee/llm-sandbox",
+   "base_commit": "e797eb3905650a624944183278a144d29ef0d802",
+   "created_at": "2025-10-07 03:43:51"
+  },
+  {
+   "instance_id": "vprusso__toqito-1484_interface",
+   "repo": "vprusso/toqito",
+   "base_commit": "06d57a15c2afa2671ac710eee8ebf8a3b06e3be7",
+   "created_at": "2026-03-19 11:41:16"
+  },
+  {
+   "instance_id": "vprusso__toqito-1538",
+   "repo": "vprusso/toqito",
+   "base_commit": "396ba18ba1fa3e2b8d4eed682562a454d85f5c91",
+   "created_at": "2026-04-22 15:23:30"
+  },
+  {
+   "instance_id": "VRSEN__agency-swarm-468",
+   "repo": "VRSEN/agency-swarm",
+   "base_commit": "0b16848ce4f973415ba7019c0bb05886e46c840d",
+   "created_at": "2025-12-01 11:27:15"
+  },
+  {
+   "instance_id": "vyperlang__vyper-4801",
+   "repo": "vyperlang/vyper",
+   "base_commit": "7d53bab7f8cce2a5fb037052663d85596d7eb2d1",
+   "created_at": "2026-01-03 21:33:22"
+  },
+  {
+   "instance_id": "youssofal__mtplx-21",
+   "repo": "youssofal/MTPLX",
+   "base_commit": "c06cc13286e86d9ff3d2e3b991eba327549c534b",
+   "created_at": "2026-05-07 19:59:26"
+  },
+  {
+   "instance_id": "yukinarit__pyserde-682",
+   "repo": "yukinarit/pyserde",
+   "base_commit": "59af51ef2292821900629ec8a3f5b898e20f8078",
+   "created_at": "2025-12-13 10:54:48"
+  },
+  {
+   "instance_id": "zauberzeug__nicegui-5858",
+   "repo": "zauberzeug/nicegui",
+   "base_commit": "315c1d15eff52464c2391e8418095992f4e7a673",
+   "created_at": "2026-03-09 16:34:24"
+  },
+  {
+   "instance_id": "zauberzeug__nicegui-5914",
+   "repo": "zauberzeug/nicegui",
+   "base_commit": "b6c2d3dd191acb488427e8eae6ab2c868b547636",
+   "created_at": "2026-03-26 14:10:41"
+  },
+  {
+   "instance_id": "zwicker-group__py-pde-712",
+   "repo": "zwicker-group/py-pde",
+   "base_commit": "619aa23acf4b07d5fbe2cf8757ca74c574a621fd",
+   "created_at": "2025-09-05 14:32:41"
+  },
+  {
+   "instance_id": "zwicker-group__py-pde-733",
+   "repo": "zwicker-group/py-pde",
+   "base_commit": "0ebe51cba52db6ee84336f3b5c3b226f80795975",
+   "created_at": "2025-12-01 10:25:41"
+  }
+ ]
+}
