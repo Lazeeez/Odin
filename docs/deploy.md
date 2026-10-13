@@ -1,81 +1,72 @@
-# Moving the website to Cloudflare
+# Hosting on allfather.dev
 
-How to serve Odin from `allfather.dev` on Cloudflare Pages, with the archive relay on the same origin, and turn the GitHub Pages site into a redirect.
+Odin's website and its archive relay run as one Cloudflare Worker: static files from `web/dist`, and the relay at `/relay/*` on the same origin. The configuration is `deploy/cloudflare/wrangler.jsonc`.
 
-**Status.** Everything in the repository is ready and tested locally. Nothing has been deployed to Cloudflare, and the GitHub Pages site and the `workers.dev` relay are untouched. Keep both running until step 5 passes.
+## Status, 2026-10-14
 
-## What changes for a visitor
-
-- **One origin.** The site and the relay share `allfather.dev`, so the relay needs no cross-origin setup and no origin allowlist to maintain.
-- **Real response headers.** A content security policy, cross-origin isolation and long-lived caching of hashed assets come from the server, where GitHub Pages could only approximate isolation through the service worker.
-- **Old links keep working.** `lazeeez.github.io/Odin/#/search?...` redirects to the same route on the new domain.
-
-## Steps
-
-### 1. Check the domain is on Cloudflare
-
-`allfather.dev` must be an active zone in the Cloudflare account that will host the site (it is, if it was bought through Cloudflare Registrar). The domain is already written into `proxy/wrangler.toml` and `deploy/github-pages-redirect/`.
-
-### 2. Create the Pages project
-
-In the Cloudflare dashboard: Workers & Pages → Create → Pages → Connect to Git, and pick this repository.
-
-| Setting | Value |
+| Piece | State |
 |---|---|
-| Production branch | `main` |
-| Root directory | `web` |
-| Build command | `npm ci --ignore-scripts && npm run build` |
-| Build output directory | `dist` |
-| Environment variable `NODE_VERSION` | `24` |
-| Environment variable `VITE_ARCHIVE_PROXY` | `/relay` |
+| The Worker `odin` (site and relay) | deployed and working at https://odin.lajat69.workers.dev |
+| `allfather.dev` pointing at it | **blocked**: the domain is not a zone in the Cloudflare account wrangler is logged in to (`lajat69@gmail.com`). See "Attaching the domain" |
+| GitHub Pages site and the old `workers.dev` relay | untouched, still serving |
+| Redirect from GitHub Pages | prepared in `deploy/github-pages-redirect/`, not published |
 
-Then add the custom domain `allfather.dev` to the project. Pull requests get preview URLs from the Git integration without further setup; previews have no relay route, so they fall back to loading through GitHub's API.
-
-The build writes `dist/_headers`, which Pages applies by itself. Nothing is configured by hand.
-
-### 3. Deploy the relay on the same origin
+## Deploying
 
 ```sh
-cd proxy
-npx wrangler deploy --env production
+cd web
+npm ci --ignore-scripts
+VITE_ARCHIVE_PROXY=/relay npm run build
+cd ../deploy/cloudflare
+npx wrangler deploy
 ```
 
-This creates a second Worker, `odin-relay`, routed at `allfather.dev/relay/*`. The existing `odin-archive-relay` on `workers.dev` is a separate Worker and keeps serving the GitHub Pages site.
+In Git Bash on Windows, prefix the build with `MSYS_NO_PATHCONV=1`: without it the shell rewrites `/relay` into a Windows path and the site silently falls back to GitHub's API.
 
-### 4. Check the new site before touching the old one
+The build writes `dist/_headers` (content security policy, cross-origin isolation, caching of hashed assets). Cloudflare applies it to every static response.
+
+## Attaching the domain
+
+`allfather.dev` uses Cloudflare's nameservers, so it is a zone in some Cloudflare account, but not the one wrangler deploys to. Either:
+
+- **log wrangler in to the account that holds the domain** (`npx wrangler login`), then run the deploy again: `wrangler.jsonc` already asks for `allfather.dev` as a custom domain, and Cloudflare creates the DNS record itself; or
+- **move the domain** into the `lajat69@gmail.com` account, then deploy again.
+
+Until one of those is done, every deploy prints an error about the zone after uploading. The upload itself succeeds and the `workers.dev` address is updated.
+
+## Checks after the domain is attached
 
 - `https://allfather.dev/` loads, and the browser console shows no "Refused to" lines.
-- Load a large repository (for example `django/django`). In the network tab there is one request to `/relay/django/django/HEAD` and none to `api.github.com`.
-- Open a deep link such as `https://allfather.dev/#/explore` directly.
-- Run a search that reaches the "rerank" stage. It downloads a model from Hugging Face and a library from jsDelivr, the two paths the local tests do not exercise end to end.
-- `curl -sI https://allfather.dev/ | grep -i content-security-policy` prints the policy.
+- Loading `django/django` makes one request to `/relay/django/django/HEAD` and none to `api.github.com` for the file list.
+- `https://allfather.dev/#/explore` opens directly.
+- A search that reaches the "rerank" stage completes. It downloads a model from Hugging Face and a library from jsDelivr; the policy allows both, but the full path has not been exercised under it.
 - `curl -s -o /dev/null -w "%{http_code}" https://allfather.dev/relay/psf/requests/HEAD` prints `403`: the relay answers only the site's own pages.
 
-### 5. Turn GitHub Pages into a redirect
+## Then: retire GitHub Pages
 
-Only after step 4 passes.
+Only after the checks pass.
 
 1. In `.github/workflows/pages.yml`, publish `deploy/github-pages-redirect` instead of `web/dist` (change the `path` of the upload step and drop the two build steps).
-2. Push, wait for the Pages run, and open an old link with a route in it: `https://lazeeez.github.io/Odin/#/explore` should land on `https://allfather.dev/#/explore`.
+2. Push and open an old link with a route in it: `https://lazeeez.github.io/Odin/#/explore` should land on `https://allfather.dev/#/explore`.
 3. Remove the repository variable `ARCHIVE_PROXY` and delete the `odin-archive-relay` Worker.
-4. Update the site URL in `README.md`, `CITATION.cff` and `web/index.html` (canonical and social-card tags).
+4. Set `"workers_dev": false` in `deploy/cloudflare/wrangler.jsonc`, remove `https://*.workers.dev` from `CONNECT` in `web/vite.config.ts`, and update the site URL in `README.md`, `CITATION.cff` and `web/index.html`.
 
-The redirect stays for good; it is two small files.
-
-## What was tested here, and what was not
+## What has been tested
 
 | Check | How | Result |
 |---|---|---|
-| The site works under the generated headers | End-to-end suite in Chromium and WebKit against `web/scripts/serve-dist.mjs`, which serves the build with its `_headers` (`WITH_HEADERS=1 npm run e2e`) | passes |
-| The policy allows GitHub, jsDelivr and Hugging Face and blocks other origins | A headless page under those headers fetching each origin | allowed ones answer, others are refused |
-| Cross-origin isolation is on | `crossOriginIsolated` in that page | true |
-| The relay under a path prefix, same-origin and cross-origin | `web/test/relay.test.ts` | passes |
-| Cloudflare applying `_headers`, the Worker route, the custom domain | needs the real deployment | not tested |
-| The rerank stage under the policy | needs a real browser session on the deployed site (step 4) | not tested |
+| The site under the generated headers | end-to-end suite in Chromium and WebKit against the build served with its `_headers` (`WITH_HEADERS=1 npm run e2e`) | passes |
+| The deployed Worker | a headless browser on the `workers.dev` address: home page, search on `psf/requests`, Explore | works; no policy violations; cross-origin isolated |
+| The same-origin relay, deployed | the same session: `psf/requests` loads with one relay request and no GitHub API request | works |
+| The relay refuses other callers | `curl` without browser headers | 403 |
+| The relay's routing and allowlist | `web/test/relay.test.ts` | passes |
+| `allfather.dev` itself | needs the domain attached | not tested |
+| The rerank stage under the policy | needs a manual session | not tested |
 
-## Decisions and loose ends
+## Decisions
 
-- **No R2 bucket.** The plan put large assets on `assets.allfather.dev`. The largest file is the 16 MB embedding model, under Pages' 25 MB per-file limit, and keeping it on the same origin avoids a cross-origin fetch under the isolation headers. Revisit if a file outgrows the limit.
-- **The policy allows `https://*.workers.dev`** so that a build pointed at the old relay still works during the move. Remove that entry from `CONNECT` in `web/vite.config.ts` after step 5.
-- **The policy allows inline styles.** The components set style attributes; tightening that means moving them to classes.
-- **The service worker still adds isolation headers itself.** It is harmless next to real headers and is what keeps the GitHub Pages copy working until the redirect.
+- **One Worker, not Pages plus a Worker.** Cloudflare now steers new static sites to Workers with static assets, and one deployment keeps the site and the relay on one origin with one command.
+- **The bare domain, not a subdomain**, by the owner's choice.
+- **No R2 bucket.** The largest file is the 16 MB embedding model, under the 25 MB per-file limit, and keeping it on the same origin avoids a cross-origin fetch under the isolation headers.
+- **Deploys are manual for now.** A GitHub Action could deploy on every push; it needs a Cloudflare API token stored as a repository secret.
+- **The policy allows inline styles**, because the components set style attributes.
