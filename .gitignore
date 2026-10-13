@@ -8,6 +8,8 @@ results/*
 !results/parity_pinned.json
 !results/holdout/
 !results/perf/
+!results/comparison/
+!results/provenance/
 !results/*_lite_test.json
 !results/browser_old_vs_new.json
 !results/cache_cold.json

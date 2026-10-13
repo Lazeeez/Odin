@@ -27,6 +27,7 @@ Function-level files score 291 of the 300 Lite issues: the 9 whose fix touches o
 | `cache_cold.json`, `cache_warm.json` | earlier analysis-cache timings, written without provenance; superseded by `perf/lite_index_2026-10-13.json` and no longer cited |
 | `perf/lite_index_2026-10-13.json` | the README's Performance table: indexing every Lite snapshot with no, a cold and a warm analysis cache (`benchmarks/bench_lite_index.py`). No metric is computed, so it is not a test-set evaluation |
 | `perf/bench_batching_2026-10-13.json`, `perf/bench_search_2026-10-13.json` | the printed output of the batching and exact-versus-HNSW benchmarks, saved with hardware and provenance (`benchmarks/save_output.py`) |
+| `comparison/locagent-lite_2026-10-13.json` | the stored rankings of four stages scored under the LocAgent protocol, with per-issue outcomes ([docs/comparison.md](../docs/comparison.md), `scripts/score_protocol.py`) |
 | `perf/unit_slots_2026-10-13.json` | unit slots and distinct unit texts over the evaluated snapshots (`benchmarks/count_unit_slots.py`) |
 | `parity_pinned.json` | the website's TypeScript chunker and BM25 against the Python engine on pinned commits of django, sympy and requests (`scripts/parity_run.py`) |
 
@@ -34,7 +35,7 @@ Each `*` stands for `_file_lite_test.json` and `_function_lite_test.json`.
 
 ## Test-set evaluations
 
-[test-evals.log](test-evals.log) lists every evaluation on a held-out test set, with the reason it was run and what was decided from it: 33 on SWE-bench Lite and 2 on the unseen-project set as of 2026-10-13. New evaluations append a line.
+[test-evals.log](test-evals.log) lists every evaluation on a held-out test set, with the reason it was run and what was decided from it: 37 on SWE-bench Lite and 2 on the unseen-project set as of 2026-10-13. New evaluations append a line.
 
 Thirteen files (`random`, `oracle`, the `bm25-*`, `dense-notests` and `hybrid-notests` rows) were written before provenance was recorded and have no `provenance` block. Their rankings are deterministic and `bm25-code-notests` at function level was re-run in October 2026 with identical output.
 

@@ -39,3 +39,7 @@ undated | lite | hybrid-notests | function | results/hybrid-notests_function_lit
 2026-10-13 | lite | ltr-notests | function | results/repro/ (local) | audit reproduction; identical rankings, nothing decided
 2026-10-13 | lite | ltr-ce-notests | function | results/repro/ (local) | audit reproduction; nothing decided
 2026-10-13 | lite | ltr-ce-notests | file | results/repro/ (local) | audit reproduction; nothing decided
+2026-10-13 | lite | bm25-code-notests | file and function | results/comparison/locagent-lite_2026-10-13.json | stored rankings scored under the locagent-lite protocol (ADR 0014); nothing re-run, nothing decided
+2026-10-13 | lite | hybrid-notests | file and function | results/comparison/locagent-lite_2026-10-13.json | stored rankings scored under the locagent-lite protocol (ADR 0014); nothing re-run, nothing decided
+2026-10-13 | lite | ltr-notests | file and function | results/comparison/locagent-lite_2026-10-13.json | stored rankings scored under the locagent-lite protocol (ADR 0014); nothing re-run, nothing decided
+2026-10-13 | lite | ltr-ce-notests | file and function | results/comparison/locagent-lite_2026-10-13.json | stored rankings scored under the locagent-lite protocol (ADR 0014); nothing re-run, nothing decided

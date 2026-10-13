@@ -228,6 +228,20 @@ def check_dense_costs(text: str, report: Report) -> None:
     )
 
 
+def check_comparison(rows: list[list[str]], report: Report) -> None:
+    path = RESULTS / "comparison" / "locagent-lite_2026-10-13.json"
+    acc = json.loads(path.read_text(encoding="utf-8"))["stages"]["ltr-ce-notests"]["acc"]
+    row = next(r for r in rows if r[0].startswith("Odin"))
+    actual = (
+        acc["file"]["acc@1"],
+        acc["file"]["acc@5"],
+        acc["function"]["acc@5"],
+        acc["function"]["acc@10"],
+    )
+    for shown, value in zip(row[3:], actual, strict=True):
+        report.expect("comparison odin", float(shown), 100 * value, 2)
+
+
 def check_prose(text: str, report: Report) -> None:
     ce_fn_mrr, _ = paired("ltr-notests", "ltr-ce-notests", "function", "mrr")
     ce_fn_r1, _ = paired("ltr-notests", "ltr-ce-notests", "function", "recall@1")
@@ -357,6 +371,7 @@ def main() -> int:
     check_per_repo(found["Evaluation methodology"], report)
     check_performance(found["Performance"], text, report)
     check_dense_costs(text, report)
+    check_comparison(found["Next to published systems"], report)
     check_prose(text, report)
     for line in report.mismatches:
         print("MISMATCH", line)
