@@ -50,12 +50,13 @@ const CONNECT = [
   "https://*.huggingface.co",
   "https://*.hf.co",
   "https://*.workers.dev",
+  "https://cloudflareinsights.com",
 ];
 
 const contentSecurityPolicy = (inlineScripts: string[]) =>
   [
     "default-src 'self'",
-    `script-src 'self' 'wasm-unsafe-eval' https://cdn.jsdelivr.net ${inlineScripts.map((h) => `'sha256-${h}'`).join(" ")}`,
+    `script-src 'self' 'wasm-unsafe-eval' https://cdn.jsdelivr.net https://static.cloudflareinsights.com ${inlineScripts.map((h) => `'sha256-${h}'`).join(" ")}`,
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data:",
     "font-src 'self'",
