@@ -25,12 +25,10 @@ def read_jsonl(path: Path) -> list[dict]:
 
 
 def without_path(identifier: str, text: str) -> str:
-    first, _, rest = text.partition("
-")
+    first, _, rest = text.partition("\n")
     if first != identifier or ".py/" not in identifier:
         return text
-    return identifier.split(".py/", 1)[1].strip("/").replace("/", ".") + "
-" + rest
+    return identifier.split(".py/", 1)[1].strip("/").replace("/", ".") + "\n" + rest
 
 
 class Cache:
@@ -89,7 +87,9 @@ def main() -> int:
         corpus = read_jsonl(args.dataset_dir / folder / "corpus.jsonl")
         texts = [(doc.get("title", "") + " " + doc["text"]).strip() for doc in corpus]
         if args.header == "qualified-name":
-            texts = [without_path(doc["_id"], text) for doc, text in zip(corpus, texts, strict=True)]
+            texts = [
+                without_path(doc["_id"], text) for doc, text in zip(corpus, texts, strict=True)
+            ]
         keys = [key_of(text) for text in texts]
         missing = {
             key: text for key, text in zip(keys, texts, strict=True) if key not in cache.rows
