@@ -2,7 +2,7 @@
 
 ## Status
 
-Proposed, 2026-10-14. The test and its decision rule below were written before the test ran. The outcome section is added after it.
+Accepted as a candidate for odin-fast, 2026-10-14. The test and its decision rule below were written before the test ran; the outcome section was added after it.
 
 ## Context
 
@@ -42,3 +42,45 @@ Fixed before looking:
 
 - A function that is identical at two paths is embedded twice. Moves and copies are a small share of units; the measured count goes in the outcome.
 - The content-addressed store stays for the current rows, so every published result remains reproducible.
+
+## Outcome
+
+Dev set, 407 issues (393 with a function-level target). Result files are in `results/dev-path/`; the paired bootstrap is `odin compare`, 10,000 resamples.
+
+| Function level | recall@1 | recall@5 | recall@10 | hit@10 | MRR |
+|---|---|---|---|---|---|
+| `dense-notests` | 0.246 | 0.461 | 0.554 | 0.667 | 0.436 |
+| `dense-path-notests` | 0.250 | 0.486 | 0.574 | 0.687 | 0.451 |
+| `hybrid-notests` | 0.288 | 0.544 | 0.628 | 0.738 | 0.492 |
+| `hybrid-path-notests` | 0.306 | 0.566 | 0.660 | 0.768 | 0.512 |
+
+| File level | recall@1 | recall@5 | recall@10 | hit@10 | MRR |
+|---|---|---|---|---|---|
+| `dense-notests` | 0.514 | 0.819 | 0.898 | 0.934 | 0.689 |
+| `dense-path-notests` | 0.538 | 0.828 | 0.919 | 0.951 | 0.719 |
+| `hybrid-notests` | 0.560 | 0.851 | 0.924 | 0.953 | 0.736 |
+| `hybrid-path-notests` | 0.595 | 0.867 | 0.929 | 0.961 | 0.764 |
+
+| Paired comparison, with path against without | Difference | 95% interval | p | Wins / losses |
+|---|---|---|---|---|
+| hybrid, function recall@10 (the deciding test) | +0.032 | [+0.013, +0.052] | 0.001 | 26 / 13 |
+| hybrid, file recall@10 (must not be worse) | +0.005 | [-0.006, +0.018] | 0.391 | 6 / 6 |
+| hybrid, function MRR | +0.020 | [+0.006, +0.035] | 0.004 | 67 / 38 |
+| hybrid, file MRR | +0.028 | [+0.011, +0.046] | 0.002 | 61 / 34 |
+| dense, function recall@10 | +0.019 | [-0.004, +0.044] | 0.108 | 27 / 19 |
+| dense, function MRR | +0.016 | [-0.004, +0.036] | 0.112 | 64 / 54 |
+| dense, file recall@10 | +0.021 | [+0.003, +0.039] | 0.018 | 16 / 7 |
+| dense, file MRR | +0.031 | [+0.011, +0.051] | 0.002 | 76 / 44 |
+
+Eight tests were run; two were the declared deciding ones.
+
+- **The rule is met.** With the path, the hybrid retriever gains 3.2 points of function recall@10 (p = 0.001) and is not worse at file level. Path-aware embedding becomes a candidate for odin-fast.
+- **The gain is a third of what the same change is worth to SweRank's model.** That model lost ten points without the path; Odin's embedding model gains two alone (not significant) and the hybrid three. BM25 already scores path terms, which is the likely reason.
+- **It survives fusion,** which was the open question: the hybrid gains more than the embedding model alone.
+- **The cost is 2.1% more embeddings.** The dev snapshots hold 176,610 distinct units by content and 180,372 by content and path.
+
+### What happens next, and what does not
+
+- Nothing in odin-fast changes yet. The rankers and the reranker were trained on features from embeddings without paths.
+- The next step is to rebuild the ranking features with path-aware embeddings, retrain the two LambdaMART rankers into new model files, and compare the whole cascade with the current one on the validation split. Only that comparison decides whether odin-fast adopts it.
+- The fusion parameters were tuned for embeddings without paths and were left alone here. Re-tuning them on dev belongs to the same step.
