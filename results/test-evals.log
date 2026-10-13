@@ -1,0 +1,41 @@
+# Every evaluation on a held-out test set, oldest first. Append one line per evaluation; never edit a line.
+# date (UTC where recorded) | test set | system | level | evidence | why it was run, and what was decided from it
+#
+# Entries before 2026-10-13 were reconstructed during the October 2026 audit from result files and logs.
+# "undated" means the result file carries no provenance block; its file date (2026-09-27) is a copy date.
+
+undated | lite | random | file | results/random_file_lite_test.json | harness sanity bound; nothing decided
+undated | lite | oracle | file | results/oracle_file_lite_test.json | harness sanity bound; nothing decided
+undated | lite | bm25-naive | file | results/bm25-naive_file_lite_test.json | baseline row; nothing decided
+undated | lite | bm25-naive | function | results/bm25-naive_function_lite_test.json | baseline row; nothing decided
+undated | lite | bm25-code | file | results/bm25-code_file_lite_test.json | tokenizer ablation row; nothing decided
+undated | lite | bm25-code | function | results/bm25-code_function_lite_test.json | tokenizer ablation row; nothing decided
+undated | lite | bm25-code-notests | file | results/bm25-code-notests_file_lite_test.json | test-exclusion ablation row; nothing decided
+undated | lite | bm25-code-notests | function | results/bm25-code-notests_function_lite_test.json | test-exclusion ablation row; nothing decided
+undated | lite | bm25-code-notests-graph | function | results/bm25-code-notests-graph_function_lite_test.json | call-graph expansion, tuned on dev; confirmed a negative result (ADR 0004)
+undated | lite | dense-notests | file | results/dense-notests_file_lite_test.json | dense row; nothing decided
+undated | lite | dense-notests | function | results/dense-notests_function_lite_test.json | dense row; nothing decided
+undated | lite | hybrid-notests | file | results/hybrid-notests_file_lite_test.json | hybrid row, fusion tuned on dev (ADR 0005); nothing decided
+undated | lite | hybrid-notests | function | results/hybrid-notests_function_lite_test.json | hybrid row, fusion tuned on dev (ADR 0005); nothing decided
+2026-09-27T08:36 | lite | ltr-notests on the corrupted embedding store | function | results/ltr-v1_function_lite_test.json | first learned-ranker run; superseded by ADR 0008
+2026-09-27T08:39 | lite | ltr-notests on the corrupted embedding store | file | results/ltr-v1_file_lite_test.json | first learned-ranker run; superseded by ADR 0008
+2026-09-27T14:40 | lite | ltr-notests | function | results/ltr-notests_function_lite_test.json | learned ranker after the store repair; the reported row
+2026-09-27T14:43 | lite | ltr-notests | file | results/ltr-notests_file_lite_test.json | learned ranker after the store repair; the reported row
+2026-09-27T15:26 | lite | ltr-ce-notests | function | results/ltr-ce-notests_function_lite_test.json | final system; the headline row
+2026-09-27T16:35 | lite | ltr-ce-notests | file | results/ltr-ce-notests_file_lite_test.json | final system; the headline row
+2026-09-27 (local) | lite | browser BM25 + MiniLM fusion (ADR 0009), rerank depths 30, 50 and 100 | function | results/depth_check.txt (local) | three depths scored on Lite next to the dev set; the depth was chosen on dev, but Lite was looked at for each
+2026-09-27 (local) | lite | browser BM25 + MiniLM fusion (ADR 0009), depth 20 | function | results/lite_browser.txt (local) | reported number for ADR 0009
+2026-09-27 (local) | lite | browser BM25 + MiniLM fusion (ADR 0009), depth 50 | function | results/lite_browser50.txt (local) | a second depth scored on Lite
+2026-09-28 (local) | lite | browser ranker v1, stage 1 | function | results/browser_ltr_stage1.txt (local) | reported number for ADR 0010
+2026-09-28 (local) | lite | browser ranker v1, stages 1 and 2 | function | results/browser_ltr_stage2.txt (local) | stage 2 hit@10 0.698
+2026-09-28 (local) | lite | browser ranker v1, stages 1 and 2, retrained stage 2 | function | results/browser_ltr.txt (local) | stage 2 hit@10 0.701, the number ADR 0010 reports; a second stage-2 model scored on Lite, contrary to that ADR's "run once"
+2026-09-28 (local) | lite | browser ranker v2 (ADR 0011): keyword, instant, semantic, rerank, files | function and file | web/public/data/lite.json | reported numbers for ADR 0011
+2026-09-28 (local) | rebench-unseen (30 projects, 747 bugs) | browser ranker v2 (ADR 0011): keyword, instant, semantic, rerank, files | function and file | web/public/data/lite.json | reported numbers for ADR 0011; first evaluation on this set
+2026-09-28 (local) | lite | browser ranker v1 against v2, paired bootstrap | function and file | results/browser_old_vs_new.json | significance of the change; no selection
+2026-09-28 (local) | rebench-unseen (30 projects, 747 bugs) | browser ranker v1 against v2, paired bootstrap | function and file | results/browser_old_vs_new.json | significance of the change; v1 scored on this set for the first time; no selection
+2026-09-28T08:34 | lite | ltr-ce-distilled-notests | function | results/ltr-ce-distilled-notests_function_lite_test.json | validation favoured the distilled reranker; Lite did not; it was rejected on this result, a decision taken on the test set
+2026-09-28T08:41 | lite | ltr-ce-distilled-notests | file | results/ltr-ce-distilled-notests_file_lite_test.json | same decision as the line above
+2026-10-13 | lite | bm25-code-notests | function | results/repro/ (local) | audit reproduction; identical rankings, nothing decided
+2026-10-13 | lite | ltr-notests | function | results/repro/ (local) | audit reproduction; identical rankings, nothing decided
+2026-10-13 | lite | ltr-ce-notests | function | results/repro/ (local) | audit reproduction; nothing decided
+2026-10-13 | lite | ltr-ce-notests | file | results/repro/ (local) | audit reproduction; nothing decided

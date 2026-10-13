@@ -4,6 +4,7 @@ __pycache__/
 .cache/
 results/*
 !results/README.md
+!results/test-evals.log
 !results/*_lite_test.json
 !results/browser_old_vs_new.json
 !results/cache_cold.json

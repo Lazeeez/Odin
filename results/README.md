@@ -28,6 +28,12 @@ Function-level files score 291 of the 300 Lite issues: the 9 whose fix touches o
 
 Each `*` stands for `_file_lite_test.json` and `_function_lite_test.json`.
 
+## Test-set evaluations
+
+[test-evals.log](test-evals.log) lists every evaluation on a held-out test set, with the reason it was run and what was decided from it: 33 on SWE-bench Lite and 2 on the unseen-project set as of 2026-10-13. New evaluations append a line.
+
+Thirteen files (`random`, `oracle`, the `bm25-*`, `dense-notests` and `hybrid-notests` rows) were written before provenance was recorded and have no `provenance` block. Their rankings are deterministic and `bm25-code-notests` at function level was re-run in October 2026 with identical output.
+
 ## Not here
 
 Training logs, feature caches and reranker training sets stay local: they are large (2.6 GB) and rebuildable with the commands in the README. Results are never overwritten; a superseded number keeps its file and is marked as superseded where it is cited.
