@@ -37,6 +37,7 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--protocol", default="locagent-lite", choices=sorted(PROTOCOLS))
     ap.add_argument("--rankings", type=Path, default=RESULTS)
+    ap.add_argument("--run", help="score one imported run; its file ranking is its unit ranking")
     ap.add_argument("--label", required=True)
     args = ap.parse_args()
     out = OUT / f"{args.protocol}_{args.label}.json"
@@ -46,9 +47,14 @@ def main() -> int:
     protocol = PROTOCOLS[args.protocol]
     labels = load_labels(protocol.labels)
     stages = {}
-    for stage in STAGES:
-        files, file_path = rankings(args.rankings, stage, "file")
-        units, unit_path = rankings(args.rankings, stage, "function")
+    for stage in [args.run] if args.run else STAGES:
+        if args.run:
+            unit_path = file_path = RESULTS / "runs" / args.run / "result.json"
+            stored = json.loads(unit_path.read_text(encoding="utf-8"))["per_instance"]
+            units = files = {row["instance_id"]: row["ranked"] for row in stored}
+        else:
+            files, file_path = rankings(args.rankings, stage, "file")
+            units, unit_path = rankings(args.rankings, stage, "function")
         scored = score_locagent(labels, files, units, protocol.ks)
         scored["ci95"] = {
             level: {k: interval(v) for k, v in scored["per_instance"][level].items()}
@@ -76,7 +82,7 @@ def main() -> int:
     out.write_text(json.dumps(report, indent=1) + "\n", encoding="utf-8", newline="\n")
     today = datetime.now(UTC).date().isoformat()
     with EVAL_LOG.open("a", encoding="utf-8", newline="\n") as log:
-        for stage in STAGES:
+        for stage in stages:
             log.write(
                 f"{today} | lite | {stage} | file and function | "
                 f"{out.relative_to(ROOT).as_posix()} | stored rankings scored under the "

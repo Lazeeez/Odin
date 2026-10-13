@@ -116,6 +116,7 @@ def execute(manifest_path: Path, out: Path, limit: int | None = None) -> dict:
     from odin.eval.runner import Query
 
     manifest = load_manifest(manifest_path)
+    code = provenance()
     out.mkdir(parents=True, exist_ok=True)
     kept = out / "manifest.json"
     if kept.exists() and sha256(kept) != sha256(manifest_path):
@@ -157,7 +158,7 @@ def execute(manifest_path: Path, out: Path, limit: int | None = None) -> dict:
         "seconds_this_invocation": round(time.perf_counter() - started, 1),
         "finished": datetime.now(UTC).isoformat(timespec="seconds"),
         "hardware": hardware(),
-        "provenance": provenance(),
+        "provenance": code,
     }
     invocations = read_json(out / "run.json")["invocations"] if (out / "run.json").exists() else []
     write_json(out / "run.json", {"invocations": [*invocations, record]})

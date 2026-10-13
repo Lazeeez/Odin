@@ -56,3 +56,5 @@ undated | lite | hybrid-notests | function | results/hybrid-notests_function_lit
 2026-10-13 | lite | hybrid-notests | file | results/provenance/hybrid-notests_file_lite_test.json | re-run to give the row a provenance block; recall identical, a few near-tied items reordered; nothing decided
 2026-10-13 | lite | hybrid-notests | function | results/provenance/hybrid-notests_function_lite_test.json | re-run to give the row a provenance block; recall identical, a few near-tied items reordered; nothing decided
 2026-10-13 | lite | dense-notests | function | results/repro/ (local) | second run to test determinism; identical to the first, nothing decided
+2026-10-13 | lite | swerank-embed-small-lite | function | results/runs/swerank-embed-small-lite/result.json | baseline: a published retriever run inside Odin's harness; nothing decided
+2026-10-13 | lite | swerank-embed-small-lite | file and function | results/comparison/locagent-lite_swerank-embed-small_2026-10-13.json | stored rankings scored under the locagent-lite protocol (ADR 0014); nothing re-run, nothing decided
