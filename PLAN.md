@@ -27,7 +27,7 @@ Phases are worked in this order, with a report to the owner after each.
 | 3 | 2. Cost and latency of the full cascade | per-stage timings, dollars per issue, accuracy-vs-cost chart | laptop now, PACE as a second hardware column | laptop done: [docs/cost.md](docs/cost.md); the cluster column waits for PACE |
 | 4 | 3. Error analysis | `docs/error-analysis.md`, labelled misses | laptop, owner labels the residue | not started |
 | 4 | 4. Contamination study | `docs/contamination.md` | laptop | not started |
-| any time | 9. Hosting and presentation | Cloudflare Pages at odin.DOMAIN, same-origin relay, R2 assets, redirect from GitHub Pages, `docs/deploy.md`, README restructure | the domain name | waiting for the domain |
+| any time | 9. Hosting and presentation | Cloudflare Pages at odin.allfather.dev, same-origin relay, R2 assets, redirect from GitHub Pages, `docs/deploy.md`, README restructure | the owner's Cloudflare account | repository side ready and tested locally for `odin.allfather.dev`: [docs/deploy.md](docs/deploy.md). The deployment itself and the README restructure are still to do |
 | 5 | 11. Accuracy track | odin-max: levers ranked from the error analysis, one ablation row each | PACE allocation | not started |
 | 6 | 6. Confidence-based escalation | selective-prediction curves, escalation with a self-hosted model, the frontier between odin-fast and odin-max | PACE | not started |
 | 7 | 7. Downstream issue resolution | resolve rate: baseline vs odin-fast vs odin-max vs oracle localization | PACE, WSL for the harness if Apptainer fails | not started |

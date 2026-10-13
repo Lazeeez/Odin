@@ -12,19 +12,23 @@ const PATH = /^\/([A-Za-z0-9_.-]+)\/([A-Za-z0-9_.-]+)\/([A-Za-z0-9_./-]+)$/;
 // Only the site itself may use the relay, so nobody else spends this account's free quota:
 // ALLOWED_ORIGINS (wrangler.toml) lists the site's origins, comma-separated. Browsers always
 // send Origin on these cross-origin requests; unset, the relay is open to any site.
-const allowed = (env, origin) => {
+const allowed = (env, request, origin) => {
   const list = (env.ALLOWED_ORIGINS ?? "").split(",").map((s) => s.trim()).filter(Boolean);
-  return !list.length || list.includes(origin);
+  const sameSite = !origin && request.headers.get("Sec-Fetch-Site") === "same-origin";
+  return !list.length || list.includes(origin) || sameSite;
 };
 
 export default {
   async fetch(request, env) {
     const origin = request.headers.get("Origin") ?? "";
     const cors = { "Access-Control-Allow-Origin": origin || "*", "Cross-Origin-Resource-Policy": "cross-origin", Vary: "Origin" };
-    if (!allowed(env, origin)) return new Response("origin not allowed", { status: 403, headers: cors });
+    if (!allowed(env, request, origin)) return new Response("origin not allowed", { status: 403, headers: cors });
     if (request.method === "OPTIONS") return new Response(null, { headers: { ...cors, "Access-Control-Allow-Methods": "GET" } });
     if (request.method !== "GET") return new Response("GET only", { status: 405, headers: cors });
-    const m = new URL(request.url).pathname.match(PATH);
+    const prefix = (env.ROUTE_PREFIX ?? "").replace(/\/+$/, "");
+    const pathname = new URL(request.url).pathname;
+    if (prefix && !pathname.startsWith(`${prefix}/`)) return new Response("not found", { status: 404, headers: cors });
+    const m = pathname.slice(prefix.length).match(PATH);
     if (!m) return new Response("usage: /<owner>/<repo>/<ref>", { status: 400, headers: cors });
     const [, owner, repo, ref] = m;
     const upstream = await fetch(`https://codeload.github.com/${owner}/${repo}/tar.gz/${ref}`, {

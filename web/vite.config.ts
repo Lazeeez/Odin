@@ -1,3 +1,5 @@
+import { createHash } from "node:crypto";
+import { readFileSync, writeFileSync } from "node:fs";
 import preact from "@preact/preset-vite";
 import type { Plugin } from "vite";
 import { defineConfig } from "vitest/config";
@@ -38,10 +40,60 @@ const uniqueAssetNames = (): Plugin => ({
   },
 });
 
+const CONNECT = [
+  "'self'",
+  "https://api.github.com",
+  "https://raw.githubusercontent.com",
+  "https://cdn.jsdelivr.net",
+  "https://data.jsdelivr.com",
+  "https://huggingface.co",
+  "https://*.huggingface.co",
+  "https://*.hf.co",
+  "https://*.workers.dev",
+];
+
+const contentSecurityPolicy = (inlineScripts: string[]) =>
+  [
+    "default-src 'self'",
+    `script-src 'self' 'wasm-unsafe-eval' https://cdn.jsdelivr.net ${inlineScripts.map((h) => `'sha256-${h}'`).join(" ")}`,
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' data:",
+    "font-src 'self'",
+    `connect-src ${CONNECT.join(" ")}`,
+    "worker-src 'self' blob:",
+    "manifest-src 'self'",
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'none'",
+    "frame-ancestors 'none'",
+  ].join("; ");
+
+const securityHeaders = (): Plugin => ({
+  name: "security-headers",
+  apply: "build",
+  closeBundle() {
+    const html = readFileSync("dist/index.html", "utf8");
+    const inline = [...html.matchAll(/<script(?![^>]*\ssrc=)[^>]*>([\s\S]*?)<\/script>/g)].map((m) =>
+      createHash("sha256").update(m[1]).digest("base64"),
+    );
+    const everywhere = [
+      "/*",
+      `  Content-Security-Policy: ${contentSecurityPolicy(inline)}`,
+      "  Cross-Origin-Opener-Policy: same-origin",
+      "  Cross-Origin-Embedder-Policy: credentialless",
+      "  X-Content-Type-Options: nosniff",
+      "  Referrer-Policy: strict-origin-when-cross-origin",
+      "  Permissions-Policy: camera=(), microphone=(), geolocation=()",
+    ];
+    const hashed = ["/assets/*", "  Cache-Control: public, max-age=31536000, immutable"];
+    writeFileSync("dist/_headers", [...everywhere, "", ...hashed, ""].join("\n"));
+  },
+});
+
 export default defineConfig({
   // Relative asset URLs: the same build works at lazeeez.github.io/Odin/ and on Vercel.
   base: "./",
-  plugins: [preact(), preloadFonts(), uniqueAssetNames()],
+  plugins: [preact(), preloadFonts(), uniqueAssetNames(), securityHeaders()],
   worker: { format: "es" },
   build: {
     target: "es2022",

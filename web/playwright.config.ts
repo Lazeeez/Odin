@@ -16,5 +16,9 @@ export default defineConfig({
     { name: "webkit", use: { ...devices["Desktop Safari"] }, testIgnore: /mobile\.e2e\.ts$/ },
     { name: "iphone", use: { ...devices["iPhone 14"] }, testMatch: /mobile\.e2e\.ts$/ },
   ],
-  webServer: { command: "npm run preview -- --port 4173 --strictPort", port: 4173, reuseExistingServer: !process.env.CI },
+  webServer: {
+    command: process.env.WITH_HEADERS ? "node scripts/serve-dist.mjs 4173" : "npm run preview -- --port 4173 --strictPort",
+    port: 4173,
+    reuseExistingServer: !process.env.CI,
+  },
 });
