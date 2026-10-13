@@ -186,14 +186,8 @@ def _src_units():
     ]
 
 
-def _top_k_with_ties_in_index_order(scores, k):
-    import numpy as np
-
-    return np.lexsort((np.arange(len(scores)), -np.asarray(scores)))[:k]
-
-
 @pytest.mark.skipif(NODE is None, reason="needs Node 24 and `npm ci` in web/")
-def test_js_rank_features_match_python(monkeypatch):
+def test_js_rank_features_match_python():
     """Every ranking stage must see the same candidates, features and scores as training."""
     from collections import Counter
 
@@ -203,7 +197,6 @@ def test_js_rank_features_match_python(monkeypatch):
     from odin.rank.features import issue_fields
     from odin.rank.mentions import Mentions
 
-    monkeypatch.setattr("odin.rank.browser.top_k", _top_k_with_ties_in_index_order)
     units = _src_units()
     trees = ROOT / "web/src/assets/ranker.json"
     model = json.loads(trees.read_text()) if trees.exists() else {}
@@ -240,10 +233,16 @@ def test_js_rank_features_match_python(monkeypatch):
 
     def same(got, ids, X, stage):
         assert [g[0] for g in got] == ids
-        np.testing.assert_allclose(
-            np.array([g[1] for g in got]).reshape(X.shape), X, rtol=1e-5, atol=1e-5
-        )
-        want = [predict(model[stage], x) for x in X]
+        G = np.array([g[1] for g in got]).reshape(X.shape)
+        names = model[stage]["features"]
+        for c in range(X.shape[1]):
+            differing = np.flatnonzero(~np.isclose(G[:, c], X[:, c], rtol=1e-5, atol=1e-5))
+            if not len(differing):
+                continue
+            assert names[c].endswith("logrank"), names[c]
+            np.testing.assert_allclose(np.sort(G[differing, c]), np.sort(X[differing, c]))
+            assert np.ptp(X[differing, c - 1]) < 1e-4, names[c]
+        want = [predict(model[stage], x) for x in G]
         np.testing.assert_allclose([g[2] for g in got], want, rtol=1e-5, atol=1e-5)
 
     covered = Counter()

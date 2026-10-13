@@ -193,3 +193,18 @@ def test_fingerprint_separates_analyzers():
 
     assert analyzer_fingerprint(code_counts) == analyzer_fingerprint(code_counts)
     assert analyzer_fingerprint(code_counts) != analyzer_fingerprint(naive_counts)
+
+
+def test_top_k_keeps_the_lowest_indices_among_scores_tied_at_the_cutoff():
+    import numpy as np
+
+    from odin.search.bm25 import top_k
+
+    scores = np.array([1.0, 3.0, 2.0, 2.0, 2.0, 5.0, 2.0], np.float32)
+    assert top_k(scores, 4).tolist() == [5, 1, 2, 3]
+    assert top_k(scores, 1).tolist() == [5]
+    assert top_k(scores, 99).tolist() == [5, 1, 2, 3, 4, 6, 0]
+    assert top_k(np.zeros(5), 2).tolist() == [0, 1]
+    shuffled = np.random.default_rng(0).permutation(1000).astype(np.float32) % 7
+    expected = np.lexsort((np.arange(1000), -shuffled))[:50]
+    assert top_k(shuffled, 50).tolist() == expected.tolist()

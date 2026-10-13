@@ -108,5 +108,8 @@ def top_k(scores: np.ndarray, k: int) -> np.ndarray:
     k = min(k, len(scores))
     if k == 0:
         return np.zeros(0, np.int64)
-    part = np.argpartition(-scores, k - 1)[:k]
+    cutoff = np.partition(scores, len(scores) - k)[len(scores) - k]
+    above = np.flatnonzero(scores > cutoff)
+    tied = np.flatnonzero(scores == cutoff)[: k - len(above)]
+    part = np.concatenate([above, tied])
     return part[np.lexsort((part, -scores[part]))]
