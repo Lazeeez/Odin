@@ -208,3 +208,13 @@ def test_top_k_keeps_the_lowest_indices_among_scores_tied_at_the_cutoff():
     shuffled = np.random.default_rng(0).permutation(1000).astype(np.float32) % 7
     expected = np.lexsort((np.arange(1000), -shuffled))[:50]
     assert top_k(shuffled, 50).tolist() == expected.tolist()
+
+
+def test_the_path_aware_text_swaps_the_qualified_name_for_the_path():
+    from odin.search.path_aware import path_header, with_path
+
+    assert path_header("pkg/auth.py::Session.login") == "pkg/auth.py/Session/login"
+    text = "Session.login\ndef login(self):\n    return 1"
+    assert with_path("pkg/auth.py::Session.login", text) == (
+        "pkg/auth.py/Session/login\ndef login(self):\n    return 1"
+    )

@@ -386,6 +386,7 @@ docs/decisions/               why things are the way they are
 15. [Heavy experiments are manifest runs, scored only at import](docs/decisions/0015-manifest-runs.md)
 16. [Ties at a cut-off are broken by index](docs/decisions/0016-deterministic-ties.md)
 17. [When the holdout is spent, and a separate set for the contamination study](docs/decisions/0017-holdout-freeze-and-contamination-set.md)
+18. [Put the file path in the text that is embedded](docs/decisions/0018-file-path-in-embedded-text.md)
 
 ## Adding a retriever
 

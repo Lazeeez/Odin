@@ -82,6 +82,17 @@ RETRIEVERS["dense-notests"] = lambda: _dense("dense")
 RETRIEVERS["hybrid-notests"] = lambda: _dense("hybrid")
 
 
+def _dense_with_paths(mode: str) -> Retriever:
+    from odin.search.dense import SentenceEncoder
+    from odin.search.path_aware import PathAwareRetriever
+
+    return PathAwareRetriever(SentenceEncoder(), mode=mode, fusion=DEV_SELECTED_FUSION)
+
+
+RETRIEVERS["dense-path-notests"] = lambda: _dense_with_paths("dense")
+RETRIEVERS["hybrid-path-notests"] = lambda: _dense_with_paths("hybrid")
+
+
 def _ltr() -> Retriever:
     from odin.rank.ltr import LTRRetriever
     from odin.search.dense import SentenceEncoder
