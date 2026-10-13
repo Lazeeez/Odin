@@ -40,7 +40,7 @@ Each `*` stands for `_file_lite_test.json` and `_function_lite_test.json`.
 
 ## Test-set evaluations
 
-[test-evals.log](test-evals.log) lists every evaluation on a held-out test set, with the reason it was run and what was decided from it: 77 on SWE-bench Lite and 2 on the unseen-project set as of 2026-10-13. New evaluations append a line.
+[test-evals.log](test-evals.log) lists every evaluation on a held-out test set, with the reason it was run and what was decided from it: 79 on SWE-bench Lite and 2 on the unseen-project set as of 2026-10-14. New evaluations append a line.
 
 Thirteen files in this folder (`random`, `oracle`, the `bm25-*`, `dense-notests` and `hybrid-notests` rows) were written before provenance was recorded. They are kept, and each was run again on 2026-10-13 into `provenance/` with a provenance block; the README check reads the re-run where one exists.
 
