@@ -186,9 +186,9 @@ export function Home({ summary, lite }: { summary: Summary | null; lite: Lite | 
             </p>
           </div>
           <div class="tiles reveal">
-            <Tile label="Function to fix in the top 10" value={fn ? fn["hit@10"] : null} note="full pipeline" />
-            <Tile label="File to fix in the top 5" value={fl ? fl["hit@5"] : null} note="full pipeline" />
-            <Tile label="Function to fix in the top 10" value={browser} note="in your browser, on 30 projects it never trained on" />
+            <Tile label="Function to fix in the top 10" value={fn ? fn["hit@10"] : null} note={fn ? `full pipeline, ${fn.n} issues` : "full pipeline"} />
+            <Tile label="File to fix in the top 5" value={fl ? fl["hit@5"] : null} note={fl ? `full pipeline, ${fl.n} issues` : "full pipeline"} />
+            <Tile label="Function to fix in the top 10" value={browser} note={lite ? `in your browser, ${lite.held_out.unseen.keyword.n} bugs from 30 projects it never trained on` : "in your browser"} />
           </div>
           <a class="text-link" href={href("benchmarks")}>See the full benchmarks →</a>
         </div>

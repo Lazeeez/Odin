@@ -44,6 +44,17 @@ Lite test, held out:
 
 Against hybrid at function level (first model, before the past-issue features): recall@10 +8.7 points (p < 0.001, 37 wins / 8 losses), recall@1 +5.1 (p = 0.011). Adding the past-issue features moved function recall@10 from 0.730 to 0.744 and file recall@10 from 0.910 to 0.923, a consistent but not individually significant gain.
 
+## Addendum: after the embedding-store repair (supersedes the Lite table above)
+
+The Lite table above was measured on an embedding store corrupted by duplicate keys ([ADR 0008](0008-embedding-store-corruption.md)). After the repair the features were rebuilt and the rankers retrained. The numbers the README reports are these, from `results/ltr-notests_*_lite_test.json`; the superseded run is kept as `results/ltr-v1_*_lite_test.json`.
+
+| | recall@1 | recall@5 | recall@10 | MRR |
+|---|---|---|---|---|
+| Function (291 issues): hybrid → LTR | 0.269 → 0.344 | 0.569 → 0.643 | 0.642 → 0.729 | 0.416 → 0.497 |
+| File (300 issues): hybrid → LTR | 0.583 → 0.627 | 0.850 → 0.883 | 0.917 → 0.930 | 0.698 → 0.741 |
+
+Against hybrid at function level: recall@10 +0.087 (95% CI [+0.049, +0.128], p < 0.001, 36 wins / 9 losses) and recall@1 +0.075 (p < 0.001). Function recall@10 is lower than the corrupted-store run reported (0.729 against 0.744); the repaired number is the correct one.
+
 ## What did not work
 
 - **Zero-shot LLM reranking** (Qwen3-Reranker-0.6B, not fine-tuned) on hybrid's top 30 of 80 dev issues matched hybrid's own order (recall@1 0.369 vs 0.365) at 7 s per query. Reading code cold, a small model adds nothing a tuned retriever does not already have. See 0007 for the fine-tuned version.

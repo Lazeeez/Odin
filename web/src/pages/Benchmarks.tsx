@@ -51,9 +51,9 @@ export function Benchmarks({ summary, lite, failed }: { summary: Summary | null;
       {failed && <p class="error-text">Couldn't load the benchmark data. Try reloading the page.</p>}
       {fn && fl && (
         <div class="tiles reveal">
-          <Tile label="Function to fix in the top 10" value={fn["hit@10"]} note="out of 10k–45k functions per project" />
-          <Tile label="Function to fix ranked first" value={fn["hit@1"]} note="the top result is right" />
-          <Tile label="File to fix in the top 5" value={fl["hit@5"]} note="file level" />
+          <Tile label="Function to fix in the top 10" value={fn["hit@10"]} note={`${fn.n} issues, 10k–45k functions per project`} />
+          <Tile label="Function to fix ranked first" value={fn["hit@1"]} note={`${fn.n} issues: 300 minus ${300 - fn.n} with no function to find`} />
+          <Tile label="File to fix in the top 5" value={fl["hit@5"]} note={`file level, all ${fl.n} issues`} />
         </div>
       )}
 
@@ -119,6 +119,7 @@ export function Benchmarks({ summary, lite, failed }: { summary: Summary | null;
           <li>Nothing is tuned on these 300 issues: fusion weights on a separate dev set, learned rankers on 1,941 other SWE-bench issues, reranker weights on a held-out split.</li>
           <li>Git-history features only see commits before the bug; "similar past bugs" only see issues opened at least 30 days earlier. Both boundaries have tests.</li>
           <li>Every improvement comes with a paired bootstrap test, and ones that aren't significant are reported as such.</li>
+          <li>Lite is not untouched. Every evaluation on it is logged with what was decided from it (results/test-evals.log in the repository), and one decision, rejecting a distilled reranker, was taken on a Lite result, in the conservative direction.</li>
         </ul>
       </section>
     </div>

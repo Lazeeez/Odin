@@ -70,6 +70,7 @@ def check_headline(rows: list[list[str]], report: Report) -> None:
     for row in rows[1:]:
         level = "file" if row[0].startswith("File") else "function"
         summary = load("ltr-ce-notests", level)["summary"]
+        report.expect(f"headline {level} issues", numbers(row[0])[0], summary["n"], 0)
         for cell, key in zip(row[1:4], ("hit@1", "hit@5", "hit@10"), strict=True):
             report.expect(f"headline {level} {key}", numbers(cell)[0], 100 * summary[key], 1)
         recall, low, high = numbers(row[4])
@@ -175,9 +176,34 @@ def check_prose(text: str, report: Report) -> None:
                 f"prose {label}: README says p < 0.01, result p = {diff.p_value}"
             )
 
-    naive = load("bm25-naive", "function")["summary"]["recall@10"]
-    shown = float(re.search(r"started this project at ([\d.]+)% function recall@10", text).group(1))
-    report.expect("prose plain BM25 recall@10", shown, 100 * naive, 1)
+    naive = load("bm25-naive", "function")["summary"]
+    final = load("ltr-ce-notests", "function")["summary"]
+    match = re.search(
+        r"plain BM25 started this project at ([\d.]+)% function hit@10 "
+        r"\(recall@10 ([\d.]+), against ([\d.]+) now\)",
+        text,
+    )
+    report.expect("prose plain BM25 hit@10", float(match.group(1)), 100 * naive["hit@10"], 1)
+    report.expect("prose plain BM25 recall@10", float(match.group(2)), naive["recall@10"], 3)
+    report.expect("prose final recall@10", float(match.group(3)), final["recall@10"], 3)
+
+    tests, _ = paired("bm25-code", "bm25-code-notests", "function", "recall@1")
+    match = re.search(r"largest lexical win at recall@1 \(\+([\d.]+), p = ([\d.]+)\)", text)
+    report.expect("prose test exclusion recall@1", float(match.group(1)), tests.delta, 3)
+    report.expect("prose test exclusion p", float(match.group(2)), tests.p_value, 3)
+    other_lexical = [
+        paired(a, b, "function", "recall@1")[0].delta
+        for a, b in (("bm25-naive", "bm25-code"), ("bm25-code-notests", "bm25-code-notests-graph"))
+    ]
+    report.checked += 1
+    if tests.delta <= max(other_lexical):
+        report.mismatches.append("prose test exclusion: README calls it the largest lexical win")
+
+    pool = re.search(r"held a gold unit for ([\d.]+)% of issues, measured on the dev set", text)
+    adr = (ROOT / "docs" / "decisions" / "0006-learning-to-rank.md").read_text(encoding="utf-8")
+    report.checked += 1
+    if f"contained a gold unit {pool.group(1)}% of the time" not in adr:
+        report.mismatches.append("prose pool recall: README and ADR 0006 disagree")
 
     r1, _ = paired("bm25-naive", "bm25-code", "function", "recall@1")
     shown = float(
@@ -212,6 +238,12 @@ def check_prose(text: str, report: Report) -> None:
     report.expect("prose gold module-only", float(match.group(3)), module_only, 0)
     report.expect("prose one file per patch", 1, max(len(g["files"]) for g in gold), 0)
 
+    log = (RESULTS / "test-evals.log").read_text(encoding="utf-8").splitlines()
+    entries = [line.split(" | ") for line in log if line and not line.startswith("#")]
+    on_lite = sum(1 for entry in entries if entry[1] == "lite")
+    shown = float(re.search(r"it has been scored (\d+) times", text).group(1))
+    report.expect("prose Lite evaluations", shown, on_lite, 0)
+
 
 def main() -> int:
     sys.stdout.reconfigure(encoding="utf-8")
@@ -222,7 +254,11 @@ def main() -> int:
     check_browser(found["In the browser, on projects it never saw"], report)
     check_retrievers(found["Every retriever"], report)
     check_steps(
-        found["What each step bought (paired bootstrap, function level, 291 issues)"], report
+        found[
+            "What each step bought (paired bootstrap, function level, "
+            "291 issues: 300 minus 9 module-level-only)"
+        ],
+        report,
     )
     check_per_repo(found["Evaluation methodology"], report)
     check_prose(text, report)

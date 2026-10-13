@@ -29,7 +29,8 @@ A two-stage LambdaMART ranker on browser-computable features. Python and TypeScr
   - Stage 1 needs no model download.
 - **Stage 2: stage 1's top 20, plus 5 similarity features.** It adds MiniLM similarity to the issue and to its title, and the stage-1 rank.
 - **Training and tuning.** Both stages are trained on SWE-bench minus Lite (1,941 issues). Round counts come from 5-fold CV on that set, and stage 2 trains on stage 1's out-of-fold top 20.
-- **Declared selection rule.** Ship stage 2 if its CV hit@10 beats stage 1's. It did: 0.770 vs 0.748. Lite was then run once.
+- **Declared selection rule.** Ship stage 2 if its CV hit@10 beats stage 1's. It did: 0.770 vs 0.748.
+- **Lite was scored more than once** (amended October 2026; this ADR first said "Lite was then run once"). The logs show three runs: stage 1 alone, then stages 1 and 2 (stage 2 hit@10 0.698), then both again after stage 2 was retrained (0.701, the number reported below). The settings came from the cross-validation rule above, not from Lite, but Lite was looked at each time. The earlier fusion pipeline of ADR 0009 was also scored on Lite at several rerank depths. [results/test-evals.log](../../results/test-evals.log) lists every evaluation.
 - **Model format.** Trees are exported as flat JSON arrays, 95 KB gzipped, and served as a content-hashed asset. Thresholds are stored as the largest float32 that is no greater than LightGBM's threshold, which keeps decisions exact for float32 features.
 
 ## Results (SWE-bench Lite, held out, 291 issues with function-level gold)

@@ -11,20 +11,20 @@ It ships two ways:
 
 ## Headline results
 
-SWE-bench Lite test, 300 issues across 12 repositories, each searched at its own `base_commit`, out of roughly 10k to 45k candidate functions per snapshot. Nothing was trained or tuned on these issues.
+SWE-bench Lite test, 300 issues across 12 repositories, each searched at its own `base_commit`, out of roughly 10k to 45k candidate functions per snapshot. Nothing was trained or tuned on these issues. File-level rows score all 300; function-level rows score 291, the 300 minus the 9 whose fix touches only module-level code and so has no function or class to find.
 
 | Final system (`ltr-ce-notests`) | hit@1 | hit@5 | hit@10 | recall@10 | MRR |
 |---|---|---|---|---|---|
-| **File that must change** | 69.0% | **89.3%** | **93.0%** | 0.930 [0.90, 0.96] | 0.783 |
-| **Function that must change** | 45.0% | 73.9% | **79.4%** | 0.772 [0.72, 0.82] | 0.560 |
+| **File that must change** (300 issues) | 69.0% | **89.3%** | **93.0%** | 0.930 [0.90, 0.96] | 0.783 |
+| **Function that must change** (291 issues) | 45.0% | 73.9% | **79.4%** | 0.772 [0.72, 0.82] | 0.560 |
 
 *hit@k*: at least one location the maintainers' fix touched is in the top k. Brackets are 95% bootstrap intervals.
 
-For reference, the same retrieval stack started this project at 30.8% function recall@10 with plain BM25.
+For reference, plain BM25 started this project at 32.6% function hit@10 (recall@10 0.308, against 0.772 now).
 
 ### In the browser, on projects it never saw
 
-The website runs a lighter pipeline (no GPU, no git history) with rankers trained on 5,115 issues from 131 projects. It is scored on 747 bugs from 30 projects kept out of training entirely, the situation of every repository a visitor pastes ([ADR 0011](docs/decisions/0011-website-at-scale.md)):
+The website runs a lighter pipeline (no GPU, no git history) with rankers trained on 5,115 issues from 131 projects. It is scored on 30 projects kept out of training entirely, the situation of every repository a visitor pastes: 747 bugs, the 785 sampled minus the 38 with no function or class target ([ADR 0011](docs/decisions/0011-website-at-scale.md)):
 
 | In-browser stage | hit@1 | hit@10 | MRR |
 |---|---|---|---|
@@ -34,9 +34,11 @@ The website runs a lighter pipeline (no GPU, no git history) with rankers traine
 | + MiniLM rerank of the top 20 | 43.9% | **77.2%** | **0.551** |
 | **file ranker** (the file that must change) | 69.2% | **94.4%** | 0.781 |
 
-Against the previous browser ranker, trained on SWE-bench alone: function hit@10 +1.3 points (p = 0.049) and file hit@10 +1.9 points (p = 0.005) on the unseen projects. On SWE-bench Lite the browser pipeline reaches 69.1% function hit@10 against the GPU pipeline's 79.4%.
+Against the previous browser ranker, trained on SWE-bench alone: function hit@10 +1.3 points (p = 0.049) and file hit@10 +1.9 points (p = 0.005) on the unseen projects. On SWE-bench Lite (291 issues) the browser pipeline reaches 69.1% function hit@10 against the GPU pipeline's 79.4%.
 
 ### Every retriever
+
+File rows: 300 issues. Function rows: 291 issues (300 minus the 9 that are module-level only).
 
 | Retriever | Level | Recall@1 | Recall@5 | Recall@10 | All@10 | MRR |
 |---|---|---|---|---|---|---|
@@ -59,7 +61,7 @@ Against the previous browser ranker, trained on SWE-bench alone: function hit@10
 
 Every tunable choice was made on data disjoint from Lite: a dev set (SWE-bench Verified minus Lite) for fusion and expansion, and SWE-bench test minus Lite (1,941 issues) for the learned rankers.
 
-### What each step bought (paired bootstrap, function level, 291 issues)
+### What each step bought (paired bootstrap, function level, 291 issues: 300 minus 9 module-level-only)
 
 | Change | ΔRecall@10 | 95% CI | p | Wins / losses |
 |---|---|---|---|---|
@@ -75,9 +77,9 @@ Every tunable choice was made on data disjoint from Lite: a dev set (SWE-bench V
 The cross-encoder's main job is the top of the list: function MRR +0.063 and recall@1 +0.063 (both p < 0.01), file MRR +0.042 and recall@1 +0.063 (p < 0.01). Earlier LTR and cross-encoder numbers were measured on a corrupted embedding store and are superseded ([ADR 0008](docs/decisions/0008-embedding-store-corruption.md)).
 
 - **Code-aware tokenization** splits `get_queryset` and `HTTPServerError` into parts and keeps the whole identifier too, so both prose ("query set") and exact mentions match. It helps most at depth. At recall@1 the gain (+0.012) is not significant.
-- **Excluding tests** is the largest single win at recall@1. Test methods reuse every identifier in the issue, so they crowd out the source.
+- **Excluding tests** is the largest lexical win at recall@1 (+0.037, p = 0.006); hybrid retrieval, learning to rank and the cross-encoder each add more later. Test methods reuse every identifier in the issue, so they crowd out the source.
 - **Call-graph expansion does not pay for itself.** It was tuned on a held-out dev set and confirmed on test. [ADR 0004](docs/decisions/0004-call-graph-expansion.md) shows why: only 15% of misses are one call away from a top hit, so the ceiling is low. It ships as opt-in.
-- **Learning to rank turns many weak signals into one ordering** ([ADR 0006](docs/decisions/0006-learning-to-rank.md)). The candidate pool already held a gold unit for 97% of issues, so the remaining errors were about order. LambdaMART learns it from 52 features: retrieval scores, the issue title and code spans scored separately, traceback frames and names mentioned in the issue, file structure, git history from strict ancestors of the base commit (BugLocator-style churn and similar past commits), and fixes of similar earlier issues.
+- **Learning to rank turns many weak signals into one ordering** ([ADR 0006](docs/decisions/0006-learning-to-rank.md)). The candidate pool already held a gold unit for 96.7% of issues, measured on the dev set, so the remaining errors were about order. LambdaMART learns it from 52 features: retrieval scores, the issue title and code spans scored separately, traceback frames and names mentioned in the issue, file structure, git history from strict ancestors of the base commit (BugLocator-style churn and similar past commits), and fixes of similar earlier issues.
 - **A fine-tuned LLM reranker reads the issue and the code together** ([ADR 0007](docs/decisions/0007-fine-tuned-cross-encoder.md)). Zero-shot it added nothing, but after one LoRA epoch on in-domain hard negatives it lifts the top ranks. It runs only on the top 20, with a shared-prefix KV cache so the issue is encoded once per query rather than once per candidate.
 - **Hybrid is the big win, because the two retrievers fail differently.** Dense alone is only marginally better than BM25 (p = 0.045), but fusing them beats both. Recall@10 is +12.7 points at file level too, with 42 wins to 4 losses. The largest gains are where issues aren't written in identifiers: sympy recall@10 went from 0.37 to 0.59 and pytest from 0.30 to 0.56 ([ADR 0005](docs/decisions/0005-dense-hybrid-retrieval.md)).
 
@@ -165,7 +167,7 @@ The ranking cascade on top: each stage is more expensive per candidate and sees 
 
 ```mermaid
 flowchart LR
-    A["BM25 + dense<br/>all units (~40k)"] --> B["candidate pool<br/>~450 units, 97% contain a gold unit"]
+    A["BM25 + dense<br/>all units (~40k)"] --> B["candidate pool<br/>~450 units, 96.7% contain a gold unit<br/>(dev set)"]
     B --> C["LambdaMART<br/>52 features: retrieval, mentions,<br/>tracebacks, git history, past fixes"]
     C --> D["fine-tuned cross-encoder<br/>top 20, shared-prefix KV cache"]
     D --> E[ranked functions and files]
@@ -204,7 +206,8 @@ flowchart LR
 
 - **Ground truth** comes from the gold patch, mapped onto a Tree-sitter parse of each file *as it existed at `base_commit`* (details below).
 - **Unseen projects for the website.** The browser's rankers are cross-validated with whole projects as folds, and scored on 30 SWE-rebench projects that appear in no training fold, so the reported numbers are what a visitor's new repository gets.
-- **Held-out tuning.** Anything with a knob is tuned off Lite: fusion and expansion on SWE-bench Verified minus Lite (407 issues, `odin tune`), learned rankers on SWE-bench test minus Lite (1,941 issues, `odin ltr`, 5-fold CV grouped by query), and the reranker's depth and weights on 250 issues held out from its training (`odin ce-tune`), with the selection rule written down before looking. Lite test is run once per final configuration.
+- **Held-out tuning.** Anything with a knob is tuned off Lite: fusion and expansion on SWE-bench Verified minus Lite (407 issues, `odin tune`), learned rankers on SWE-bench test minus Lite (1,941 issues, `odin ltr`, 5-fold CV grouped by query), and the reranker's depth and weights on 250 issues held out from its training (`odin ce-tune`), with the selection rule written down before looking.
+- **How often Lite has been looked at.** No number here was trained or tuned on Lite, but Lite is not untouched: it has been scored 33 times, and [results/test-evals.log](results/test-evals.log) lists each one with what was decided from it. Most are one run per reported row. The exceptions: the early browser pipeline was scored on Lite at several rerank depths and with two stage-2 models (its settings were chosen on dev data and cross-validation, but Lite was looked at each time), and the distilled reranker was rejected on a Lite result, a decision taken on the test set, in the conservative direction. Every later evaluation appends to the log.
 - **No leakage through features.** Git history uses only strict ancestors of the base commit (`git rev-list`). Earlier-issue features only see issues opened at least 30 days before the query. Both boundaries have tests.
 - **Reproducibility.** Cached features and trained models carry a fingerprint of the source code that produced them, and a model refuses to load against different feature code. Every result file records the git commit, library versions, model hashes and command line.
 - **Significance.** `odin compare` runs a paired bootstrap over queries (10k resamples) and reports Δ, a 95% CI, a two-sided p-value and win/loss counts. A difference that isn't significant is reported as such.
@@ -267,7 +270,7 @@ Retrievers: `random`, `oracle`, `bm25-naive`, `bm25-code`, `bm25-code-notests`, 
 - **Replayed results of the full pipeline.** Stage-by-stage metrics with confidence intervals, significance tests, per-project tables, and an explorer that tells each of the 300 Lite issues as a story: the report, the answer key, and where every stage ranked the fix. Explorer views are deep-linkable (`#/explore/django__django-11019`); *Beat Odin* (`#/explore?mode=game`) lets visitors guess the fixed file against Odin's pick.
 - **UX.** Real open issues from the loaded repository as one-click queries; "Why #1?" bars showing what each kind of evidence added to a result's score; when a result's file last changed; a map of the repository with the results lit; an "Odin this" bookmarklet that opens any GitHub issue in Odin; a command palette (Ctrl+K); Functions/Files views, syntax-highlighted code, shareable `#/search?repo=&q=` links, cancel, recent repositories, `/` to focus, and a light/dark toggle (light by default).
 
-The engine in `web/src/engine/` is a port of the chunker, tokenizer and BM25. `tests/test_site_engine.py` runs that TypeScript source directly under Node 24 and requires unit-for-unit agreement with the Python chunker and identical BM25 rankings and scores. On 837 files from django, sympy and requests (17,369 units) there are zero mismatches. `web/test/` holds Vitest unit tests, including a check that highlighted repository code can never inject markup.
+The engine in `web/src/engine/` is a port of the chunker, tokenizer and BM25. `tests/test_site_engine.py` runs that TypeScript source directly under Node 24 and requires unit-for-unit agreement with the Python chunker, identical BM25 rankings and scores, identical ranker features and identical static embeddings, on Odin's own source files and a set of adversarial strings. `web/test/` holds Vitest unit tests, including a check that highlighted repository code can never inject markup.
 
 ```bash
 cd web && npm ci && npm run dev        # http://localhost:5173
@@ -381,7 +384,7 @@ What would move the numbers further, in expected order of impact:
 1. **A frontier LLM as the final stage.** Published SWE-bench localization agents get their precision from large models reading candidate code. The cascade already reduces each issue to about 20 candidates, which keeps that affordable.
 2. **A bigger reranker base model** where memory allows. More epochs, LTR-mined negatives and a two-adapter ensemble were already tried and kept ([ADR 0007](docs/decisions/0007-fine-tuned-cross-encoder.md)). Fine-tuning the embedding model was tried and did not help.
 
-Tried recently and not adopted: distilling the two-adapter reranker into one (better on validation, MRR 0.634 vs 0.623, but file hit@1 fell 0.690 → 0.660 on Lite, p = 0.027), and a learned query projection for the static embeddings (semantic-only MRR 0.287 → 0.220 on held-out projects). The website's *How it works* page lists every result that did and didn't work.
+Tried recently and not adopted: distilling the two-adapter reranker into one (better on validation, MRR 0.634 vs 0.623, but file hit@1 fell 0.690 → 0.660 on Lite, p = 0.027; it was rejected on that Lite result, which is a decision taken on the test set, in the conservative direction), and a learned query projection for the static embeddings (semantic-only MRR 0.287 → 0.220 on held-out projects). The website's *How it works* page lists every result that did and didn't work.
 
 ## License
 
