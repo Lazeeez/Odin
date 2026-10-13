@@ -9,7 +9,7 @@ Where Odin stands on SWE-bench Lite when it is scored the way other papers score
 - **Under LocAgent's protocol, at file level Odin is behind both LocAgent and SweRank.** File Acc@1 is 69.0% against 77.7% and 83.2%.
 - **Odin's reranker is far smaller.** It has 0.6 billion parameters and runs on a 6 GB laptop GPU. SweRank's rerankers have 7 and 32 billion, and its best retriever 7 billion.
 - **Odin costs about a quarter of a cent per issue** on its laptop timings at a public GPU rental price, against one to two cents for SweRank's rerankers and 46 to 79 cents for the agents ([cost.md](cost.md)).
-- **Every other system's row is copied from its paper**, except SweRankEmbed-Small, which was reproduced here (74.8% function Acc@10 against the paper's 74.45%) and also run inside Odin's index, where it scores about 9 points lower. The cause is being isolated; it is in Odin's indexing, not in the model.
+- **Every other system's row is copied from its paper**, except SweRankEmbed-Small, which was reproduced here (74.8% function Acc@10 against the paper's 74.45%) and also run inside Odin's index, where it scores about 9 points lower. The cause is that Odin embeds functions without their file path; removing the path from the authors' own corpus costs the model the same 10 points.
 
 ## The protocol
 
@@ -93,9 +93,19 @@ SweRankEmbed-Small was run as the only retriever over Odin's own units, with tes
 
 - **The paper's number reproduces.** With the authors' corpus, settings and evaluator the model scores 74.82% at function Acc@10 against the paper's 74.45%, and within 0.8 points on all seven numbers.
 - **In Odin's index the same model scores about 9 points lower** (65.7% [59.9, 71.2]). The gap is therefore in how Odin indexes and feeds the model, not in the model and not in the labels: scored with the same LocAgent labels on the 272 issues both have, the authors' pipeline gives 75.7% and Odin's index 66.2%.
-- **What has been ruled out so far.** Class units: dropping every unit that is not in the authors' corpus raises Odin's number by 1.5 points only. What remains to separate: Odin cut the issue and each function at 512 tokens where the authors use 1,024, and Odin prefixes a unit with its qualified name where the authors prefix it with its path. Those runs are in progress.
-- **Why it matters beyond this row.** Every Odin row in the tables above was produced with the same indexing. If input length or the text prefix costs 9 points for this model, it may cost Odin's own retriever points too; that is a cheap lever to test on validation before odin-fast is frozen.
-- **It is a stronger retriever than Odin's embedding model**, at about a quarter of the size: recall@10 0.641 against 0.586 on the same units. It alone matches Odin's hybrid.
+- **The cause is the file path.** Odin embeds a function as its qualified name and its source; the authors' corpus begins every document with `path/to/file.py/Class/method`. Replacing that first line with `Class.method` in the authors' own corpus, and changing nothing else, takes the model from 74.82% to 64.96%, and file Acc@1 from 67.2% to 57.3%. Inside Odin's index it scores 65.69% and 57.3%.
+
+  | SweRankEmbed-Small on the authors' corpus (274 issues, their evaluator) | File Acc@1 | Function Acc@5 | Function Acc@10 |
+  |---|---|---|---|
+  | as the authors run it: 1,024 tokens, path header | 67.15 | 63.50 | 74.82 |
+  | issue cut to 512 tokens | 65.69 | 61.68 | 73.72 |
+  | functions cut to 512 tokens | 65.33 | 61.31 | 74.45 |
+  | both cut to 512 tokens | 63.50 | 60.22 | 74.82 |
+  | both cut to 512, header without the path | 57.30 | 54.38 | 64.96 |
+  | the same model inside Odin's index (LocAgent labels) | 57.30 | 57.66 | 65.69 |
+
+- **What is ruled out.** Input length: 512 tokens instead of 1,024 moves function Acc@10 by at most 1.1 points. Class units: dropping every Odin unit that is not in the authors' corpus adds 1.5 points. Labels: with the same labels on the 272 issues both have, the gap is unchanged.
+- **Why it matters beyond this row.** Every Odin row in the tables above was produced with embeddings that never saw a file path. Whether adding it helps Odin's own embedding model, and whether the gain survives fusion with BM25, which already scores path terms, is being tested on the dev set under a rule fixed in advance ([ADR 0018](decisions/0018-file-path-in-embedded-text.md)).
 - **Nothing was chosen from this run.** Whether a SweRank retriever belongs in odin-max is a question for dev data.
 
 ## Cost
