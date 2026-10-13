@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+message: "If you use Odin, please cite it as below."
+title: "Odin: bug localization with a ranking cascade, measured on real bug fixes"
+type: software
+authors:
+  - given-names: Lajat
+    family-names: Manekar
+repository-code: "https://github.com/Lazeeez/Odin"
+url: "https://lazeeez.github.io/Odin/"
+license: MIT
+version: 0.1.0
+keywords:
+  - bug localization
+  - code search
+  - learning to rank
+  - SWE-bench

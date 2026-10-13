@@ -1,7 +1,7 @@
 [project]
 name = "odin"
 version = "0.1.0"
-description = "AST-aware hybrid + graph retrieval for code search, evaluated on SWE-bench"
+description = "Bug localization on any git commit: hybrid retrieval, learned ranking and a fine-tuned reranker, measured on SWE-bench"
 readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]
