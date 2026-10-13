@@ -55,7 +55,7 @@ Left to clean up in the accounts, not in the repository:
 | The relay refuses other callers | `curl` without browser headers | 403 |
 | The relay's routing and allowlist | `web/test/relay.test.ts` | passes |
 | `allfather.dev` itself | a headless browser on the live domain: home page, a search on `psf/requests` through `/relay`, Explore, Benchmarks | works; cross-origin isolated; the relay answers 403 to `curl` and to another origin |
-| Cloudflare Web Analytics | the zone injects its beacon script and the content security policy blocks it | blocked on purpose until the owner decides: turn Web Analytics off for the zone, or add `https://static.cloudflareinsights.com` to the policy |
+| Cloudflare Web Analytics | the zone injects its beacon script; the policy allows `static.cloudflareinsights.com` and `cloudflareinsights.com` | the script loads on the live site with no policy violation |
 | The rerank stage under the policy | needs a manual session | not tested |
 
 ## Decisions
