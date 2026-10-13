@@ -238,6 +238,25 @@ def check_prose(text: str, report: Report) -> None:
     report.expect("prose gold module-only", float(match.group(3)), module_only, 0)
     report.expect("prose one file per patch", 1, max(len(g["files"]) for g in gold), 0)
 
+    parity = json.loads((RESULTS / "parity_pinned.json").read_text(encoding="utf-8"))["totals"]
+    match = re.search(
+        r"([\d,]+) files and ([\d,]+) units chunk identically, scores agree to within 1e-5, "
+        r"and (\d+) of (\d+) queries return the same top 10\. The other (\d+) differ only",
+        text,
+    )
+    shown = [float(group.replace(",", "")) for group in match.groups()]
+    same = parity["queries"] - parity["queries_with_different_top10"]
+    report.expect("prose parity files", shown[0], parity["files"], 0)
+    report.expect("prose parity units", shown[1], parity["units"], 0)
+    report.expect("prose parity same top 10", shown[2], same, 0)
+    report.expect("prose parity queries", shown[3], parity["queries"], 0)
+    report.expect("prose parity ties", shown[4], parity["of_which_only_ties_at_the_cutoff"], 0)
+    report.checked += 2
+    if parity["files_with_different_units"]:
+        report.mismatches.append("prose parity: README says every file chunks identically")
+    if parity["largest_relative_score_difference"] > 1e-5:
+        report.mismatches.append("prose parity: README says scores agree to within 1e-5")
+
     log = (RESULTS / "test-evals.log").read_text(encoding="utf-8").splitlines()
     entries = [line.split(" | ") for line in log if line and not line.startswith("#")]
     on_lite = sum(1 for entry in entries if entry[1] == "lite")

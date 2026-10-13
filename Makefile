@@ -4,7 +4,7 @@ DATASET ?= lite
 A ?= results/bm25-code_function_lite_test.json
 B ?= results/bm25-code-notests_function_lite_test.json
 
-.PHONY: setup setup-dense gold eval ablations dense tune tune-fusion ltr reranker final bench compare test check-readme lint fmt web-dev web-check web-data
+.PHONY: setup setup-dense gold eval ablations dense tune tune-fusion ltr reranker final bench compare test check-readme parity lint fmt web-dev web-check web-data
 
 setup:
 	uv sync
@@ -77,6 +77,9 @@ test:
 
 check-readme:
 	uv run python scripts/check_readme.py
+
+parity:
+	uv run python scripts/parity_run.py --check
 
 lint:
 	uv run ruff check src tests benchmarks scripts

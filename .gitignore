@@ -5,6 +5,7 @@ __pycache__/
 results/*
 !results/README.md
 !results/test-evals.log
+!results/parity_pinned.json
 !results/*_lite_test.json
 !results/browser_old_vs_new.json
 !results/cache_cold.json

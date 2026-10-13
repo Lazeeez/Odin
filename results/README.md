@@ -25,6 +25,7 @@ Function-level files score 291 of the 300 Lite issues: the 9 whose fix touches o
 | `ltr-v1_*` | the learned ranker measured on the corrupted embedding store; superseded, kept as the record for [ADR 0008](../docs/decisions/0008-embedding-store-corruption.md) |
 | `browser_old_vs_new.json` | paired bootstrap of the website's rankers against the ones they replaced ([ADR 0011](../docs/decisions/0011-website-at-scale.md)) |
 | `cache_cold.json`, `cache_warm.json` | the analysis-cache timings in the README's Performance section |
+| `parity_pinned.json` | the website's TypeScript chunker and BM25 against the Python engine on pinned commits of django, sympy and requests (`scripts/parity_run.py`) |
 
 Each `*` stands for `_file_lite_test.json` and `_function_lite_test.json`.
 
