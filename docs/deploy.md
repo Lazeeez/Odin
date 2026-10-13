@@ -1,12 +1,12 @@
 # Moving the website to Cloudflare
 
-How to serve Odin from `odin.allfather.dev` on Cloudflare Pages, with the archive relay on the same origin, and turn the GitHub Pages site into a redirect.
+How to serve Odin from `allfather.dev` on Cloudflare Pages, with the archive relay on the same origin, and turn the GitHub Pages site into a redirect.
 
 **Status.** Everything in the repository is ready and tested locally. Nothing has been deployed to Cloudflare, and the GitHub Pages site and the `workers.dev` relay are untouched. Keep both running until step 5 passes.
 
 ## What changes for a visitor
 
-- **One origin.** The site and the relay share `odin.allfather.dev`, so the relay needs no cross-origin setup and no origin allowlist to maintain.
+- **One origin.** The site and the relay share `allfather.dev`, so the relay needs no cross-origin setup and no origin allowlist to maintain.
 - **Real response headers.** A content security policy, cross-origin isolation and long-lived caching of hashed assets come from the server, where GitHub Pages could only approximate isolation through the service worker.
 - **Old links keep working.** `lazeeez.github.io/Odin/#/search?...` redirects to the same route on the new domain.
 
@@ -29,7 +29,7 @@ In the Cloudflare dashboard: Workers & Pages → Create → Pages → Connect to
 | Environment variable `NODE_VERSION` | `24` |
 | Environment variable `VITE_ARCHIVE_PROXY` | `/relay` |
 
-Then add the custom domain `odin.allfather.dev` to the project. Pull requests get preview URLs from the Git integration without further setup; previews have no relay route, so they fall back to loading through GitHub's API.
+Then add the custom domain `allfather.dev` to the project. Pull requests get preview URLs from the Git integration without further setup; previews have no relay route, so they fall back to loading through GitHub's API.
 
 The build writes `dist/_headers`, which Pages applies by itself. Nothing is configured by hand.
 
@@ -40,23 +40,23 @@ cd proxy
 npx wrangler deploy --env production
 ```
 
-This creates a second Worker, `odin-relay`, routed at `odin.allfather.dev/relay/*`. The existing `odin-archive-relay` on `workers.dev` is a separate Worker and keeps serving the GitHub Pages site.
+This creates a second Worker, `odin-relay`, routed at `allfather.dev/relay/*`. The existing `odin-archive-relay` on `workers.dev` is a separate Worker and keeps serving the GitHub Pages site.
 
 ### 4. Check the new site before touching the old one
 
-- `https://odin.allfather.dev/` loads, and the browser console shows no "Refused to" lines.
+- `https://allfather.dev/` loads, and the browser console shows no "Refused to" lines.
 - Load a large repository (for example `django/django`). In the network tab there is one request to `/relay/django/django/HEAD` and none to `api.github.com`.
-- Open a deep link such as `https://odin.allfather.dev/#/explore` directly.
+- Open a deep link such as `https://allfather.dev/#/explore` directly.
 - Run a search that reaches the "rerank" stage. It downloads a model from Hugging Face and a library from jsDelivr, the two paths the local tests do not exercise end to end.
-- `curl -sI https://odin.allfather.dev/ | grep -i content-security-policy` prints the policy.
-- `curl -s -o /dev/null -w "%{http_code}" https://odin.allfather.dev/relay/psf/requests/HEAD` prints `403`: the relay answers only the site's own pages.
+- `curl -sI https://allfather.dev/ | grep -i content-security-policy` prints the policy.
+- `curl -s -o /dev/null -w "%{http_code}" https://allfather.dev/relay/psf/requests/HEAD` prints `403`: the relay answers only the site's own pages.
 
 ### 5. Turn GitHub Pages into a redirect
 
 Only after step 4 passes.
 
 1. In `.github/workflows/pages.yml`, publish `deploy/github-pages-redirect` instead of `web/dist` (change the `path` of the upload step and drop the two build steps).
-2. Push, wait for the Pages run, and open an old link with a route in it: `https://lazeeez.github.io/Odin/#/explore` should land on `https://odin.allfather.dev/#/explore`.
+2. Push, wait for the Pages run, and open an old link with a route in it: `https://lazeeez.github.io/Odin/#/explore` should land on `https://allfather.dev/#/explore`.
 3. Remove the repository variable `ARCHIVE_PROXY` and delete the `odin-archive-relay` Worker.
 4. Update the site URL in `README.md`, `CITATION.cff` and `web/index.html` (canonical and social-card tags).
 
