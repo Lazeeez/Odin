@@ -84,3 +84,20 @@ Eight tests were run; two were the declared deciding ones.
 - Nothing in odin-fast changes yet. The rankers and the reranker were trained on features from embeddings without paths.
 - The next step is to rebuild the ranking features with path-aware embeddings, retrain the two LambdaMART rankers into new model files, and compare the whole cascade with the current one on the validation split. Only that comparison decides whether odin-fast adopts it.
 - The fusion parameters were tuned for embeddings without paths and were left alone here. Re-tuning them on dev belongs to the same step.
+
+## The cascade test on validation
+
+Written on 2026-10-14, before the path-aware rankers were trained.
+
+- **Fusion re-tuned first.** The same grid and rule as the original tuning (`odin tune --what fusion`, best function recall@10 on dev) were run with path-aware embeddings. The same setting wins, a z-score sum with weight 0.8 on the embedding score (recall@10 0.660), so the fusion parameters stay as they are.
+- **Rankers.** The 52 features are rebuilt over the training issues (SWE-bench test minus Lite) with path-aware embeddings, and both LambdaMART rankers are trained with the unchanged settings into `models/paths/`. The shipped rankers are not touched.
+- **Reranker.** The two adapters are used as they are, with the shipped depth and blend weights. They were trained on candidates from the current retriever; that favours the current cascade if anything.
+- **Data.** The 250 validation issues the reranker never saw. For each variant the function ranker is retrained without those issues, as in the error analysis.
+- **What is compared.** The current cascade against the path-aware cascade, at function level, after the ranker and after the reranker.
+
+### Decision rule
+
+- **odin-fast adopts path-aware embeddings** if the full path-aware cascade beats the current one on function recall@10 in a paired bootstrap at p < 0.05 and is not significantly worse on MRR.
+- **Otherwise it is not adopted** and stays recorded as a retriever-level gain that did not carry through the cascade.
+- Hit@10, all@10 and the ranker-only comparison are reported and do not decide.
+- Adoption would still mean retraining the final rankers on all training issues and, separately, deciding whether the reranker should be retrained on the new candidates. Nothing is evaluated on Lite or the holdout as part of this test.
