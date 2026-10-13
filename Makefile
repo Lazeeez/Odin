@@ -4,7 +4,7 @@ DATASET ?= lite
 A ?= results/bm25-code_function_lite_test.json
 B ?= results/bm25-code-notests_function_lite_test.json
 
-.PHONY: setup setup-dense gold eval ablations dense tune tune-fusion ltr reranker final bench compare test lint fmt web-dev web-check web-data
+.PHONY: setup setup-dense gold eval ablations dense tune tune-fusion ltr reranker final bench compare test check-readme lint fmt web-dev web-check web-data
 
 setup:
 	uv sync
@@ -27,7 +27,9 @@ ablations:
 
 # Dense and hybrid rows (needs `make setup-dense`; first run embeds ~185k units).
 dense:
-	for r in dense-notests hybrid-notests; do \n		for l in file function; do uv run odin eval --retriever $$r --level $$l || exit 1; done; \n	done
+	for r in dense-notests hybrid-notests; do \
+		for l in file function; do uv run odin eval --retriever $$r --level $$l || exit 1; done; \
+	done
 
 # Tune on SWE-bench Verified minus Lite; never on the Lite test set.
 tune:
@@ -57,7 +59,8 @@ web-check:
 
 web-data:
 	uv run python scripts/export_site.py
-	uv run --extra dense python scripts/browser_ltr.py --stage2
+	uv run --extra dense python scripts/browser_ltr.py
+	uv run python scripts/export_showcase.py
 
 final:
 	for l in file function; do uv run odin eval --retriever ltr-ce-notests --level $$l || exit 1; done
@@ -71,6 +74,9 @@ compare:
 
 test:
 	uv run pytest -q
+
+check-readme:
+	uv run python scripts/check_readme.py
 
 lint:
 	uv run ruff check src tests benchmarks scripts
