@@ -9,7 +9,7 @@ Where Odin stands on SWE-bench Lite when it is scored the way other papers score
 - **Under LocAgent's protocol, at file level Odin is behind both LocAgent and SweRank.** File Acc@1 is 69.0% against 77.7% and 83.2%.
 - **Odin's reranker is far smaller.** It has 0.6 billion parameters and runs on a 6 GB laptop GPU. SweRank's rerankers have 7 and 32 billion, and its best retriever 7 billion.
 - **Odin costs about a quarter of a cent per issue** on its laptop timings at a public GPU rental price, against one to two cents for SweRank's rerankers and 46 to 79 cents for the agents ([cost.md](cost.md)).
-- **Every other system's row is copied from its paper**, except one: SweRankEmbed-Small was also run inside Odin's index, where it scores 8.8 points below its paper at function Acc@10.
+- **Every other system's row is copied from its paper**, except SweRankEmbed-Small, which was reproduced here (74.8% function Acc@10 against the paper's 74.45%) and also run inside Odin's index, where it scores about 9 points lower. The cause is being isolated; it is in Odin's indexing, not in the model.
 
 ## The protocol
 
@@ -33,6 +33,7 @@ LocAgent's, which SweRank reuses. Read from LocAgent's `evaluation/eval_metric.p
 | LocAgent | Qwen2.5-32B, fine-tuned | reported, L4 | 75.91 | 90.51 | 92.70 | 85.77 | 87.23 | 71.90 | 77.01 |
 | LocAgent | Claude 3.5 | reported, L4 | 77.74 | 91.97 | 94.16 | 86.50 | 87.59 | 73.36 | 77.37 |
 | SweRankEmbed-Small | 137M | reported, S1 | 66.42 | 86.50 | 90.88 | 79.56 | 85.04 | 63.14 | 74.45 |
+| SweRankEmbed-Small | 137M | reproduced | 67.15 | 87.23 | 91.24 | 79.20 | 85.04 | 63.50 | 74.82 |
 | SweRankEmbed-Small | 137M | in Odin's index | 57.30 | 81.39 | 86.50 | 74.09 | 81.02 | 57.66 | 65.69 |
 | SweRankEmbed-Large | 7B | reported, S1 | 72.63 | 91.24 | 94.16 | 84.31 | 89.78 | 71.90 | 82.12 |
 | SweRankEmbed-Large + SweRankLLM-Small | 7B + 7B | reported, S1 | 78.10 | 92.34 | 94.53 | 89.05 | 92.70 | 79.56 | 86.13 |
@@ -47,6 +48,7 @@ Sources:
 
 - **L4** is Table 4 of LocAgent, [arXiv:2503.09089v2](https://arxiv.org/abs/2503.09089v2). The agent rows use Claude 3.5 Sonnet (2024-10-22); the paper also gives GPT-4o rows, omitted here.
 - **S1** is Table 1 of SweRank, [arXiv:2505.07849v1](https://arxiv.org/abs/2505.07849v1). Its rerankers run on SweRankEmbed-Large's candidates.
+- **Reproduced** means the authors' corpora, queries, labels and evaluator, run again here: [results/reproductions/swerank-embed-small_lite_2026-10-14.json](../results/reproductions/swerank-embed-small_lite_2026-10-14.json). One difference from their script is stated there: embeddings are cached across issues, which was checked against their unmodified script on 20 issues (the same seven numbers; 99.2% of the top-100 items in common).
 - **In Odin's index** means the published model run through Odin's chunker, index and harness as the only retriever ([ADR 0015](decisions/0015-manifest-runs.md)): run `swerank-embed-small-lite`, imported into `results/runs/` and scored into [results/comparison/locagent-lite_swerank-embed-small_2026-10-13.json](../results/comparison/locagent-lite_swerank-embed-small_2026-10-13.json).
 - **Scored here** means Odin's committed rankings (`results/*_lite_test.json`) scored by `scripts/score_protocol.py` into [results/comparison/locagent-lite_2026-10-13.json](../results/comparison/locagent-lite_2026-10-13.json). The Odin rows exclude test files from the index, as every Odin row does.
 
@@ -86,9 +88,13 @@ SweRankEmbed-Small was run as the only retriever over Odin's own units, with tes
 | Odin's embedding model (`dense-notests`, 0.5B) | 0.586 | not scored |
 | SweRankEmbed-Small (137M), in Odin's index | 0.641 | 65.69 |
 | SweRankEmbed-Small, as its paper reports it | | 74.45 |
+| SweRankEmbed-Small, reproduced with the authors' corpus and settings | | 74.82 |
 | Odin's hybrid of BM25 and its embedding model | 0.642 | 64.96 |
 
-- **In Odin's index the model scores 8.8 points below its paper** at function Acc@10 (65.7% [59.9, 71.2] against 74.45%). The corpus is the likely reason and has not been pinned down: Odin ranks classes as units alongside methods, prefixes each unit with its qualified name, and excludes tests, while the paper's preprocessed corpus is distributed separately and was not used here. Until the paper's own pipeline is re-run, the gap between Odin's rows and the reported rows cannot be read as a pure model difference.
+- **The paper's number reproduces.** With the authors' corpus, settings and evaluator the model scores 74.82% at function Acc@10 against the paper's 74.45%, and within 0.8 points on all seven numbers.
+- **In Odin's index the same model scores about 9 points lower** (65.7% [59.9, 71.2]). The gap is therefore in how Odin indexes and feeds the model, not in the model and not in the labels: scored with the same LocAgent labels on the 272 issues both have, the authors' pipeline gives 75.7% and Odin's index 66.2%.
+- **What has been ruled out so far.** Class units: dropping every unit that is not in the authors' corpus raises Odin's number by 1.5 points only. What remains to separate: Odin cut the issue and each function at 512 tokens where the authors use 1,024, and Odin prefixes a unit with its qualified name where the authors prefix it with its path. Those runs are in progress.
+- **Why it matters beyond this row.** Every Odin row in the tables above was produced with the same indexing. If input length or the text prefix costs 9 points for this model, it may cost Odin's own retriever points too; that is a cheap lever to test on validation before odin-fast is frozen.
 - **It is a stronger retriever than Odin's embedding model**, at about a quarter of the size: recall@10 0.641 against 0.586 on the same units. It alone matches Odin's hybrid.
 - **Nothing was chosen from this run.** Whether a SweRank retriever belongs in odin-max is a question for dev data.
 
@@ -117,7 +123,7 @@ L5 and S5 are Table 5 of each paper.
 
 ## Not done yet
 
-- **No baseline has been reproduced with its authors' pipeline.** SweRank's preprocessed corpora are distributed outside its repository; re-running its own scripts on them is the next step, and the 7B and 32B models need the cluster.
+- **Only SweRank's 137M retriever has been reproduced.** Its 7B retriever and its 7B and 32B rerankers need the cluster.
 - **Other protocols.** Agentless and OrcaLoca also report match rates in their own papers, on their own subsets; only CoSIL's evaluation of them is implemented here.
 - **Loc-Bench**, the non-SWE-bench benchmark both papers also report on (560 issues), belongs to phase 5.
 - **A deeper Odin run** to replace the module lower bound.

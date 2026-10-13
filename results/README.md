@@ -29,6 +29,7 @@ Function-level files score 291 of the 300 Lite issues: the 9 whose fix touches o
 | `perf/bench_batching_2026-10-13.json`, `perf/bench_search_2026-10-13.json` | the printed output of the batching and exact-versus-HNSW benchmarks, saved with hardware and provenance (`benchmarks/save_output.py`) |
 | `comparison/locagent-lite_2026-10-13.json` | the stored rankings of four stages scored under the LocAgent protocol, with per-issue outcomes ([docs/comparison.md](../docs/comparison.md), `scripts/score_protocol.py`) |
 | `comparison/cosil-lite_2026-10-14.json` | the four stages scored under the CoSIL protocol |
+| `reproductions/swerank-embed-small_lite_2026-10-14.json` | SweRankEmbed-Small reproduced with its authors' corpora and evaluator: sources, settings, the check against their unmodified script, and the rankings |
 | `runs/NAME/result.json` | a manifest run, verified and scored by `odin import-run` ([ADR 0015](../docs/decisions/0015-manifest-runs.md)). `swerank-embed-small-lite` is SweRankEmbed-Small inside Odin's index |
 | `perf/unit_slots_2026-10-13.json` | unit slots and distinct unit texts over the evaluated snapshots (`benchmarks/count_unit_slots.py`) |
 | `ties/*_lite_test.json` | all 17 rows run again after ties at a cut-off were made deterministic ([ADR 0016](../docs/decisions/0016-deterministic-ties.md)): 33 of 5,019 rankings changed, no metric changed. The README check reads these first |
