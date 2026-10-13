@@ -12,6 +12,9 @@ export default defineConfig({
   projects: [
     { name: "desktop", use: { ...devices["Desktop Chrome"] }, testIgnore: /mobile\.e2e\.ts$/ },
     { name: "phone", use: { ...devices["Pixel 7"] }, testMatch: /mobile\.e2e\.ts$/ },
+    { name: "firefox", use: { ...devices["Desktop Firefox"] }, testIgnore: /mobile\.e2e\.ts$/ },
+    { name: "webkit", use: { ...devices["Desktop Safari"] }, testIgnore: /mobile\.e2e\.ts$/ },
+    { name: "iphone", use: { ...devices["iPhone 14"] }, testMatch: /mobile\.e2e\.ts$/ },
   ],
   webServer: { command: "npm run preview -- --port 4173 --strictPort", port: 4173, reuseExistingServer: !process.env.CI },
 });
