@@ -266,7 +266,7 @@ make gold                                        # ground truth (committed; rebu
 make eval RETRIEVER=hybrid-notests LEVEL=function
 uv run odin gold --dataset full                  # training ground truth (2,294 issues)
 uv run odin ltr                                  # LambdaMART models (committed in models/)
-make adapters                                    # the two reranker adapters, checksum-verified (once published)
+make adapters                                    # the two reranker adapters from Hugging Face, checksum-verified (private for now: needs a login)
 make reranker                                    # or train them: two adapters and the ensemble weights
 make eval RETRIEVER=ltr-ce-notests LEVEL=function
 uv run odin compare results/bm25-code_function_lite_test.json \

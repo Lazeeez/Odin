@@ -68,7 +68,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 base = "Qwen/Qwen3-Reranker-0.6B"
 tokenizer = AutoTokenizer.from_pretrained(base)
 model = PeftModel.from_pretrained(
-    AutoModelForCausalLM.from_pretrained(base), "REPO_ID", subfolder="v2"
+    AutoModelForCausalLM.from_pretrained(base), "lazeeez/odin-reranker-adapters", subfolder="v2"
 )
 ```
 

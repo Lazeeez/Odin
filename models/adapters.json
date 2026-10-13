@@ -1,7 +1,7 @@
 {
  "base_model": "Qwen/Qwen3-Reranker-0.6B",
- "repo": null,
- "revision": null,
+ "repo": "lazeeez/odin-reranker-adapters",
+ "revision": "0117dc4fe2c7260fc7d7684c47787e652a840012",
  "files": {
   "v1/adapter_config.json": {
    "sha256": "e1da736165910d5a5362ac7eb83223dde5b9709e8214752421908292b25192d9",
