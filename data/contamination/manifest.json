@@ -1,0 +1,489 @@
+{
+ "name": "odin-postcutoff",
+ "rules": "docs/decisions/0017-holdout-freeze-and-contamination-set.md",
+ "source": "nebius/SWE-rebench-leaderboard",
+ "source_licence": "CC-BY-4.0",
+ "revision": "34d5a58864acf91613740a09ec5d205228dcfa39",
+ "files": [
+  "data/2025_01-00000-of-00001.parquet",
+  "data/2025_02-00000-of-00001.parquet",
+  "data/2025_03-00000-of-00001.parquet",
+  "data/2025_04-00000-of-00001.parquet",
+  "data/2025_05-00000-of-00001.parquet",
+  "data/2025_06-00000-of-00001.parquet",
+  "data/2025_07-00000-of-00001.parquet",
+  "data/2025_08-00000-of-00001.parquet",
+  "data/2025_09-00000-of-00001.parquet",
+  "data/2025_10-00000-of-00001.parquet",
+  "data/2025_11-00000-of-00001.parquet",
+  "data/2025_12-00000-of-00001.parquet",
+  "data/2026_01-00000-of-00001.parquet",
+  "data/2026_02-00000-of-00001.parquet",
+  "data/2026_03-00000-of-00001.parquet",
+  "data/test-00000-of-00001.parquet"
+ ],
+ "cutoff": "2025-09-01",
+ "selection": "every instance created on or after 2025-09-01 that is not in the holdout, is not a training issue, and belongs to a project Odin trained or tuned on",
+ "counts": {
+  "instances": 73,
+  "projects": 27,
+  "from_swe_bench_projects": 24,
+  "largest_project": 10
+ },
+ "provenance": {
+  "timestamp": "2026-10-13T16:51:38+00:00",
+  "git_commit": "1f2daa521da7044d8080db91e54df84485d43d45",
+  "git_dirty": true,
+  "python": "3.11.16",
+  "platform": "Windows-10-10.0.26200-SP0",
+  "packages": {
+   "numpy": "2.4.6",
+   "scipy": "1.17.1",
+   "tree-sitter": "0.26.0",
+   "lightgbm": "4.7.0",
+   "torch": "2.14.0+cu130",
+   "sentence-transformers": "6.1.0"
+  },
+  "models": {}
+ },
+ "instances": [
+  {
+   "instance_id": "agronholm__anyio-975",
+   "repo": "agronholm/anyio",
+   "base_commit": "47a559ab1e1b03e51b769becdf6c76b732fdf127",
+   "created_at": "2025-09-14 10:38:44"
+  },
+  {
+   "instance_id": "agronholm__anyio-1121",
+   "repo": "agronholm/anyio",
+   "base_commit": "cb245dba9883516f2ed4c23899de157183a1cb50",
+   "created_at": "2026-04-21 14:00:36"
+  },
+  {
+   "instance_id": "agronholm__anyio-1134",
+   "repo": "agronholm/anyio",
+   "base_commit": "01b8d02381ba95ba11241c1ec361e908fe05b8be",
+   "created_at": "2026-05-05 21:20:58"
+  },
+  {
+   "instance_id": "astropy__astropy-18627",
+   "repo": "astropy/astropy",
+   "base_commit": "c2f4675db2a073bbf3b79df0d5b8823694f77973",
+   "created_at": "2025-09-19 21:15:54"
+  },
+  {
+   "instance_id": "astropy__astropy-18681",
+   "repo": "astropy/astropy",
+   "base_commit": "7fb552198e0e9841a00872a9bc5a3994581bf717",
+   "created_at": "2025-10-05 18:06:54"
+  },
+  {
+   "instance_id": "astropy__astropy-18752",
+   "repo": "astropy/astropy",
+   "base_commit": "2309a502d14d28319aabbb75b52adfed49366042",
+   "created_at": "2025-10-19 11:10:21"
+  },
+  {
+   "instance_id": "astropy__astropy-18818",
+   "repo": "astropy/astropy",
+   "base_commit": "22d3cb5d98d48453c1dce7e1d65780a6559b3b1a",
+   "created_at": "2025-11-02 01:15:45"
+  },
+  {
+   "instance_id": "astropy__astropy-18868",
+   "repo": "astropy/astropy",
+   "base_commit": "40f1cfbbaa91365cedc857a60c168e112a2f943d",
+   "created_at": "2025-11-10 18:12:30"
+  },
+  {
+   "instance_id": "astropy__astropy-18911",
+   "repo": "astropy/astropy",
+   "base_commit": "af5561ba730f3fcf1290531ac986edd4b631be13",
+   "created_at": "2025-11-14 16:53:32"
+  },
+  {
+   "instance_id": "astropy__astropy-18958",
+   "repo": "astropy/astropy",
+   "base_commit": "43216f92931c7d984a30ecd980922f5167411285",
+   "created_at": "2025-11-17 16:54:25"
+  },
+  {
+   "instance_id": "astropy__astropy-19055",
+   "repo": "astropy/astropy",
+   "base_commit": "96e9c97ab6c12c0ee90cfb6424cded6e6d5d849f",
+   "created_at": "2025-12-15 15:26:02"
+  },
+  {
+   "instance_id": "astropy__astropy-19438",
+   "repo": "astropy/astropy",
+   "base_commit": "352a52f2eb11f6d57145a877888a8b9a4d034af5",
+   "created_at": "2026-03-16 13:19:32"
+  },
+  {
+   "instance_id": "beeware__briefcase-2546",
+   "repo": "beeware/briefcase",
+   "base_commit": "064d9cf2c4e2407193d21ca6bc76e53b4b4c9aff",
+   "created_at": "2025-11-01 19:13:30"
+  },
+  {
+   "instance_id": "beeware__briefcase-2651",
+   "repo": "beeware/briefcase",
+   "base_commit": "13fc4482ef8731e4d95d9f661f97ce56b60f64ac",
+   "created_at": "2026-01-27 16:12:15"
+  },
+  {
+   "instance_id": "conan-io__conan-19393",
+   "repo": "conan-io/conan",
+   "base_commit": "a35ce49857e57269c9036922be16221cb37fd011",
+   "created_at": "2025-12-17 00:11:20"
+  },
+  {
+   "instance_id": "conan-io__conan-19604",
+   "repo": "conan-io/conan",
+   "base_commit": "ad7f30275329c63c924d3201463a1143ba1a739c",
+   "created_at": "2026-02-11 16:04:19"
+  },
+  {
+   "instance_id": "conan-io__conan-19735_interface",
+   "repo": "conan-io/conan",
+   "base_commit": "4a65d65f53d2ab37f4ce0e52dc3f25cd832b2934",
+   "created_at": "2026-03-10 10:33:02"
+  },
+  {
+   "instance_id": "conan-io__conan-19750",
+   "repo": "conan-io/conan",
+   "base_commit": "6c9356b3e5bd75f7d7061a708785e80aaacb3b43",
+   "created_at": "2026-03-13 10:20:23"
+  },
+  {
+   "instance_id": "facelessuser__pymdown-extensions-2807",
+   "repo": "facelessuser/pymdown-extensions",
+   "base_commit": "6ed9a366fbb5744900b3c860e3b051d1ec529df0",
+   "created_at": "2025-12-14 17:13:36"
+  },
+  {
+   "instance_id": "joke2k__faker-2309",
+   "repo": "joke2k/faker",
+   "base_commit": "1c0855ee7767de82514a748baa25838d08410b6a",
+   "created_at": "2026-01-12 20:47:22"
+  },
+  {
+   "instance_id": "mwouts__jupytext-1443",
+   "repo": "mwouts/jupytext",
+   "base_commit": "d23d78e9dab5a6fb81229b24e137def2e1882677",
+   "created_at": "2025-10-06 15:15:47"
+  },
+  {
+   "instance_id": "omni-us__jsonargparse-770",
+   "repo": "omni-us/jsonargparse",
+   "base_commit": "cb4e6338efbadd60f39b670cb311dbdd17ee2877",
+   "created_at": "2025-09-08 05:00:49"
+  },
+  {
+   "instance_id": "omni-us__jsonargparse-781",
+   "repo": "omni-us/jsonargparse",
+   "base_commit": "3eb1bdd73df9be5089b1d55dd6d35fb693aff7b3",
+   "created_at": "2025-10-06 05:33:04"
+  },
+  {
+   "instance_id": "omni-us__jsonargparse-827",
+   "repo": "omni-us/jsonargparse",
+   "base_commit": "7e97a30a4e64f56be9df7fc9092b42f3bb14b18d",
+   "created_at": "2026-01-07 16:47:41"
+  },
+  {
+   "instance_id": "omni-us__jsonargparse-839",
+   "repo": "omni-us/jsonargparse",
+   "base_commit": "a2c72c1b46af12bbf9998bab330e0e4f62cd5e88",
+   "created_at": "2026-02-02 06:14:29"
+  },
+  {
+   "instance_id": "pandas-dev__pandas-63945",
+   "repo": "pandas-dev/pandas",
+   "base_commit": "a4523484f6267501ae0bc240c5baf2108c622373",
+   "created_at": "2026-01-30 04:30:20"
+  },
+  {
+   "instance_id": "pandas-dev__pandas-64092",
+   "repo": "pandas-dev/pandas",
+   "base_commit": "6cec78baaa433a5fae3138786526cb5f8ab0de9b",
+   "created_at": "2026-02-09 14:59:59"
+  },
+  {
+   "instance_id": "pandas-dev__pandas-64104",
+   "repo": "pandas-dev/pandas",
+   "base_commit": "939cca6a9004681c160af0d15d7f83b29393fce7",
+   "created_at": "2026-02-10 09:56:40"
+  },
+  {
+   "instance_id": "pandas-dev__pandas-64796",
+   "repo": "pandas-dev/pandas",
+   "base_commit": "ff8dac94dcc6964255a6b44048a80bfd0d015ce3",
+   "created_at": "2026-03-23 21:00:36"
+  },
+  {
+   "instance_id": "pandas-dev__pandas-64797",
+   "repo": "pandas-dev/pandas",
+   "base_commit": "df120b666a19cbd3f6a8d65ae77a056c73c36b17",
+   "created_at": "2026-03-23 21:01:03"
+  },
+  {
+   "instance_id": "pandas-dev__pandas-64816",
+   "repo": "pandas-dev/pandas",
+   "base_commit": "9df51a79c83d8f905da9d6af2a391b23d2095410",
+   "created_at": "2026-03-24 01:27:57"
+  },
+  {
+   "instance_id": "pennylaneai__pennylane-9298",
+   "repo": "PennyLaneAI/pennylane",
+   "base_commit": "4c31d796dcaa6f6ef96cc46b311f9171ea26102e",
+   "created_at": "2026-04-13 19:33:03"
+  },
+  {
+   "instance_id": "pgmpy__pgmpy-3137",
+   "repo": "pgmpy/pgmpy",
+   "base_commit": "da98466c0a79cb416562e450d85699aedc10f422",
+   "created_at": "2026-03-22 09:18:02"
+  },
+  {
+   "instance_id": "pydap__pydap-624",
+   "repo": "pydap/pydap",
+   "base_commit": "12fb95e64776aaabc5edddd1563c6e1c7b5656aa",
+   "created_at": "2026-01-26 19:36:57"
+  },
+  {
+   "instance_id": "pydata__xarray-10723",
+   "repo": "pydata/xarray",
+   "base_commit": "40c27d19d169ccf1c469255c6c6da327f5822d01",
+   "created_at": "2025-09-09 11:10:35"
+  },
+  {
+   "instance_id": "pydata__xarray-10838",
+   "repo": "pydata/xarray",
+   "base_commit": "20d377347154412aed41697da23274ca48c0fd54",
+   "created_at": "2025-10-09 22:04:17"
+  },
+  {
+   "instance_id": "pydata__xarray-10863",
+   "repo": "pydata/xarray",
+   "base_commit": "bd06460f987f5edc14d1c2eeb89fd289ea7c1291",
+   "created_at": "2025-10-17 14:10:14"
+  },
+  {
+   "instance_id": "python-trio__trio-3334",
+   "repo": "python-trio/trio",
+   "base_commit": "0f975c3e5f188e99a92ed0140edd0f834f7aeb73",
+   "created_at": "2025-09-21 02:26:29"
+  },
+  {
+   "instance_id": "reata__sqllineage-723",
+   "repo": "reata/sqllineage",
+   "base_commit": "c4c9b4fc3121438c54430cef6abf9d790227eec9",
+   "created_at": "2025-09-20 07:43:37"
+  },
+  {
+   "instance_id": "reata__sqllineage-743",
+   "repo": "reata/sqllineage",
+   "base_commit": "e8f4ec4bf9a77c056fe8933f934bd710b6eae573",
+   "created_at": "2025-12-17 11:36:49"
+  },
+  {
+   "instance_id": "reframe-hpc__reframe-3553",
+   "repo": "reframe-hpc/reframe",
+   "base_commit": "6d30b7ee73a610564123f5ab30531dd482985782",
+   "created_at": "2025-09-17 16:31:17"
+  },
+  {
+   "instance_id": "reframe-hpc__reframe-3660_interface",
+   "repo": "reframe-hpc/reframe",
+   "base_commit": "fcbd6df35be5e236cd2f47c5d7c8883928a098b3",
+   "created_at": "2026-04-27 23:53:48"
+  },
+  {
+   "instance_id": "scikit-learn__scikit-learn-33168",
+   "repo": "scikit-learn/scikit-learn",
+   "base_commit": "cb7e82dd443aa1eb24bb70a3188b067536320a40",
+   "created_at": "2026-02-01 21:08:10"
+  },
+  {
+   "instance_id": "scikit-learn__scikit-learn-33565",
+   "repo": "scikit-learn/scikit-learn",
+   "base_commit": "b674d83af6280151e3d2e0674cc6b1cce6075dc2",
+   "created_at": "2026-03-17 10:54:06"
+  },
+  {
+   "instance_id": "scipp__plopp-513",
+   "repo": "scipp/plopp",
+   "base_commit": "a5e7043936c5987a98423bf8244600a3b520f3ea",
+   "created_at": "2026-01-22 12:50:06"
+  },
+  {
+   "instance_id": "scrapy__scrapy-7255",
+   "repo": "scrapy/scrapy",
+   "base_commit": "ccfa052fa19f712355fb17b863e8ff77f34ff3ac",
+   "created_at": "2026-02-13 13:19:49"
+  },
+  {
+   "instance_id": "scrapy__scrapy-7351_interface",
+   "repo": "scrapy/scrapy",
+   "base_commit": "2b174e348d88d19dd32135e8e483c4eb784aeca8",
+   "created_at": "2026-03-24 14:13:12"
+  },
+  {
+   "instance_id": "spacetelescope__jwst-9967",
+   "repo": "spacetelescope/jwst",
+   "base_commit": "3655f0c18aa29cb60e7f51ad0aa7a79e98a384fd",
+   "created_at": "2025-10-28 15:05:29"
+  },
+  {
+   "instance_id": "sqlfluff__sqlfluff-7615",
+   "repo": "sqlfluff/sqlfluff",
+   "base_commit": "14d78ec8b330821ba3bc06c70f0847a95ba9ceeb",
+   "created_at": "2026-03-15 12:31:18"
+  },
+  {
+   "instance_id": "sqlfluff__sqlfluff-7617",
+   "repo": "sqlfluff/sqlfluff",
+   "base_commit": "a8fcdc368ae16d2e110d478369e713425faea366",
+   "created_at": "2026-03-16 06:55:25"
+  },
+  {
+   "instance_id": "sqlfluff__sqlfluff-7622",
+   "repo": "sqlfluff/sqlfluff",
+   "base_commit": "ebcbcaeb8e619d67d676bd5089fde178c7a4d75f",
+   "created_at": "2026-03-16 15:50:33"
+  },
+  {
+   "instance_id": "sunpy__sunpy-8548_interface",
+   "repo": "sunpy/sunpy",
+   "base_commit": "c961a1507a83b9dab24ccce12ab92a53b30359d7",
+   "created_at": "2026-03-21 21:08:48"
+  },
+  {
+   "instance_id": "sympy__sympy-28382",
+   "repo": "sympy/sympy",
+   "base_commit": "d2010cc032551624899be19855eb8826bd7f6220",
+   "created_at": "2025-09-06 02:38:04"
+  },
+  {
+   "instance_id": "sympy__sympy-28454",
+   "repo": "sympy/sympy",
+   "base_commit": "e02ebb6a5958fb8df1878208bc4085def8503075",
+   "created_at": "2025-10-04 05:33:46"
+  },
+  {
+   "instance_id": "sympy__sympy-28467",
+   "repo": "sympy/sympy",
+   "base_commit": "4580fd6403157037596807bafb2c97b42246e1f3",
+   "created_at": "2025-10-14 22:34:26"
+  },
+  {
+   "instance_id": "sympy__sympy-28564",
+   "repo": "sympy/sympy",
+   "base_commit": "ce3180c6cbb6b78dbb5b8a0bfa1402ade7d8d398",
+   "created_at": "2025-11-08 09:45:57"
+  },
+  {
+   "instance_id": "sympy__sympy-28570",
+   "repo": "sympy/sympy",
+   "base_commit": "22779eb67cb200a2dc224f6d04f5e07435b3b66b",
+   "created_at": "2025-11-09 02:24:33"
+  },
+  {
+   "instance_id": "sympy__sympy-28639",
+   "repo": "sympy/sympy",
+   "base_commit": "90ef1a70459a6ba9785679da104cda45b430d471",
+   "created_at": "2025-11-23 18:24:05"
+  },
+  {
+   "instance_id": "sympy__sympy-28660",
+   "repo": "sympy/sympy",
+   "base_commit": "52a71d9c1d8d6039e42078664cc88323fc2438e8",
+   "created_at": "2025-11-26 14:13:53"
+  },
+  {
+   "instance_id": "sympy__sympy-28714",
+   "repo": "sympy/sympy",
+   "base_commit": "6fbaabd26f5b1a8a04299621acf99866c1ad8b39",
+   "created_at": "2025-12-08 10:50:36"
+  },
+  {
+   "instance_id": "sympy__sympy-28738",
+   "repo": "sympy/sympy",
+   "base_commit": "ccd0264bf63aac4594771cec17057f804c6161b7",
+   "created_at": "2025-12-10 05:53:32"
+  },
+  {
+   "instance_id": "sympy__sympy-28790",
+   "repo": "sympy/sympy",
+   "base_commit": "225b2b461028a60fac5f1dc993b4de560cb5e176",
+   "created_at": "2025-12-18 17:55:29"
+  },
+  {
+   "instance_id": "tox-dev__tox-3666",
+   "repo": "tox-dev/tox",
+   "base_commit": "8a69efd8addef58643f2c89f13bcecb82d04df51",
+   "created_at": "2026-01-08 15:30:44"
+  },
+  {
+   "instance_id": "tox-dev__tox-3683",
+   "repo": "tox-dev/tox",
+   "base_commit": "60e4c851a2f86e113372baf08f014700d097821c",
+   "created_at": "2026-02-13 08:57:34"
+  },
+  {
+   "instance_id": "tox-dev__tox-3759",
+   "repo": "tox-dev/tox",
+   "base_commit": "a4d8dabb3ed3736c00e2de14f8ed0dd419b2cc99",
+   "created_at": "2026-02-18 15:31:24"
+  },
+  {
+   "instance_id": "tox-dev__tox-3810",
+   "repo": "tox-dev/tox",
+   "base_commit": "02e9ed73da6a0f97f9167e957e1168d6116942ce",
+   "created_at": "2026-02-22 06:43:19"
+  },
+  {
+   "instance_id": "tox-dev__tox-3846",
+   "repo": "tox-dev/tox",
+   "base_commit": "ae05f2a33ccfe52ff22ac578ec6c8eb9f750ce4a",
+   "created_at": "2026-03-03 15:34:23"
+  },
+  {
+   "instance_id": "tox-dev__tox-3904",
+   "repo": "tox-dev/tox",
+   "base_commit": "106f036cdc6f7240380773e66d281bff7eaf1149",
+   "created_at": "2026-03-26 04:52:51"
+  },
+  {
+   "instance_id": "tox-dev__tox-3931",
+   "repo": "tox-dev/tox",
+   "base_commit": "dd305fe8f347c49fcd3bd63d5e56c912e4c428f2",
+   "created_at": "2026-05-01 15:37:40"
+  },
+  {
+   "instance_id": "ucfopen__canvasapi-716",
+   "repo": "ucfopen/canvasapi",
+   "base_commit": "77ff5b248603db987e57f11a104767d4b790265a",
+   "created_at": "2026-03-31 19:11:13"
+  },
+  {
+   "instance_id": "yt-project__unyt-593",
+   "repo": "yt-project/unyt",
+   "base_commit": "951dd4df05d7bccbe540cbaae6c6c642d33ff6af",
+   "created_at": "2025-10-08 12:18:15"
+  },
+  {
+   "instance_id": "yt-project__unyt-628",
+   "repo": "yt-project/unyt",
+   "base_commit": "6da943b912cb6769a18bd87d9a4d5abed0ca9f9a",
+   "created_at": "2026-01-29 23:29:26"
+  },
+  {
+   "instance_id": "zarr-developers__virtualizarr-979",
+   "repo": "zarr-developers/VirtualiZarr",
+   "base_commit": "3194b095ede4abaa9d9d0daaa91a6f0424cc4a93",
+   "created_at": "2026-04-24 16:09:18"
+  }
+ ]
+}

@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted, 2026-10-13. Written before the holdout's ground truth was built and before anything was evaluated on it.
+Accepted, 2026-10-13. Written before the holdout's ground truth was built and before anything was evaluated on it. Amended on 2026-10-14 by [ADR 0017](0017-holdout-freeze-and-contamination-set.md): the holdout is not the contamination study's set, odin-fast is frozen only after the conditions listed there, and a final run may report its stages as declared by-products.
 
 ## Context
 

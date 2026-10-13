@@ -385,6 +385,7 @@ docs/decisions/               why things are the way they are
 14. [Compare with published systems under their own protocol](docs/decisions/0014-comparison-protocols.md)
 15. [Heavy experiments are manifest runs, scored only at import](docs/decisions/0015-manifest-runs.md)
 16. [Ties at a cut-off are broken by index](docs/decisions/0016-deterministic-ties.md)
+17. [When the holdout is spent, and a separate set for the contamination study](docs/decisions/0017-holdout-freeze-and-contamination-set.md)
 
 ## Adding a retriever
 

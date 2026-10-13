@@ -99,6 +99,7 @@ Each lever is an ablation on top of the previous best, with a paired bootstrap a
 | 2026-10-13 | Ties at a top-k cut-off are broken by index in Python as in the browser; all 17 Lite rows were re-run and no metric changed ([ADR 0016](docs/decisions/0016-deterministic-ties.md)). |
 | 2026-10-13 | The error analysis uses the 250-issue validation split, not Lite. |
 | 2026-10-13 | The headline claim is reframed as a hypothesis in this file; the README changes only after the holdout result and the owner's review of the sentence. |
+| 2026-10-14 | odin-fast is frozen and evaluated on the holdout only after the SweRank reproduction and the cheap phase 11 levers are decided on validation; the contamination study gets its own 73-issue post-cutoff set; a final holdout run may report its stages as pre-declared by-products ([ADR 0017](docs/decisions/0017-holdout-freeze-and-contamination-set.md)). |
 | 2026-10-13 | Where a baseline reports results with an open model, it is reproduced on PACE with the same model in preference to quoting the paper. |
 
 ## Constraints

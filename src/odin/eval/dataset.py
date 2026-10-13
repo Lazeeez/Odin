@@ -39,11 +39,30 @@ def _rows(dataset: str, split: str, parts: int = 1) -> list[dict]:
     return rows
 
 
+POSTCUTOFF_MANIFEST = Path("data/contamination/manifest.json")
+
+
+def _postcutoff_instances() -> list[Instance]:
+    manifest = json.loads(POSTCUTOFF_MANIFEST.read_text(encoding="utf-8"))
+    wanted = [i["instance_id"] for i in manifest["instances"]]
+    found: dict[str, Instance] = {}
+    for name in manifest["files"]:
+        path = hf_hub_download(
+            manifest["source"], name, repo_type="dataset", revision=manifest["revision"]
+        )
+        for row in pq.read_table(path, columns=_COLUMNS).to_pylist():
+            if row["instance_id"] in set(wanted):
+                found[row["instance_id"]] = Instance(**row)
+    return [found[i] for i in wanted]
+
+
 def load_instances(name: str = "lite", split: str = "test") -> list[Instance]:
     if name == "holdout":
         from odin.eval.holdout import sealed_instances
 
         return sealed_instances()
+    if name == "postcutoff":
+        return _postcutoff_instances()
     if name == "rebench":
         rows = _rows(DATASETS[name], "test", parts=2)  # all ~21k; "filtered" is a subset
         if split in ("train", "test"):

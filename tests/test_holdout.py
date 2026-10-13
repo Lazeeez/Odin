@@ -118,3 +118,40 @@ def test_a_set_with_a_holdout_project_is_rejected():
     project = holdout.read_manifest()["instances"][0]["repo"]
     with pytest.raises(holdout.HoldoutRefused, match="1 holdout projects"):
         holdout.assert_disjoint(["django/django", project.upper()], "a training set")
+
+
+def postcutoff():
+    from odin.eval.dataset import POSTCUTOFF_MANIFEST
+
+    return json.loads(POSTCUTOFF_MANIFEST.read_text(encoding="utf-8"))
+
+
+def test_the_postcutoff_set_shares_nothing_with_the_holdout_or_with_training_issues():
+    manifest = postcutoff()
+    issues = {i["instance_id"] for i in manifest["instances"]}
+    holdout.assert_disjoint({i["repo"] for i in manifest["instances"]}, "the post-cutoff set")
+    assert not issues & {i["instance_id"] for i in holdout.read_manifest()["instances"]}
+    sample = json.loads(REBENCH_SAMPLE.read_text(encoding="utf-8"))
+    trained = set(sample["train"]) | set(sample["test"])
+    for name in ("full", "verified", "lite"):
+        trained |= {
+            g.instance_id for g in read_gold(holdout.GOLD.parent / f"swebench_{name}_test.jsonl")
+        }
+    assert not issues & trained
+    unseen = {repo.lower() for repo in sample["test_repos"]}
+    assert not {i["repo"].lower() for i in manifest["instances"]} & unseen
+    assert all(i["created_at"][:10] >= manifest["cutoff"] for i in manifest["instances"])
+
+
+def test_the_postcutoff_ground_truth_lists_exactly_its_manifest():
+    listed = [i["instance_id"] for i in postcutoff()["instances"]]
+    gold = read_gold(holdout.GOLD.parent / "swebench_postcutoff_test.jsonl")
+    assert [g.instance_id for g in gold] == listed
+
+
+@pytest.mark.parametrize("command", ["tune", "ltr", "ce-train", "ce-tune"])
+def test_training_and_tuning_commands_do_not_accept_the_postcutoff_set(command, capsys):
+    with pytest.raises(SystemExit) as stopped:
+        cli.main([command, "--dataset", "postcutoff"])
+    assert stopped.value.code == 2
+    assert "invalid choice: 'postcutoff'" in capsys.readouterr().err

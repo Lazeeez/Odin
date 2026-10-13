@@ -11,6 +11,7 @@ DEFAULT_CACHE = Path(".cache/repos")
 DEFAULT_GOLD_DIR = Path("data/gold")
 DATASET_NAMES = ["lite", "verified", "full", "rebench"]
 HOLDOUT = "holdout"
+EVALUATION_ONLY = [HOLDOUT, "postcutoff"]
 
 
 def _gold_path(dataset: str, split: str) -> Path:
@@ -412,7 +413,7 @@ def main(argv: list[str] | None = None) -> None:
     sub = parser.add_subparsers(dest="command", required=True)
 
     gold = sub.add_parser("gold", help="build ground truth from SWE-bench gold patches")
-    gold.add_argument("--dataset", default="lite", choices=[*DATASET_NAMES, HOLDOUT])
+    gold.add_argument("--dataset", default="lite", choices=[*DATASET_NAMES, *EVALUATION_ONLY])
     gold.add_argument("--split", default="test")
     gold.add_argument("--repo")
     gold.add_argument("--limit", type=int)
@@ -424,7 +425,7 @@ def main(argv: list[str] | None = None) -> None:
     ev = sub.add_parser("eval", help="score a retriever against ground truth")
     ev.add_argument("--retriever", required=True)
     ev.add_argument("--level", default="file", choices=["file", "function"])
-    ev.add_argument("--dataset", default="lite", choices=[*DATASET_NAMES, HOLDOUT])
+    ev.add_argument("--dataset", default="lite", choices=[*DATASET_NAMES, *EVALUATION_ONLY])
     ev.add_argument("--unseal", action="store_true")
     ev.add_argument("--config")
     ev.add_argument("--split", default="test")

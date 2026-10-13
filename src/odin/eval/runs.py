@@ -14,7 +14,7 @@ from odin.eval.provenance import provenance
 MANIFESTS = Path("cluster/manifests")
 IMPORTED = Path("results/runs")
 EVAL_LOG = Path("results/test-evals.log")
-TEST_SETS = {("lite", "test"), ("rebench", "test")}
+TEST_SETS = {("lite", "test"), ("rebench", "test"), ("postcutoff", "test")}
 KS = (1, 5, 10)
 
 
