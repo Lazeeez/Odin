@@ -15,7 +15,7 @@ More data costs nothing at query time, so it fits odin-fast.
 ## The test
 
 - **Training data.** The current set (SWE-bench test minus Lite) plus the SWE-rebench training projects. The 52 features, the candidate pool, the LambdaMART settings and the way the round count is chosen (5-fold cross-validation by NDCG@10) are unchanged.
-- **One change to a feature's input, declared here.** The "similar earlier issues" features look up earlier fixed issues of the same project. Their memory holds SWE-bench issues only, so for a SWE-rebench issue they would always be empty. The memory is extended with the SWE-rebench training issues. Each query still sees only issues opened before it, and a SWE-bench query's features do not change, because the lookup is per project.
+- **One addition to a feature's input, declared here.** The "similar earlier issues" features look up earlier fixed issues of the same project. Their memory holds SWE-bench issues only, so for a SWE-rebench issue they would always be empty. The SWE-rebench training issues get a memory of their own, built the same way. Each query still sees only issues of its own project opened before it. The SWE-bench memory is left exactly as it is, so the existing SWE-bench features are reused unchanged.
 - **Models** go to `models/more-data/`. The shipped rankers are not touched.
 - **The reranker** is used as it is.
 
