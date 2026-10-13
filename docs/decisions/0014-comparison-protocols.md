@@ -37,6 +37,18 @@ Fixed before looking:
 - Next to them, other systems' numbers copied from their papers, each cell citing its table and marked "reported". A system re-run here or on the cluster is marked "reproduced". No cell is filled from memory or from a secondary source.
 - Each scoring of stored rankings is appended to `results/test-evals.log`: it is a new look at Lite, even though nothing is re-run.
 
+### The CoSIL protocol, as its code defines it
+
+Added on 2026-10-14, before any Odin ranking was scored under it. Read from `evaluation/FLEvalNew.py` and `evaluation/gt.json` in the CoSIL repository, pinned by commit in the code. The CoSIL paper reports Agentless and OrcaLoca under the same protocol.
+
+- **Instances.** All 300 Lite issues. An issue with no prediction counts as a failure; nothing is skipped.
+- **Labels.** `gt.json`: for each issue, `file::Qualified.name` entries, or a bare file where the fix changes no function.
+- **Top-N.** An issue succeeds when at least one gold item is among the first N predictions. N is 1, 3 and 5.
+- **MAP and MRR** over the predictions, divided by 300.
+- **Functions are matched by name alone.** The evaluator compares `Qualified.name` strings and ignores the file, so a same-named function in another file counts as correct. That is the published protocol and is reproduced as it is.
+- **How Odin's output is mapped.** Files are the first five of the file ranking. Function names are the qualified names of the first five units of the unit ranking. The evaluated systems can list more than five names, because they list several per file for up to five files; holding Odin to five is the stricter reading.
+- **What is reported.** The same four stages, all ten numbers each, with intervals, next to Table 2 of the CoSIL paper (arXiv:2503.22424v1) for the systems run with Qwen2.5-Coder-32B.
+
 ### What this comparison cannot show
 
 - Lite has been scored many times in this project (see the log) and predates every model involved, here and in the compared papers. The sealed holdout ([ADR 0013](0013-sealed-holdout.md)) carries the headline claims; this comparison only places Odin among published numbers.

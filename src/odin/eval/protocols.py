@@ -31,7 +31,18 @@ LOCAGENT_LITE = Protocol(
     ),
     ks={"file": (1, 3, 5), "module": (5, 10), "function": (5, 10)},
 )
-PROTOCOLS = {LOCAGENT_LITE.name: LOCAGENT_LITE}
+COSIL_LITE = Protocol(
+    name="cosil-lite",
+    paper="CoSIL (arXiv:2503.22424), evaluation/FLEvalNew.py and evaluation/gt.json",
+    labels=LabelSource(
+        "https://raw.githubusercontent.com/ZhonghaoJiang/CoSIL",
+        "0568e423735b399d5b089996961fea9ae142e4c7",
+        "evaluation/gt.json",
+    ),
+    ks={"file": (1, 3, 5), "function": (1, 3, 5)},
+)
+COSIL_DEPTH = 5
+PROTOCOLS = {LOCAGENT_LITE.name: LOCAGENT_LITE, COSIL_LITE.name: COSIL_LITE}
 
 
 def _unique(items: Iterable[str]) -> list[str]:
@@ -104,4 +115,80 @@ def score_locagent(
             for level, by_k in hits.items()
         },
         "instance_ids": scored,
+    }
+
+
+def load_cosil_labels(source: LabelSource) -> dict[str, list[str]]:
+    import json
+    import urllib.request
+
+    url = f"{source.dataset}/{source.revision}/{source.path}"
+    with urllib.request.urlopen(url, timeout=60) as response:
+        return json.loads(response.read().decode("utf-8"))
+
+
+def cosil_gold(entries: Sequence[str]) -> tuple[set[str], set[str]]:
+    files, names = set(), set()
+    for entry in entries:
+        parts = entry.split("::")
+        if len(parts) == 2:
+            files.add(parts[0])
+            names.add(parts[1])
+        elif len(parts) == 1:
+            files.add(parts[0])
+    return files, names
+
+
+def cosil_names(ranked_units: Sequence[str]) -> list[str]:
+    return [unit.split("::")[1] for unit in ranked_units if "::" in unit]
+
+
+def _average_precision(gold: set[str], predictions: Sequence[str]) -> float:
+    if not gold:
+        return 0.0
+    hits, total = 0, 0.0
+    for position, item in enumerate(predictions, start=1):
+        if item in gold:
+            hits += 1
+            total += hits / position
+    return total / len(gold)
+
+
+def _reciprocal_rank(gold: set[str], predictions: Sequence[str]) -> float:
+    for position, item in enumerate(predictions, start=1):
+        if item in gold:
+            return 1.0 / position
+    return 0.0
+
+
+def score_cosil(
+    labels: dict[str, list[str]],
+    ranked_files: dict[str, list[str]],
+    ranked_units: dict[str, list[str]],
+) -> dict:
+    per_instance: dict[str, dict[str, list[float]]] = {"file": {}, "function": {}}
+    for instance, entries in labels.items():
+        gold_files, gold_names = cosil_gold(entries)
+        files = ranked_files.get(instance, [])[:COSIL_DEPTH]
+        names = cosil_names(ranked_units.get(instance, []))[:COSIL_DEPTH] if files else []
+        for level, gold, predictions in (
+            ("file", gold_files, files),
+            ("function", gold_names, names),
+        ):
+            row = per_instance[level]
+            for k in COSIL_LITE.ks[level]:
+                hit = any(item in gold for item in predictions[:k])
+                row.setdefault(f"top@{k}", []).append(float(hit))
+            row.setdefault("map", []).append(_average_precision(gold, predictions))
+            row.setdefault("mrr", []).append(_reciprocal_rank(gold, predictions))
+    return {
+        "instances": len(labels),
+        "without_a_file_ranking": sum(i not in ranked_files for i in labels),
+        "without_a_unit_ranking": sum(i not in ranked_units for i in labels),
+        "scores": {
+            level: {metric: sum(values) / len(labels) for metric, values in rows.items()}
+            for level, rows in per_instance.items()
+        },
+        "per_instance": per_instance,
+        "instance_ids": list(labels),
     }

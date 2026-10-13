@@ -10,7 +10,13 @@ import numpy as np
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
 
-from odin.eval.protocols import LEVELS, PROTOCOLS, load_labels, score_locagent  # noqa: E402
+from odin.eval.protocols import (  # noqa: E402
+    PROTOCOLS,
+    load_cosil_labels,
+    load_labels,
+    score_cosil,
+    score_locagent,
+)
 from odin.eval.provenance import provenance  # noqa: E402
 
 RESULTS = ROOT / "results"
@@ -45,7 +51,8 @@ def main() -> int:
         sys.exit(f"{out} exists; results are never overwritten, pick another --label")
 
     protocol = PROTOCOLS[args.protocol]
-    labels = load_labels(protocol.labels)
+    cosil = protocol.name == "cosil-lite"
+    labels = (load_cosil_labels if cosil else load_labels)(protocol.labels)
     stages = {}
     for stage in [args.run] if args.run else STAGES:
         if args.run:
@@ -55,10 +62,13 @@ def main() -> int:
         else:
             files, file_path = rankings(args.rankings, stage, "file")
             units, unit_path = rankings(args.rankings, stage, "function")
-        scored = score_locagent(labels, files, units, protocol.ks)
+        if cosil:
+            scored = score_cosil(labels, files, units)
+        else:
+            scored = score_locagent(labels, files, units, protocol.ks)
         scored["ci95"] = {
-            level: {k: interval(v) for k, v in scored["per_instance"][level].items()}
-            for level in LEVELS
+            level: {k: interval(v) for k, v in by_metric.items()}
+            for level, by_metric in scored["per_instance"].items()
         }
         scored["rankings"] = {
             "file": file_path.relative_to(ROOT).as_posix(),
@@ -66,7 +76,7 @@ def main() -> int:
             "units_stored_per_issue": max(len(r) for r in units.values()),
         }
         stages[stage] = scored
-        print(stage, json.dumps(scored["acc"]))
+        print(stage, json.dumps(scored["scores" if cosil else "acc"]))
     report = {
         "protocol": protocol.name,
         "paper": protocol.paper,
