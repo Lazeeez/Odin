@@ -27,19 +27,27 @@ OUT = ROOT / "results" / "validation-path"
 KS = (1, 5, 10)
 TOP = 10
 VARIANTS = {
-    "current": ("results/ltr_features_full_minus_lite_function.npz", HybridRetriever),
-    "paths": ("results/ltr_features_full_minus_lite_paths_function.npz", PathAwareRetriever),
+    "current": (
+        "results/ltr_features_full_minus_lite_function.npz",
+        MODEL_DIR / "ltr_function.json",
+        HybridRetriever,
+    ),
+    "paths": (
+        "results/ltr_features_full_minus_lite_paths_function.npz",
+        MODEL_DIR / "paths" / "ltr_function.json",
+        PathAwareRetriever,
+    ),
 }
 
 
-def out_of_fold_ranker(features: Path, held_out: set[str]):
+def out_of_fold_ranker(features: Path, settings: Path, held_out: set[str]):
     import lightgbm as lgb
 
     data = RankingData.load(features)
     if data is None:
         sys.exit(f"{features} is missing or stale")
     kept = data.split(np.array([i for i, q in enumerate(data.qids) if q not in held_out]))
-    rounds = json.loads((MODEL_DIR / "ltr_function.json").read_text(encoding="utf-8"))["rounds"]
+    rounds = json.loads(settings.read_text(encoding="utf-8"))["rounds"]
     model = lgb.LGBMRanker(n_estimators=rounds, random_state=0, **LGBM_PARAMS)
     model.fit(kept.X, kept.y, group=kept.group)
     return model, len(kept.group)
@@ -77,8 +85,8 @@ def main() -> int:
     encoder = SentenceEncoder()
 
     for name in wanted:
-        features, kind = VARIANTS[name]
-        ranker, trained_on = out_of_fold_ranker(ROOT / features, held_out)
+        features, settings, kind = VARIANTS[name]
+        ranker, trained_on = out_of_fold_ranker(ROOT / features, ROOT / settings, held_out)
         retriever = kind(encoder, fusion=DEV_SELECTED_FUSION)
         extractor = FeatureExtractor(retriever, DEV_SELECTED_FUSION, memory=issue_memory(retriever))
         stages: dict[str, tuple[list, list]] = {"ranker": ([], []), "reranker": ([], [])}
