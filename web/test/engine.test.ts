@@ -1,10 +1,10 @@
 import { fileURLToPath } from "node:url";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { BM25 } from "../src/engine/bm25.ts";
+import { BM25, unitCounts } from "../src/engine/bm25.ts";
 import { chunkFile, createParser } from "../src/engine/chunk.ts";
 import { isTestPath, parseRepo } from "../src/engine/github.ts";
-import { listFiles, refCandidates, selectFiles } from "../src/engine/repo.ts";
-import { untar } from "../src/engine/tarball.ts";
+import { listFiles, loadRepo, type Parsing, refCandidates, selectFiles } from "../src/engine/repo.ts";
+import { TruncatedArchive, untar } from "../src/engine/tarball.ts";
 import { predict, type RankerModel, rankFiles, rankUnits, rerankStage, signals, type Tree } from "../src/engine/rank.ts";
 import { expand, tokenize } from "../src/engine/tokenize.ts";
 import type { Unit } from "../src/engine/types.ts";
@@ -289,6 +289,103 @@ describe("repository archives", () => {
     expect(Object.keys(got).sort()).toEqual([long, "pkg/a.py", "pkg/b.py"].sort());
     expect(got["pkg/a.py"]).toContain("def a()");
     expect(got[long]).toContain("def deep()");
+  });
+
+  it("reports the commit and refuses an archive cut short", async () => {
+    const commit = "d086db856be187255b8ec61ef409357393020f32";
+    const header = entry("pax_global_header", `52 comment=${commit}\n`, "g");
+    const seen: string[] = [];
+    const whole = await gzip([header, entry("repo-abc/a.py", "x = 1\n")]);
+    for await (const _ of untar(whole, () => true, (c) => (seen.push(c), true))) continue;
+    expect(seen).toEqual([commit]);
+
+    const body = entry("repo-abc/a.py", "x = 1\n");
+    const cut = new Blob([header, body.subarray(0, 600)]).stream().pipeThrough(new CompressionStream("gzip"));
+    const read = async () => {
+      for await (const _ of untar(cut, () => true)) continue;
+    };
+    await expect(read()).rejects.toBeInstanceOf(TruncatedArchive);
+  });
+
+  const commit = "d086db856be187255b8ec61ef409357393020f32";
+  const relay = (owner: string, name: string, ref: string) => `https://relay.test/${owner}/${name}/${ref}`;
+  const parsing: Parsing = {
+    threads: 1,
+    parse: async (path, text) => {
+      const units = [unit(path, path.replace(/\W/g, "_"), text)];
+      return { units, counts: units.map(unitCounts) };
+    },
+    count: async (units) => units.map(unitCounts),
+  };
+  const archive = () => gzip([
+    entry("pax_global_header", `52 comment=${commit}\n`, "g"),
+    entry("repo-abc/", "", "5"),
+    entry("repo-abc/pkg/core.py", "def core():\n    return 1\n"),
+    entry("repo-abc/docs/conf.py", "project = 'x'\n"),
+    entry("repo-abc/tests/test_core.py", "def test_core():\n    pass\n"),
+    entry("repo-abc/.venv/lib/site.py", "import sys\n"),
+    entry("repo-abc/README.md", "# hi"),
+  ]);
+
+  it("takes the file list and the files from the archive, never GitHub's API", async () => {
+    const calls: string[] = [];
+    vi.stubGlobal("fetch", vi.fn(async (url: string) => {
+      calls.push(url);
+      return new Response(await archive());
+    }));
+    const loaded = await loadRepo(parsing, "o/r", { archive: relay });
+    expect(calls).toEqual(["https://relay.test/o/r/HEAD"]);
+    expect(loaded.via).toBe("archive");
+    expect(loaded.sha).toBe(`commit:${commit}`);
+    expect(loaded.units.map((u) => u.path)).toEqual(["docs/conf.py", "pkg/core.py"]);
+    expect(loaded.files).toBe(2);
+    vi.unstubAllGlobals();
+  });
+
+  it("stops at the archive's first header when that commit is cached", async () => {
+    const stored = [unit("pkg/core.py", "core", "def core(): ...")];
+    const keys: string[] = [];
+    const cache = {
+      get: async (key: string) => (keys.push(key), stored),
+      put: async () => {},
+    };
+    const parse = vi.fn(parsing.parse);
+    vi.stubGlobal("fetch", vi.fn(async () => new Response(await archive())));
+    const loaded = await loadRepo({ ...parsing, parse }, "o/r", { archive: relay, cache });
+    expect(keys).toEqual([`v3|o/r@commit:${commit}||src`]);
+    expect(loaded.fromCache).toBe(true);
+    expect(parse).not.toHaveBeenCalled();
+    vi.unstubAllGlobals();
+  });
+
+  it("reads a /tree link as the first ref the relay has, the rest as a folder", async () => {
+    const calls: string[] = [];
+    vi.stubGlobal("fetch", vi.fn(async (url: string) => {
+      calls.push(url);
+      return url.endsWith("/stable") ? new Response("", { status: 404 }) : new Response(await archive());
+    }));
+    const loaded = await loadRepo(parsing, "https://github.com/o/r/tree/stable/5.x/pkg", { archive: relay });
+    expect(calls).toEqual(["https://relay.test/o/r/stable", "https://relay.test/o/r/stable/5.x"]);
+    expect([loaded.branch, loaded.scope]).toEqual(["stable/5.x", "pkg"]);
+    expect(loaded.units.map((u) => u.path)).toEqual(["pkg/core.py"]);
+    vi.unstubAllGlobals();
+  });
+
+  it("lists files through GitHub when the relay is down", async () => {
+    vi.stubGlobal("fetch", vi.fn(async (url: string) => {
+      if (url.startsWith("https://relay.test/")) return new Response("", { status: 502 });
+      if (url.includes("/git/trees/")) {
+        return Response.json({
+          sha: "tree1", truncated: false, url: "https://api.github.com/repos/o/r/git/trees/tree1",
+          tree: [{ type: "blob", mode: "100644", path: "pkg/core.py", size: 10 }],
+        });
+      }
+      return new Response("def core():\n    return 1\n");
+    }));
+    const loaded = await loadRepo(parsing, "o/r", { archive: relay });
+    expect(loaded.via).toBe("GitHub API");
+    expect(loaded.units.map((u) => u.path)).toEqual(["pkg/core.py"]);
+    vi.unstubAllGlobals();
   });
 });
 

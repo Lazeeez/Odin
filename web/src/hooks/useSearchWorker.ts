@@ -60,9 +60,11 @@ export function useSearchWorker() {
     switch (msg.type) {
       case "progress": {
         if (!loadingRef.current) return; // late reports from downloads in flight at cancel
-        const files = msg.total > 1 ? ` ${msg.done.toLocaleString()} / ${msg.total.toLocaleString()} files` : "";
+        const totalUnknown = msg.total === 0;
+        const files = msg.total > 1 ? ` ${msg.done.toLocaleString()} / ${msg.total.toLocaleString()} files`
+          : totalUnknown && msg.done > 0 ? ` ${msg.done.toLocaleString()} files` : "";
         furthest.current = Math.max(furthest.current, overallProgress(msg.phase, msg.done, msg.total));
-        setStatus({ text: `${msg.phase}…${files}`, fraction: furthest.current, error: false });
+        setStatus({ text: `${msg.phase}…${files}`, fraction: totalUnknown ? null : furthest.current, error: false });
         return;
       }
       case "loaded":

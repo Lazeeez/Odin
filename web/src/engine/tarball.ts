@@ -25,11 +25,21 @@ function paxPath(data: Uint8Array): string | null {
   return m ? m[1] : null;
 }
 
+function paxCommit(data: Uint8Array): string | null {
+  return decoder.decode(data).match(/(?:^|\n)\d+ comment=([0-9a-f]{40})\n/)?.[1] ?? null;
+}
+
+export class TruncatedArchive extends Error {}
+
 /**
  * Regular files of a gzipped tar stream, for which `want(path)` is true (others are skipped
  * without being kept). Handles ustar prefixes, pax and GNU long names.
  */
-export async function* untar(stream: ReadableStream<BufferSource>, want: (path: string) => boolean): AsyncGenerator<TarFile> {
+export async function* untar(
+  stream: ReadableStream<BufferSource>,
+  want: (path: string) => boolean,
+  onCommit?: (commit: string) => boolean | Promise<boolean>,
+): AsyncGenerator<TarFile> {
   const reader = stream.pipeThrough(new DecompressionStream("gzip")).getReader();
   let buf = new Uint8Array(0);
   let done = false;
@@ -52,9 +62,13 @@ export async function* untar(stream: ReadableStream<BufferSource>, want: (path: 
     return out;
   };
   let longName: string | null = null;
+  let finished = false;
   while (await need(BLOCK)) {
     const header = take(BLOCK);
-    if (header.every((b) => b === 0)) break; // end of archive
+    if (header.every((b) => b === 0)) {
+      finished = true;
+      break;
+    }
     const size = octal(header, 124, 12);
     const type = String.fromCharCode(header[156] || 48);
     const padded = Math.ceil(size / BLOCK) * BLOCK;
@@ -64,7 +78,14 @@ export async function* untar(stream: ReadableStream<BufferSource>, want: (path: 
       longName = type === "x" ? paxPath(body) : str(body, 0, size);
       continue;
     }
-    if (type === "g") continue;
+    if (type === "g") {
+      const commit = paxCommit(body);
+      if (commit && onCommit && !(await onCommit(commit))) {
+        finished = true;
+        break;
+      }
+      continue;
+    }
     const prefix = str(header, 345, 155);
     const name = longName ?? (prefix ? `${prefix}/${str(header, 0, 100)}` : str(header, 0, 100));
     longName = null;
@@ -73,4 +94,5 @@ export async function* untar(stream: ReadableStream<BufferSource>, want: (path: 
     if (path && want(path)) yield { path, data: body.slice() };
   }
   await reader.cancel().catch(() => {});
+  if (!finished) throw new TruncatedArchive("the archive ended before its end marker");
 }

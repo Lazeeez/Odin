@@ -338,6 +338,162 @@ async function downloadArchive(c: Collector, parsing: Parsing, url: string): Pro
   return c.files.map((_, i) => i).filter((i) => !seen.has(i));
 }
 
+interface LoadOptions {
+  includeTests: boolean;
+  progress: Progress;
+  cache: RepoCache | null;
+  signal: AbortSignal | null;
+  partial?: Partial;
+}
+
+const byPath = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0);
+
+async function readArchive(
+  parsing: Parsing, owner: string, name: string, branch: string, scope: string | null, url: string, options: LoadOptions,
+): Promise<LoadedRepo | "missing" | null> {
+  const { includeTests, progress, cache, signal, partial } = options;
+  let response: Response;
+  try {
+    response = await fetch(url, { signal: signal ?? undefined });
+  } catch {
+    if (signal?.aborted) throw new LoadError("Loading cancelled.", { cancelled: true });
+    return null;
+  }
+  if (response.status === 404) return "missing";
+  if (!response.ok || !response.body) return null;
+
+  const repo = `${owner}/${name}`;
+  const folder = scope ? `${scope.replace(/\/+$/, "")}/` : "";
+  const wanted = (path: string) => /\.py$/i.test(path) && !SKIP_DIR.test(path) && path.startsWith(folder);
+  const decoder = new TextDecoder();
+  const parsed = new Map<string, Parsed>();
+  const held: { path: string; text: string; size: number }[] = [];
+  const started = performance.now();
+  let commit: string | null = null;
+  let key: string | null = null;
+  let cached: Unit[] | undefined;
+  let eligible = 0;
+  let oversized = 0;
+  let unparsed = 0;
+  let kept = 0;
+  let bytes = 0;
+  let heldBytes = 0;
+  let done = 0;
+  let lastPartial = performance.now();
+  let inFlight: Promise<void>[] = [];
+
+  const gather = (): Parsed => {
+    const units: Unit[] = [];
+    const counts: TermCounts[] = [];
+    for (const path of [...parsed.keys()].sort(byPath)) {
+      const result = parsed.get(path)!;
+      units.push(...result.units);
+      counts.push(...result.counts);
+    }
+    return { units, counts };
+  };
+  const admit = (size: number) => kept < LIMITS.maxFiles && bytes + size <= LIMITS.maxBytes;
+  const parse = async (path: string, text: string): Promise<void> => {
+    try {
+      parsed.set(path, await parsing.parse(path, text));
+    } catch {
+      unparsed++;
+    }
+    done++;
+    if (signal?.aborted) return;
+    if (done % 10 === 0) progress("Downloading and parsing", done, 0);
+    if (partial && performance.now() - lastPartial > PARTIAL_EVERY_MS) {
+      lastPartial = performance.now();
+      const soFar = gather();
+      if (soFar.units.length) partial(soFar.units, soFar.counts, done, 0, { repo, branch, scope });
+    }
+  };
+  const keep = (path: string, text: string, size: number) => {
+    kept++;
+    bytes += size;
+    inFlight.push(parse(path, text));
+  };
+
+  progress("Downloading and parsing", 0, 0);
+  try {
+    const files = untar(response.body, wanted, async (hash) => {
+      commit = hash;
+      key = `v3|${repo}@commit:${hash}|${scope ?? ""}|${includeTests ? "tests" : "src"}`;
+      cached = cache ? await cache.get(key) : undefined;
+      return !cached;
+    });
+    for await (const file of files) {
+      if (signal?.aborted) throw new LoadError("Loading cancelled.", { cancelled: true });
+      if (!includeTests && isTestPath(file.path)) continue;
+      const size = file.data.length;
+      if (size > LIMITS.maxFileBytes) {
+        oversized++;
+        continue;
+      }
+      eligible++;
+      if (SECONDARY.test(file.path)) {
+        if (heldBytes + size <= LIMITS.maxBytes) {
+          held.push({ path: file.path, text: decoder.decode(file.data), size });
+          heldBytes += size;
+        }
+        continue;
+      }
+      if (!admit(size)) continue;
+      keep(file.path, decoder.decode(file.data), size);
+      if (inFlight.length >= 8 * parsing.threads) {
+        await Promise.all(inFlight);
+        inFlight = [];
+      }
+    }
+    for (const file of held.sort((a, b) => byPath(a.path, b.path))) if (admit(file.size)) keep(file.path, file.text, file.size);
+    await Promise.all(inFlight);
+  } catch (err) {
+    await Promise.allSettled(inFlight);
+    if (err instanceof LoadError) throw err;
+    if (signal?.aborted) throw new LoadError("Loading cancelled.", { cancelled: true });
+    return null;
+  }
+
+  const sha = commit ? `commit:${commit}` : null;
+  if (cached) {
+    progress("Building the index", 0, 1);
+    const counts = await parsing.count(cached);
+    const loaded = performance.now();
+    const index = new BM25(cached, { counts });
+    return {
+      repo, branch, scope, via: "archive", sha, files: new Set(cached.map((u) => u.path)).size, units: cached, index,
+      notes: [], fromCache: true, timings: { loadMs: loaded - started, indexMs: performance.now() - loaded },
+    };
+  }
+  if (!eligible) return null;
+  const { units, counts } = gather();
+  if (!units.length) throw new LoadError("These Python files contain no functions or classes to search.");
+  const notes: string[] = [];
+  if (oversized) notes.push(`Skipped ${oversized} Python file${oversized > 1 ? "s" : ""} over 1 MB (usually generated code).`);
+  if (kept < eligible) {
+    notes.push(`Indexed ${kept.toLocaleString()} of ${eligible.toLocaleString()} Python files to stay within browser limits; docs, examples and vendored code went first.`);
+  }
+  if (unparsed) notes.push(`${unparsed} file${unparsed > 1 ? "s" : ""} could not be parsed.`);
+  if (key && cache) await cache.put(key, units);
+  progress("Building the index", 0, 1);
+  const loaded = performance.now();
+  const index = new BM25(units, { counts });
+  return {
+    repo, branch, scope, via: "archive", sha, files: kept, units, index, notes, fromCache: false,
+    timings: { loadMs: loaded - started, indexMs: performance.now() - loaded },
+  };
+}
+
+async function loadFromArchive(
+  parsing: Parsing, ref: RepoRef, archive: (owner: string, name: string, ref: string) => string, options: LoadOptions,
+): Promise<LoadedRepo | null> {
+  for (const [branch, scope] of refCandidates(ref.ref)) {
+    const loaded = await readArchive(parsing, ref.owner, ref.name, branch, scope, archive(ref.owner, ref.name, branch), options);
+    if (loaded !== "missing") return loaded;
+  }
+  return null;
+}
+
 /** Download, parse and index a repository; a revisit of the same snapshot hits `cache`. */
 export async function loadRepo(
   parsing: Parsing, input: string,
@@ -349,6 +505,10 @@ export async function loadRepo(
     } = {},
 ): Promise<LoadedRepo> {
   const ref = parseRepo(input);
+  if (archive) {
+    const loaded = await loadFromArchive(parsing, ref, archive, { includeTests, progress, cache, signal, partial });
+    if (loaded) return loaded;
+  }
   progress("Listing files", 0, 1);
   const refKey = `${ref.owner}/${ref.name}@${ref.ref ?? ""}`.toLowerCase();
   let listing = await cache?.getListing?.(refKey);

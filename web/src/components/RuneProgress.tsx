@@ -23,7 +23,7 @@ export function RuneProgress({ fraction, label, size = "lg" }: { fraction?: numb
           </>
         )}
         {size === "lg" && RING.map((d, i) => (
-          <g key={i} class={i < lit ? "on" : ""} transform={`rotate(${(i * 360) / N}) translate(0 -76) scale(1.25) translate(-4 -8)`}>
+          <g key={i} class={i < lit ? "on" : ""} style={{ "--i": i }} transform={`rotate(${(i * 360) / N}) translate(0 -76) scale(1.25) translate(-4 -8)`}>
             <path d={d} />
           </g>
         ))}

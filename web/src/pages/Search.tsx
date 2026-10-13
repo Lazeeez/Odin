@@ -408,7 +408,7 @@ export function Search({ active, request }: { active: boolean; request: URLSearc
             <span class="repo-pill"><b>{info.repo}</b>{info.scope ? <> / {info.scope}</> : null} · {info.branch === "HEAD" ? "default branch" : info.branch}</span>
             {!info.partial && <span>{info.units.toLocaleString()} functions and classes in {info.files.toLocaleString()} files</span>}
             {info.partial ? (
-              <span class="note live">Still loading: searching the {info.partial.filesDone.toLocaleString()} of {info.partial.filesTotal.toLocaleString()} files parsed so far. Results refresh when it finishes.</span>
+              <span class="note live">Still loading: searching the {info.partial.filesDone.toLocaleString()}{info.partial.filesTotal ? ` of ${info.partial.filesTotal.toLocaleString()}` : ""} files parsed so far. Results refresh when it finishes.</span>
             ) : (
               <span class="muted">{info.fromCache ? "from your browser's cache" : `ready in ${(info.timings.loadMs / 1000).toFixed(1)} s`}</span>
             )}
