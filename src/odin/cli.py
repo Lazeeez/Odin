@@ -188,6 +188,10 @@ def cmd_tune(args: argparse.Namespace) -> None:
         grid = [FusionParams("rrf", w, k) for k in (10, 30, 60, 100) for w in (0.3, 0.5, 0.7)]
         grid += [FusionParams("zsum", w) for w in (0.2, 0.35, 0.5, 0.65, 0.8)]
         retriever = HybridRetriever(SentenceEncoder(), exclude_tests=True)
+        if args.paths:
+            from odin.search.path_aware import PathAwareRetriever
+
+            retriever = PathAwareRetriever(SentenceEncoder())
         _print_table(tune_fusion(retriever, gold, queries, grid, args.level, progress=_progress))
         return
 
@@ -216,18 +220,26 @@ def cmd_ltr(args: argparse.Namespace) -> None:
 
     gold, queries = _load_eval_set(args)
     stem = f"results/ltr_features_{args.dataset}_minus_{'_'.join(args.exclude)}"
+    if args.paths:
+        stem += "_paths"
     paths = {level: Path(f"{stem}_{level}.npz") for level in LEVELS}
     data = {level: RankingData.load(p) for level, p in paths.items()}
     if any(d is None for d in data.values()):
         from odin.rank.ltr import issue_memory
 
         retriever = HybridRetriever(SentenceEncoder(), fusion=DEV_SELECTED_FUSION)
+        if args.paths:
+            from odin.search.path_aware import PathAwareRetriever
+
+            retriever = PathAwareRetriever(SentenceEncoder(), fusion=DEV_SELECTED_FUSION)
         extractor = FeatureExtractor(retriever, DEV_SELECTED_FUSION, memory=issue_memory(retriever))
         data = build_ranking_data(extractor, gold, queries, _progress)
         retriever.close()
         for level, d in data.items():
             d.save(paths[level])
     for level, (names, baseline, model_path) in LEVELS.items():
+        if args.paths:
+            model_path = model_path.parent / "paths" / model_path.name
         d = data[level]
         print(f"{level}: {len(d.group)} queries, {len(d.y)} candidates, {int(d.y.sum())} gold")
         rounds, cv, base = cross_validate(d, baseline, names, folds=args.folds)
@@ -457,6 +469,7 @@ def main(argv: list[str] | None = None) -> None:
     tu.add_argument("--exclude-tests", action="store_true")
     tu.add_argument("--what", default="expansion", choices=["expansion", "fusion"])
     tu.add_argument("--level", default="function", choices=["file", "function"])
+    tu.add_argument("--paths", action="store_true", help="embed units with their file path")
     tu.set_defaults(func=cmd_tune)
 
     lt = sub.add_parser("ltr", help="train the learning-to-rank model on the dev set")
@@ -466,6 +479,7 @@ def main(argv: list[str] | None = None) -> None:
     lt.add_argument("--repo")
     lt.add_argument("--gold", type=Path)
     lt.add_argument("--folds", type=int, default=5)
+    lt.add_argument("--paths", action="store_true", help="embed units with their file path")
     lt.set_defaults(func=cmd_ltr)
 
     ct = sub.add_parser("ce-train", help="fine-tune the cross-encoder reranker")
