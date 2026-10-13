@@ -1,0 +1,35 @@
+{
+ "base_model": "Qwen/Qwen3-Reranker-0.6B",
+ "repo": null,
+ "revision": null,
+ "files": {
+  "v1/adapter_config.json": {
+   "sha256": "e1da736165910d5a5362ac7eb83223dde5b9709e8214752421908292b25192d9",
+   "bytes": 1230
+  },
+  "v1/adapter_model.safetensors": {
+   "sha256": "91246a13d417d71e01b2f24a7b35bfc46c51f231ac2ae2728761499604d603b9",
+   "bytes": 40422168
+  },
+  "v1/training.json": {
+   "sha256": "98ca3305563e4c55fa675cc65532981679e89120f5755b56b7bfa2b0e29032a6",
+   "bytes": 56
+  },
+  "v2/adapter_config.json": {
+   "sha256": "8bd17f4c756f82f187b9961aa0bbcdf1b2549941e78f2eae95351480169e8c41",
+   "bytes": 1230
+  },
+  "v2/adapter_model.safetensors": {
+   "sha256": "9ce9bafbf4c21b80a89a99557871792b07ac5368528eb151f48be0cb021e08a0",
+   "bytes": 20236864
+  },
+  "v2/training.json": {
+   "sha256": "ef66403a2d1a3fdae59f2dc386c6d30099d87517b1dc72d4f0cae8334d35e674",
+   "bytes": 56
+  },
+  "reranker.json": {
+   "sha256": "fb9c4cb9cfa0ad2fb04c24029851827ba024c1cc00d6c0ec570e4ceec543dcec",
+   "bytes": 601
+  }
+ }
+}

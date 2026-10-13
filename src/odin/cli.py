@@ -120,6 +120,9 @@ def cmd_eval(args: argparse.Namespace) -> None:
         )
 
     models = sorted(Path("models").glob("*.txt")) if args.retriever.startswith("ltr") else []
+    if "-ce" in args.retriever:
+        models += sorted(Path("models").glob("reranker*.json"))
+        models += sorted(Path("models").glob("ce_adapter*/adapter_model.safetensors"))
     report["provenance"] = provenance(models) | {
         "argv": sys.argv[1:],
         "gold_file": str(args.gold or _gold_path(args.dataset, args.split)),

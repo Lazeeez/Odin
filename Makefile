@@ -4,7 +4,7 @@ DATASET ?= lite
 A ?= results/bm25-code_function_lite_test.json
 B ?= results/bm25-code-notests_function_lite_test.json
 
-.PHONY: setup setup-dense gold eval ablations dense tune tune-fusion ltr reranker final bench compare test check-readme parity lint fmt web-dev web-check web-data
+.PHONY: setup setup-dense gold eval ablations dense tune tune-fusion ltr reranker adapters final bench compare test check-readme parity lint fmt web-dev web-check web-data
 
 setup:
 	uv sync
@@ -49,6 +49,9 @@ reranker:
 	uv run odin ce-train --negatives hybrid --epochs 1 --data results/ce_train_hybrid_negatives.jsonl --out models/ce_adapter_v1
 	uv run odin ce-train --negatives ltr --epochs 2 --out models/ce_adapter
 	uv run odin ce-tune --adapter models/ce_adapter_v1 models/ce_adapter --out models/reranker.json
+
+adapters:
+	uv run python scripts/adapters.py fetch
 
 # Website (web/): dev server, checks, production build, data refresh.
 web-dev:

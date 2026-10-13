@@ -245,7 +245,8 @@ make gold                                        # ground truth (committed; rebu
 make eval RETRIEVER=hybrid-notests LEVEL=function
 uv run odin gold --dataset full                  # training ground truth (2,294 issues)
 uv run odin ltr                                  # LambdaMART models (committed in models/)
-uv run odin ce-train && uv run odin ce-tune      # reranker adapter (~35 min, not committed)
+make adapters                                    # the two reranker adapters, checksum-verified (once published)
+make reranker                                    # or train them: two adapters and the ensemble weights
 make eval RETRIEVER=ltr-ce-notests LEVEL=function
 uv run odin compare results/bm25-code_function_lite_test.json \
                     results/bm25-code-notests_function_lite_test.json
