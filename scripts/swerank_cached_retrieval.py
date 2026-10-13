@@ -24,6 +24,15 @@ def read_jsonl(path: Path) -> list[dict]:
         return [json.loads(line) for line in handle if line.strip()]
 
 
+def without_path(identifier: str, text: str) -> str:
+    first, _, rest = text.partition("
+")
+    if first != identifier or ".py/" not in identifier:
+        return text
+    return identifier.split(".py/", 1)[1].strip("/").replace("/", ".") + "
+" + rest
+
+
 class Cache:
     def __init__(self, folder: Path, dim: int) -> None:
         self.folder = folder
@@ -54,6 +63,7 @@ def main() -> int:
     ap.add_argument("--revision", default="745d2a06103a66d3cfa600aa52fc0d3523010daa")
     ap.add_argument("--sequence_length", type=int, default=1024)
     ap.add_argument("--query_length", type=int)
+    ap.add_argument("--header", choices=["path", "qualified-name"], default="path")
     ap.add_argument("--batch_size", type=int, default=32)
     ap.add_argument("--cache", type=Path, required=True)
     ap.add_argument("--results_file", type=Path, required=True)
@@ -78,6 +88,8 @@ def main() -> int:
     for n, folder in enumerate(folders, start=1):
         corpus = read_jsonl(args.dataset_dir / folder / "corpus.jsonl")
         texts = [(doc.get("title", "") + " " + doc["text"]).strip() for doc in corpus]
+        if args.header == "qualified-name":
+            texts = [without_path(doc["_id"], text) for doc, text in zip(corpus, texts, strict=True)]
         keys = [key_of(text) for text in texts]
         missing = {
             key: text for key, text in zip(keys, texts, strict=True) if key not in cache.rows
