@@ -7,8 +7,8 @@ Odin's website and its archive relay run as one Cloudflare Worker: static files 
 | Piece | State |
 |---|---|
 | The Worker `odin` (site and relay) on `allfather.dev` | live, in the Cloudflare account `lajatm9@gmail.com` |
-| GitHub Pages site and the old `workers.dev` relay | untouched, still serving |
-| Redirect from GitHub Pages | prepared in `deploy/github-pages-redirect/`, not published |
+| `www.allfather.dev` | serves the same site; pages declare `allfather.dev` as canonical |
+| GitHub Pages site | being removed by the owner; see "GitHub Pages" |
 | A first copy of the Worker in the other Cloudflare account (`odin.lajat69.workers.dev`) | still there from the first attempt; delete it from that account's dashboard |
 
 ## Deploying
@@ -37,14 +37,15 @@ The domain's zone is in the `lajatm9@gmail.com` Cloudflare account, so wrangler 
 - A search that reaches the "rerank" stage completes. It downloads a model from Hugging Face and a library from jsDelivr; the policy allows both, but the full path has not been exercised under it.
 - `curl -s -o /dev/null -w "%{http_code}" https://allfather.dev/relay/psf/requests/HEAD` prints `403`: the relay answers only the site's own pages.
 
-## Then: retire GitHub Pages
+## GitHub Pages
 
-Only after the checks pass.
+The owner is removing the GitHub Pages site by hand. Its workflow (`.github/workflows/pages.yml`) and the prepared redirect page were deleted from the repository on 2026-10-14, so links to `lazeeez.github.io/Odin` stop working once Pages is turned off.
 
-1. In `.github/workflows/pages.yml`, publish `deploy/github-pages-redirect` instead of `web/dist` (change the `path` of the upload step and drop the two build steps).
-2. Push and open an old link with a route in it: `https://lazeeez.github.io/Odin/#/explore` should land on `https://allfather.dev/#/explore`.
-3. Remove the repository variable `ARCHIVE_PROXY` and delete the `odin-archive-relay` Worker.
-4. Remove `https://*.workers.dev` from `CONNECT` in `web/vite.config.ts`, and update the site URL in `README.md`, `CITATION.cff` and `web/index.html`.
+Left to clean up in the accounts, not in the repository:
+
+- the repository variable `ARCHIVE_PROXY` (no longer read by anything);
+- the `odin-archive-relay` Worker and the first copy of `odin`, both in the `lajat69@gmail.com` Cloudflare account;
+- `https://*.workers.dev` in `CONNECT` in `web/vite.config.ts`, once the old relay is gone.
 
 ## What has been tested
 

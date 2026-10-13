@@ -9,9 +9,12 @@
   },
   "workers_dev": false,
   "preview_urls": false,
-  "routes": [{ "pattern": "allfather.dev", "custom_domain": true, "zone_name": "allfather.dev" }],
+  "routes": [
+    { "pattern": "allfather.dev", "custom_domain": true, "zone_name": "allfather.dev" },
+    { "pattern": "www.allfather.dev", "custom_domain": true, "zone_name": "allfather.dev" }
+  ],
   "vars": {
     "ROUTE_PREFIX": "/relay",
-    "ALLOWED_ORIGINS": "https://allfather.dev"
+    "ALLOWED_ORIGINS": "https://allfather.dev,https://www.allfather.dev"
   }
 }

@@ -7,7 +7,7 @@ The question this project answers: **given a bug report, can we find the code th
 It ships two ways:
 
 - **A research pipeline** (`src/odin`, Python): the full cascade on a GPU, evaluated on SWE-bench Lite.
-- **A website that runs entirely in the browser**, on any public Python repository: **[lazeeez.github.io/Odin](https://lazeeez.github.io/Odin/)**. Paste a repository and a bug report; parsing, indexing, embedding and ranking happen on your device.
+- **A website that runs entirely in the browser**, on any public Python repository: **[allfather.dev](https://allfather.dev/)**. Paste a repository and a bug report; parsing, indexing, embedding and ranking happen on your device.
 
 ## Headline results
 
@@ -219,7 +219,7 @@ flowchart LR
 |---|---|
 | Research pipeline | Python 3.11+, uv, Tree-sitter, NumPy/SciPy (sparse BM25), PyTorch + sentence-transformers (jina-code embeddings), LightGBM (LambdaMART), Hugging Face PEFT/LoRA on Qwen3 (cross-encoder), SQLite (analysis cache), git (blobless mirrors, `cat-file --batch`) |
 | Website | TypeScript (strict), Preact, Vite, Web Workers, Tree-sitter compiled to WebAssembly, Model2Vec static embeddings (int8), Transformers.js + ONNX Runtime (MiniLM on WebGPU or WASM), IndexedDB, a service worker (COOP/COEP isolation, offline cache) |
-| Hosting | GitHub Pages (static), an optional Cloudflare Worker relay for repository archives (`proxy/`) |
+| Hosting | One Cloudflare Worker at allfather.dev: static files plus a relay for repository archives at `/relay` (`deploy/cloudflare/`, `proxy/`) |
 | Quality | pytest, Vitest, Playwright end-to-end tests (desktop and phone), a Python/TypeScript parity suite, ruff, GitHub Actions CI, axe accessibility checks |
 | Data | SWE-bench (Lite, Verified, full), SWE-rebench (CC-BY-4.0) for 150 more projects |
 
@@ -286,7 +286,7 @@ Retrievers: `random`, `oracle`, `bm25-naive`, `bm25-code`, `bm25-code-notests`, 
 
 ## Website
 
-`web/` is the product site: **TypeScript + Vite + Preact**, deployed to GitHub Pages by `.github/workflows/pages.yml` (or Vercel via `vercel.json`). Everything runs in the visitor's browser; there is no server. Pages are hash routes, so any static host works: Home, `#/search`, `#/how-it-works`, `#/benchmarks` and `#/explore/<issue>`; older `?repo=` and `#issue=` links redirect.
+`web/` is the product site: **TypeScript + Vite + Preact**, deployed to [allfather.dev](https://allfather.dev/) as a Cloudflare Worker with static assets ([docs/deploy.md](docs/deploy.md)). Everything runs in the visitor's browser; there is no server. Pages are hash routes, so any static host works: Home, `#/search`, `#/how-it-works`, `#/benchmarks` and `#/explore/<issue>`; older `?repo=` and `#issue=` links redirect.
 
 - **Search any public Python repository.** It accepts `owner/name`, https or ssh URLs, and links to a branch, a folder (the search is then limited to it), a file, an issue or a pull request. Over the browser budget (6,000 files, 60 MB) it keeps the project's own code and drops docs, examples and vendored code first; committed virtualenvs are skipped. A Web Worker lists the repository through GitHub's API and downloads its Python files (or one `.tar.gz` through an optional CORS relay, `proxy/`), parser threads split them into functions with Tree-sitter compiled to WebAssembly, and a code-aware BM25 index is built. Large repositories are searchable while they load. A learned ranker (LambdaMART, exported as JSON trees) orders candidates using what the issue names: traceback frames, quoted identifiers, module paths and title matches. In the background, a static code-embedding model (Model2Vec potion-code-16M, int8, 16.8 MB) embeds every function in seconds, a second ranker adds meaning to the evidence, and a small language model (MiniLM, WebGPU or WebAssembly) reranks the top 20. A file ranker orders whole files. Parsed repositories are cached in IndexedDB by git tree hash, embeddings by content hash; the main thread never blocks.
 - **Measured on projects it never saw.** `scripts/browser_ltr.py` trains the browser's rankers on 5,115 issues from 131 projects (SWE-bench minus Lite plus 120 projects sampled from SWE-rebench), choosing settings by project-grouped cross-validation, then scores this exact pipeline once on held-out data. On 747 bugs from 30 projects kept out of training entirely, a function the fix changed is in the top 10 for 77.2% (hit@10; keyword search alone 66.1%), and the file ranker finds the file in the top 10 for 94.4%. A parity test runs the TypeScript features, tokenizer and embeddings against the Python ones, value for value. See [ADR 0011](docs/decisions/0011-website-at-scale.md).
@@ -303,9 +303,7 @@ uv run python scripts/export_site.py   # refresh web/public/data/ from results/*
 
 The page is 38 KB of JavaScript and 13 KB of CSS (gzipped); the map, the game and the command palette are separate 1–2 KB chunks loaded on first use. Searching adds the workers, 150 KB (gzipped) of parser WebAssembly, the 276 KB ranker and the 16.8 MB static embedding model, each fetched once and cached. The rerank model's runtime comes from jsDelivr's CDN on first use. `npm run e2e` runs the Playwright suite against a built preview.
 
-One-time setup for Pages: repository Settings → Pages → Source: GitHub Actions.
-
-**Archive relay (optional, recommended).** `proxy/cloudflare-worker.js` passes GitHub's repository archives through with CORS headers, so a repository downloads as one `.tar.gz` instead of one request per file: Django is ready in 3.5 s instead of 13.8 s, transformers in 5.8 s instead of about a minute. It serves only the origins in `proxy/wrangler.toml`. Deploy with `npx wrangler deploy` in `proxy/` (free Cloudflare plan), then set the repository variable `ARCHIVE_PROXY` to the worker's URL; the next Pages build uses it. With the relay on, the file list and the commit also come from the archive, so loading makes no call to GitHub's API and its limit of 60 requests an hour does not apply ([ADR 0012](docs/decisions/0012-archive-file-list.md)). Without it, or if it is down, the site lists files through the API and loads them one by one.
+**Archive relay.** `proxy/cloudflare-worker.js` passes GitHub's repository archives through, so a repository downloads as one `.tar.gz` instead of one request per file: Django is ready in 3.5 s instead of 13.8 s, transformers in 5.8 s instead of about a minute. It runs in the same Worker as the site, at `/relay` on the same origin, and answers only the site's own pages. With the relay on, the file list and the commit also come from the archive, so loading makes no call to GitHub's API and its limit of 60 requests an hour does not apply ([ADR 0012](docs/decisions/0012-archive-file-list.md)). A build without `VITE_ARCHIVE_PROXY`, or a relay that is down, falls back to listing files through the API and loading them one by one.
 
 ## How ground truth is built
 
