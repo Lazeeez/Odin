@@ -186,8 +186,14 @@ def _src_units():
     ]
 
 
+def _top_k_with_ties_in_index_order(scores, k):
+    import numpy as np
+
+    return np.lexsort((np.arange(len(scores)), -np.asarray(scores)))[:k]
+
+
 @pytest.mark.skipif(NODE is None, reason="needs Node 24 and `npm ci` in web/")
-def test_js_rank_features_match_python():
+def test_js_rank_features_match_python(monkeypatch):
     """Every ranking stage must see the same candidates, features and scores as training."""
     from collections import Counter
 
@@ -197,6 +203,7 @@ def test_js_rank_features_match_python():
     from odin.rank.features import issue_fields
     from odin.rank.mentions import Mentions
 
+    monkeypatch.setattr("odin.rank.browser.top_k", _top_k_with_ties_in_index_order)
     units = _src_units()
     trees = ROOT / "web/src/assets/ranker.json"
     model = json.loads(trees.read_text()) if trees.exists() else {}
