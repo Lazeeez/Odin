@@ -10,6 +10,7 @@ results/*
 !results/perf/
 !results/comparison/
 !results/provenance/
+!results/runs/
 !results/*_lite_test.json
 !results/browser_old_vs_new.json
 !results/cache_cold.json
@@ -28,3 +29,5 @@ web/playwright-report/
 
 # Wrangler's local state from deploying the relay (proxy/)
 .wrangler/
+cluster/site.env
+runs/

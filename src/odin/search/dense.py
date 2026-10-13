@@ -162,6 +162,8 @@ class SentenceEncoder:
         query_prompt: str = "nl2code_query",
         document_prompt: str = "nl2code_document",
         adapter: Path | None = None,
+        revision: str | None = None,
+        trust_remote_code: bool = False,
     ) -> None:
         import torch
         from sentence_transformers import SentenceTransformer
@@ -169,14 +171,19 @@ class SentenceEncoder:
         self.device = device or ("cuda" if torch.cuda.is_available() else "cpu")
         dtype = torch.float16 if self.device.startswith("cuda") else torch.float32
         self.model = SentenceTransformer(
-            model, device=self.device, model_kwargs={"torch_dtype": dtype}
+            model,
+            device=self.device,
+            model_kwargs={"torch_dtype": dtype},
+            revision=revision,
+            trust_remote_code=trust_remote_code,
         )
         self.name = model
         if adapter is not None:
             merge_lora(self.model[0].auto_model, Path(adapter))
             # A fine-tuned model embeds differently: give it its own cache namespace.
             self.name = f"{model}+{Path(adapter).name}"
-        self.dim = self.model.get_embedding_dimension()
+        dimension = getattr(self.model, "get_embedding_dimension", None)
+        self.dim = (dimension or self.model.get_sentence_embedding_dimension)()
         self.max_doc_tokens = max_doc_tokens
         self.max_query_tokens = max_query_tokens
         self.token_budget = token_budget

@@ -139,6 +139,34 @@ def cmd_eval(args: argparse.Namespace) -> None:
     print(f"wrote {out}")
 
 
+def cmd_run(args: argparse.Namespace) -> None:
+    from odin.eval import runs
+
+    try:
+        if args.fetch_only:
+            print(json.dumps(runs.fetch(args.manifest), indent=2))
+            return
+        if not args.out:
+            sys.exit("--out is required unless --fetch-only is given")
+        record = runs.execute(args.manifest, args.out, args.local)
+    except runs.RunRefused as refusal:
+        sys.exit(f"refused: {refusal}")
+    print(json.dumps({k: v for k, v in record.items() if k != "provenance"}, indent=2))
+    print(f"wrote {args.out}")
+
+
+def cmd_import_run(args: argparse.Namespace) -> None:
+    from odin.eval import runs
+
+    try:
+        out = runs.import_run(args.run)
+    except runs.RunRefused as refusal:
+        sys.exit(f"refused: {refusal}")
+    summary = json.loads(out.read_text(encoding="utf-8"))["summary"]
+    print(json.dumps(summary, indent=2))
+    print(f"wrote {out}")
+
+
 def _print_table(rows) -> None:
     rows = sorted(rows, key=lambda r: (r[1]["recall@10"], r[1]["mrr"]), reverse=True)
     print(f"{'setting':<48}{'r@1':>7}{'r@5':>7}{'r@10':>7}{'mrr':>7}")
@@ -406,6 +434,17 @@ def main(argv: list[str] | None = None) -> None:
     ev.add_argument("--k", type=int, nargs="+", default=[1, 5, 10])
     ev.add_argument("--out", type=Path)
     ev.set_defaults(func=cmd_eval)
+
+    rn = sub.add_parser("run", help="rank every issue of a manifest into a run directory")
+    rn.add_argument("--manifest", type=Path, required=True)
+    rn.add_argument("--out", type=Path)
+    rn.add_argument("--fetch-only", action="store_true", help="download what the job needs")
+    rn.add_argument("--local", type=int, metavar="N", help="test the job on the first N issues")
+    rn.set_defaults(func=cmd_run)
+
+    im = sub.add_parser("import-run", help="verify a run directory and score it")
+    im.add_argument("run", type=Path)
+    im.set_defaults(func=cmd_import_run)
 
     tu = sub.add_parser("tune", help="grid-search call-graph expansion on a dev set")
     tu.add_argument("--dataset", default="verified", choices=DATASET_NAMES)

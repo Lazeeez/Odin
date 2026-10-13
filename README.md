@@ -379,6 +379,7 @@ docs/decisions/               why things are the way they are
 12. [Take the file list from the archive, not from GitHub's API](docs/decisions/0012-archive-file-list.md)
 13. [A sealed holdout for the headline claims](docs/decisions/0013-sealed-holdout.md)
 14. [Compare with published systems under their own protocol](docs/decisions/0014-comparison-protocols.md)
+15. [Heavy experiments are manifest runs, scored only at import](docs/decisions/0015-manifest-runs.md)
 
 ## Adding a retriever
 

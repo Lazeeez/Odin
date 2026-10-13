@@ -1,0 +1,37 @@
+{
+ "name": "swerank-embed-small-lite",
+ "what": "SweRankEmbed-Small as the only retriever, over Odin's own index of functions and classes",
+ "why": "baseline: a published retriever run inside Odin's harness; nothing decided",
+ "dataset": "lite",
+ "split": "test",
+ "level": "function",
+ "top_k": 100,
+ "retriever": {
+  "kind": "dense",
+  "model": "Salesforce/SweRankEmbed-Small",
+  "revision": "745d2a06103a66d3cfa600aa52fc0d3523010daa",
+  "licence": "CC-BY-NC-4.0",
+  "query_prompt": "query",
+  "document_prompt": null,
+  "trust_remote_code": true,
+  "max_doc_tokens": 512,
+  "max_query_tokens": 512,
+  "exclude_tests": true
+ },
+ "expected": {
+  "hardware": "one GPU with 6 GB or more",
+  "gpu_hours": 0.5,
+  "wall_hours": 2
+ },
+ "environment": {
+  "with": [
+   "torch==2.14.0+cu130",
+   "transformers>=4.50,<5",
+   "sentence-transformers>=4,<6"
+  ],
+  "index": [
+   "https://download.pytorch.org/whl/cu130"
+  ],
+  "why": "the model's own code needs transformers 4"
+ }
+}
