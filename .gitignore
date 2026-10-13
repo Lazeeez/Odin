@@ -16,6 +16,8 @@ results/*
 !results/error-analysis/
 !results/dev-path/
 !results/validation-path/
+!results/more-data/
+results/more-data/parts/
 !results/*_lite_test.json
 !results/browser_old_vs_new.json
 !results/cache_cold.json
