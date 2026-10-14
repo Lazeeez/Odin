@@ -20,16 +20,27 @@ const allowed = (env, request, origin) => {
   return !list.length || list.includes(origin) || sameSite;
 };
 
+const PAGES = /^\/(search|benchmarks|explore|how-it-works)(\/[^]*)?$/;
+
+const sitePath = (url, prefix) => {
+  if (!prefix || url.pathname.startsWith(`${prefix}/`) || url.pathname.startsWith("/api/")) return null;
+  if (url.pathname === "/favicon.ico") return Response.redirect(`${url.origin}/favicon.svg`, 301);
+  const page = url.pathname.match(PAGES);
+  return page ? Response.redirect(`${url.origin}/#${url.pathname}${url.search}`, 301) : Response.redirect(`${url.origin}/`, 302);
+};
+
 export default {
   async fetch(request, env) {
+    const url = new URL(request.url);
+    const prefix = (env.ROUTE_PREFIX ?? "").replace(/\/+$/, "");
+    const page = sitePath(url, prefix);
+    if (page) return page;
     const origin = request.headers.get("Origin") ?? "";
     const cors = { "Access-Control-Allow-Origin": origin || "*", "Cross-Origin-Resource-Policy": "cross-origin", Vary: "Origin" };
     if (!allowed(env, request, origin)) return new Response("origin not allowed", { status: 403, headers: cors });
-    const url = new URL(request.url);
     if (url.pathname.startsWith("/api/")) return api(request, env, url.pathname.slice(4));
     if (request.method === "OPTIONS") return new Response(null, { headers: { ...cors, "Access-Control-Allow-Methods": "GET" } });
     if (request.method !== "GET") return new Response("GET only", { status: 405, headers: cors });
-    const prefix = (env.ROUTE_PREFIX ?? "").replace(/\/+$/, "");
     const pathname = url.pathname;
     if (prefix && !pathname.startsWith(`${prefix}/`)) return new Response("not found", { status: 404, headers: cors });
     const m = pathname.slice(prefix.length).match(PATH);

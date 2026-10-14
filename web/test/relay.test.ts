@@ -41,7 +41,23 @@ describe("archive relay", () => {
     expect((await relay.fetch(sameOrigin, env)).status).toBe(200);
     expect(calls).toEqual(["https://codeload.github.com/django/django/tar.gz/stable/5.0.x"]);
     expect((await relay.fetch(new Request(`${SITE}/relay/django/django/main`), env)).status).toBe(403);
-    expect((await relay.fetch(new Request(`${SITE}/elsewhere/django/django/main`, { headers: { Origin: SITE } }), env)).status).toBe(404);
+    expect((await relay.fetch(new Request(`${SITE}/elsewhere/django/django/main`, { headers: { Origin: SITE } }), env)).status).toBe(302);
+  });
+
+  it("sends readable page addresses to the page and anything else home, never an error", async () => {
+    const calls = upstream();
+    const env = { ...ENV, ROUTE_PREFIX: "/relay" };
+    const go = async (path: string) => {
+      const response = await relay.fetch(new Request(`${SITE}${path}`, { headers: { "Sec-Fetch-Site": "none" } }), env);
+      return [response.status, response.headers.get("Location")];
+    };
+    expect(await go("/search?repo=psf/requests")).toEqual([301, `${SITE}/#/search?repo=psf/requests`]);
+    expect(await go("/explore/django__django-11019")).toEqual([301, `${SITE}/#/explore/django__django-11019`]);
+    expect(await go("/how-it-works")).toEqual([301, `${SITE}/#/how-it-works`]);
+    expect(await go("/favicon.ico")).toEqual([301, `${SITE}/favicon.svg`]);
+    expect(await go("/no/such/page")).toEqual([302, `${SITE}/`]);
+    expect(await go("/searching")).toEqual([302, `${SITE}/`]);
+    expect(calls).toEqual([]);
   });
 
   it("proxies nothing but GitHub archives", async () => {
