@@ -1,0 +1,189 @@
+{
+ "what": "rankers trained on SWE-bench alone against rankers that also saw the other four folds of SWE-rebench training projects, scored on the held-out fold's issues",
+ "levels": [
+  {
+   "level": "function",
+   "issues": 3174,
+   "projects": 119,
+   "folds": 5,
+   "swe_bench_only": {
+    "n": 3174,
+    "mrr": 0.5935,
+    "recall@1": 0.2115,
+    "hit@1": 0.4811,
+    "all@1": 0.1289,
+    "recall@5": 0.4396,
+    "hit@5": 0.7432,
+    "all@5": 0.2892,
+    "recall@10": 0.5358,
+    "hit@10": 0.8239,
+    "all@10": 0.3544
+   },
+   "with_other_projects": {
+    "n": 3174,
+    "mrr": 0.6011,
+    "recall@1": 0.2161,
+    "hit@1": 0.4861,
+    "all@1": 0.1326,
+    "recall@5": 0.4481,
+    "hit@5": 0.7527,
+    "all@5": 0.2946,
+    "recall@10": 0.5431,
+    "hit@10": 0.8258,
+    "all@10": 0.3648
+   },
+   "paired": {
+    "recall@10": {
+     "delta": 0.0073,
+     "ci95": [
+      0.0027,
+      0.0119
+     ],
+     "p_value": 0.0024,
+     "wins": 307,
+     "losses": 217
+    },
+    "mrr": {
+     "delta": 0.0076,
+     "ci95": [
+      0.0022,
+      0.0131
+     ],
+     "p_value": 0.0078,
+     "wins": 443,
+     "losses": 353
+    },
+    "hit@10": {
+     "delta": 0.0019,
+     "ci95": [
+      -0.0044,
+      0.0082
+     ],
+     "p_value": 0.5804,
+     "wins": 56,
+     "losses": 50
+    },
+    "all@10": {
+     "delta": 0.0104,
+     "ci95": [
+      0.0047,
+      0.0164
+     ],
+     "p_value": 0.0004,
+     "wins": 61,
+     "losses": 28
+    },
+    "recall@1": {
+     "delta": 0.0046,
+     "ci95": [
+      -0.0008,
+      0.0102
+     ],
+     "p_value": 0.0964,
+     "wins": 117,
+     "losses": 99
+    }
+   }
+  },
+  {
+   "level": "file",
+   "issues": 3261,
+   "projects": 119,
+   "folds": 5,
+   "swe_bench_only": {
+    "n": 3261,
+    "mrr": 0.8164,
+    "recall@1": 0.4586,
+    "hit@1": 0.7283,
+    "all@1": 0.3293,
+    "recall@5": 0.7348,
+    "hit@5": 0.9316,
+    "all@5": 0.5655,
+    "recall@10": 0.8177,
+    "hit@10": 0.9601,
+    "all@10": 0.6633
+   },
+   "with_other_projects": {
+    "n": 3261,
+    "mrr": 0.8163,
+    "recall@1": 0.4563,
+    "hit@1": 0.7252,
+    "all@1": 0.3281,
+    "recall@5": 0.7403,
+    "hit@5": 0.9359,
+    "all@5": 0.5722,
+    "recall@10": 0.8279,
+    "hit@10": 0.9641,
+    "all@10": 0.6762
+   },
+   "paired": {
+    "recall@10": {
+     "delta": 0.0102,
+     "ci95": [
+      0.0066,
+      0.0139
+     ],
+     "p_value": 0.0,
+     "wins": 186,
+     "losses": 93
+    },
+    "mrr": {
+     "delta": -0.0001,
+     "ci95": [
+      -0.0037,
+      0.0036
+     ],
+     "p_value": 0.9682,
+     "wins": 193,
+     "losses": 162
+    },
+    "hit@10": {
+     "delta": 0.004,
+     "ci95": [
+      0.0009,
+      0.0074
+     ],
+     "p_value": 0.0164,
+     "wins": 21,
+     "losses": 8
+    },
+    "all@10": {
+     "delta": 0.0129,
+     "ci95": [
+      0.0071,
+      0.019
+     ],
+     "p_value": 0.0,
+     "wins": 70,
+     "losses": 28
+    },
+    "recall@1": {
+     "delta": -0.0023,
+     "ci95": [
+      -0.0074,
+      0.0027
+     ],
+     "p_value": 0.3654,
+     "wins": 59,
+     "losses": 69
+    }
+   }
+  }
+ ],
+ "provenance": {
+  "timestamp": "2026-10-14T01:51:47+00:00",
+  "git_commit": "1414006649367d421aaa25e973b89026ab05397a",
+  "git_dirty": false,
+  "python": "3.11.16",
+  "platform": "Windows-10-10.0.26200-SP0",
+  "packages": {
+   "numpy": "2.4.6",
+   "scipy": "1.17.1",
+   "tree-sitter": "0.26.0",
+   "lightgbm": "4.7.0",
+   "torch": "2.14.0+cu130",
+   "sentence-transformers": "6.1.0"
+  },
+  "models": {}
+ }
+}
