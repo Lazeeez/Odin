@@ -11,6 +11,7 @@ export HF_HOME="$ODIN_SCRATCH/huggingface"
 export UV_CACHE_DIR="$ODIN_SCRATCH/uv"
 export PATH="$HOME/.local/bin:$PATH"
 export GIT_TERMINAL_PROMPT=0 GIT_ASKPASS=/bin/true SSH_ASKPASS=/bin/true
+export HF_TOKEN_PATH="${HF_TOKEN_PATH:-$HOME/.cache/huggingface/token}"
 
 manifest_field() {
   python3 -c 'import json,sys; v=json.load(open(sys.argv[1]))

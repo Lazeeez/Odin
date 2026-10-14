@@ -41,6 +41,16 @@ bash cluster/submit.sh cluster/manifests/NAME.json     # prints the job id and t
 - Raise a job's time limit with `WALL_HOURS=6 bash cluster/submit.sh ...`.
 - When the job ends, the run directory is copied from scratch to `$ODIN_RESULTS/NAME/`.
 
+## Running a script instead of a manifest
+
+Benchmarks and other scripts that are not manifest runs go through `submit_script.sh`, which uses the same local-disk staging:
+
+```sh
+WALL_HOURS=4 bash cluster/submit_script.sh "python benchmarks/bench_cascade.py --label pace-l40s"
+```
+
+The command runs from a copy of the repository on the node's local disk, with the repository's `.venv` on the path. Whatever it writes under `results/` or `models/` is copied to `$ODIN_RESULTS/script-<jobid>/` when it ends; the log is `$ODIN_SCRATCH/logs/script-<jobid>.log`.
+
 ## Bringing a run back
 
 ```sh
