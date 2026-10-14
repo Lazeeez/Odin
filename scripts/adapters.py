@@ -1,7 +1,6 @@
 import argparse
 import hashlib
 import json
-import shutil
 import sys
 from pathlib import Path
 
@@ -13,12 +12,16 @@ LOCAL_FOLDER = {"v1": "ce_adapter_v1", "v2": "ce_adapter"}
 ADAPTER_FILES = ("adapter_config.json", "adapter_model.safetensors", "training.json")
 
 
+TEXT = (".json", ".txt", ".md")
+
+
+def canonical(path: Path) -> bytes:
+    data = path.read_bytes()
+    return data.replace(b"\r\n", b"\n") if path.suffix in TEXT else data
+
+
 def sha256(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as fh:
-        for block in iter(lambda: fh.read(1 << 20), b""):
-            digest.update(block)
-    return digest.hexdigest()
+    return hashlib.sha256(canonical(path)).hexdigest()
 
 
 def local_files() -> dict[str, Path]:
@@ -119,7 +122,7 @@ def fetch() -> int:
         if sha256(got) != manifest["files"][name]["sha256"]:
             sys.exit(f"{name} from {manifest['repo']} does not match its recorded checksum")
         files[name].parent.mkdir(parents=True, exist_ok=True)
-        shutil.copyfile(got, files[name])
+        files[name].write_bytes(canonical(got))
         print(f"fetched {name}")
     return verify()
 

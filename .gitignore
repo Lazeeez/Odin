@@ -2,6 +2,7 @@
 __pycache__/
 *.pyc
 .cache/
+.cache
 results/*
 !results/README.md
 !results/test-evals.log

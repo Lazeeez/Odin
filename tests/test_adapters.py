@@ -10,7 +10,10 @@ LOCAL_FOLDER = {"v1": "ce_adapter_v1", "v2": "ce_adapter"}
 
 
 def digest(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+    data = path.read_bytes()
+    if path.suffix == ".json":
+        data = data.replace(b"\r\n", b"\n")
+    return hashlib.sha256(data).hexdigest()
 
 
 def test_the_published_ensemble_settings_are_the_committed_ones():

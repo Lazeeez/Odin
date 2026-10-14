@@ -4,8 +4,9 @@
  "revision": "0117dc4fe2c7260fc7d7684c47787e652a840012",
  "files": {
   "v1/adapter_config.json": {
-   "sha256": "e1da736165910d5a5362ac7eb83223dde5b9709e8214752421908292b25192d9",
-   "bytes": 1230
+   "sha256": "3ca7cdc205a2b6ee3997c43d37cf1a103b61e1f1bffaf3f45159b22d4585eb82",
+   "bytes": 1180,
+   "line_endings": "LF, as git stores it; the copy on Hugging Face has CRLF"
   },
   "v1/adapter_model.safetensors": {
    "sha256": "91246a13d417d71e01b2f24a7b35bfc46c51f231ac2ae2728761499604d603b9",
@@ -13,11 +14,13 @@
   },
   "v1/training.json": {
    "sha256": "98ca3305563e4c55fa675cc65532981679e89120f5755b56b7bfa2b0e29032a6",
-   "bytes": 56
+   "bytes": 56,
+   "line_endings": "LF, as git stores it; the copy on Hugging Face has CRLF"
   },
   "v2/adapter_config.json": {
-   "sha256": "8bd17f4c756f82f187b9961aa0bbcdf1b2549941e78f2eae95351480169e8c41",
-   "bytes": 1230
+   "sha256": "0809eff21c7e6df4df929a9d54c824cd2c49ae05df86628fecb5971c26af0878",
+   "bytes": 1180,
+   "line_endings": "LF, as git stores it; the copy on Hugging Face has CRLF"
   },
   "v2/adapter_model.safetensors": {
    "sha256": "9ce9bafbf4c21b80a89a99557871792b07ac5368528eb151f48be0cb021e08a0",
@@ -25,11 +28,13 @@
   },
   "v2/training.json": {
    "sha256": "ef66403a2d1a3fdae59f2dc386c6d30099d87517b1dc72d4f0cae8334d35e674",
-   "bytes": 56
+   "bytes": 56,
+   "line_endings": "LF, as git stores it; the copy on Hugging Face has CRLF"
   },
   "reranker.json": {
-   "sha256": "fb9c4cb9cfa0ad2fb04c24029851827ba024c1cc00d6c0ec570e4ceec543dcec",
-   "bytes": 601
+   "sha256": "8fb4e174900b63fcdc556abb25eb073faf9d70924c568ee76c397a296644fee4",
+   "bytes": 574,
+   "line_endings": "LF, as git stores it; the copy on Hugging Face has CRLF"
   }
  }
 }
