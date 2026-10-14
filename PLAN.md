@@ -13,6 +13,8 @@ Target claim, once the work is done:
 - The last clause is untested: nothing has been evaluated on the sealed holdout.
 - The README keeps stating only what is measured. The wording is revisited after the SweRank reproduction explains the gap between its paper and its score in Odin's index, and the owner sees the proposed sentence before it goes into the README.
 
+**odin-max target, 2026-10-15. A target, not a result.** The highest accuracy that can be measured on the sealed holdout, reported with its cost per issue. On Lite, for comparison with published work, the aim is SweRank's level (88.7% function Acc@10 under LocAgent's protocol, reproduced on PACE) at a fraction of its compute. Not a promise of 90 on every metric: top-1 and all-locations metrics are bounded by ambiguous issues and multi-location fixes for every published system.
+
 Odin will ship two named operating points on one accuracy-versus-cost frontier: **odin-fast**, the current cascade, and **odin-max**, the best accuracy at any compute, with the phase 6 escalation curve between them.
 
 ## Status
