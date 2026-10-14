@@ -20,6 +20,7 @@ results/*
 !results/more-data/
 !results/odin-max/
 results/odin-max/work/
+results/browser-reranker/work/
 results/more-data/parts/
 !results/*_lite_test.json
 !results/browser_old_vs_new.json
