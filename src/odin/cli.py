@@ -160,7 +160,7 @@ def cmd_import_run(args: argparse.Namespace) -> None:
     from odin.eval import runs
 
     try:
-        out = runs.import_run(args.run)
+        out = runs.import_run(args.run, args.label)
     except runs.RunRefused as refusal:
         sys.exit(f"refused: {refusal}")
     summary = json.loads(out.read_text(encoding="utf-8"))["summary"]
@@ -457,6 +457,7 @@ def main(argv: list[str] | None = None) -> None:
 
     im = sub.add_parser("import-run", help="verify a run directory and score it")
     im.add_argument("run", type=Path)
+    im.add_argument("--label", help="import under this name instead of the manifest's")
     im.set_defaults(func=cmd_import_run)
 
     tu = sub.add_parser("tune", help="grid-search call-graph expansion on a dev set")

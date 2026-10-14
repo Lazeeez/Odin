@@ -233,13 +233,13 @@ def verify(run: Path) -> tuple[dict, dict[str, dict]]:
     return manifest, rankings
 
 
-def import_run(run: Path) -> Path:
+def import_run(run: Path, label: str | None = None) -> Path:
     from odin.eval.ground_truth import read_gold
     from odin.eval.metrics import aggregate, bootstrap_ci, percentile, score
     from odin.eval.runner import gold_targets
 
     manifest, rankings = verify(run)
-    out = IMPORTED / manifest["name"] / "result.json"
+    out = IMPORTED / (label or manifest["name"]) / "result.json"
     if out.exists():
         raise RunRefused(f"{out} exists; results are never overwritten")
     level = manifest["level"]
