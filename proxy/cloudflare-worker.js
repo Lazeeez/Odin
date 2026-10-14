@@ -7,6 +7,8 @@
 // variable ARCHIVE_PROXY to the worker's URL (Settings -> Secrets and variables -> Actions ->
 // Variables). The next Pages build picks it up; without it the site downloads file by file.
 
+import { api } from "./api.js";
+
 const PATH = /^\/([A-Za-z0-9_.-]+)\/([A-Za-z0-9_.-]+)\/([A-Za-z0-9_./-]+)$/;
 
 // Only the site itself may use the relay, so nobody else spends this account's free quota:
@@ -23,10 +25,12 @@ export default {
     const origin = request.headers.get("Origin") ?? "";
     const cors = { "Access-Control-Allow-Origin": origin || "*", "Cross-Origin-Resource-Policy": "cross-origin", Vary: "Origin" };
     if (!allowed(env, request, origin)) return new Response("origin not allowed", { status: 403, headers: cors });
+    const url = new URL(request.url);
+    if (url.pathname.startsWith("/api/")) return api(request, env, url.pathname.slice(4));
     if (request.method === "OPTIONS") return new Response(null, { headers: { ...cors, "Access-Control-Allow-Methods": "GET" } });
     if (request.method !== "GET") return new Response("GET only", { status: 405, headers: cors });
     const prefix = (env.ROUTE_PREFIX ?? "").replace(/\/+$/, "");
-    const pathname = new URL(request.url).pathname;
+    const pathname = url.pathname;
     if (prefix && !pathname.startsWith(`${prefix}/`)) return new Response("not found", { status: 404, headers: cors });
     const m = pathname.slice(prefix.length).match(PATH);
     if (!m) return new Response("usage: /<owner>/<repo>/<ref>", { status: 400, headers: cors });

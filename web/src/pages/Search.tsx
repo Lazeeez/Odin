@@ -6,12 +6,13 @@ import { RecentChange } from "../components/RecentChange.tsx";
 import { RuneProgress } from "../components/RuneProgress.tsx";
 import { Seg } from "../components/Seg.tsx";
 import { githubUrl, parseRepo } from "../engine/github.ts";
+import { feedbackEnabled, newSession, type QuerySource, recordSearch, recordVote } from "../lib/feedback.ts";
 import { type Results, useSearchWorker } from "../hooks/useSearchWorker.ts";
 import { highlightPython, matchedTerms } from "../lib/highlight.ts";
 import { href, replaceHash } from "../lib/router.ts";
 import { useLazy } from "../lib/lazy.ts";
 import { load, save } from "../lib/storage.ts";
-import type { RepoInfo, WireFile, WireHit } from "../worker/protocol.ts";
+import type { RankStage, RepoInfo, WireFile, WireHit } from "../worker/protocol.ts";
 
 const PRESETS: Record<string, string[]> = {
   "psf/requests": [
@@ -84,8 +85,33 @@ function WhyBars({ why, rank }: { why: [string, number][]; rank: number }) {
   );
 }
 
-function HitRow({ hit, rank, info, terms, open, onToggle }: {
-  hit: WireHit; rank: number; info: RepoInfo; terms: readonly string[]; open: boolean; onToggle: () => void;
+interface Rating {
+  session: string;
+  stage: RankStage;
+  issue: string | null;
+}
+
+function Vote({ hit, rank, info, rating }: { hit: WireHit; rank: number; info: RepoInfo; rating: Rating }) {
+  const [state, setState] = useState<{ session: string; vote: 1 | -1; failed: boolean } | null>(null);
+  const current = state?.session === rating.session ? state : null;
+  const cast = async (vote: 1 | -1) => {
+    setState({ session: rating.session, vote, failed: false });
+    const ok = await recordVote({
+      repo: info.repo, sha: info.sha, unit: hit.id, rank, vote, stage: rating.stage, issue: rating.issue, session: rating.session,
+    });
+    if (!ok) setState({ session: rating.session, vote, failed: true });
+  };
+  return (
+    <span class="vote" title="Is this where the fix goes? Odin records the repository, this function and its rank, never your bug report.">
+      <span class="vote-q">{current ? (current.failed ? "Not saved" : "Thanks") : "Right place?"}</span>
+      <button type="button" class={`vote-btn${current?.vote === 1 ? " on" : ""}`} aria-pressed={current?.vote === 1} aria-label="Yes, the fix goes here" onClick={() => cast(1)}>👍</button>
+      <button type="button" class={`vote-btn${current?.vote === -1 ? " on" : ""}`} aria-pressed={current?.vote === -1} aria-label="No, not here" onClick={() => cast(-1)}>👎</button>
+    </span>
+  );
+}
+
+function HitRow({ hit, rank, info, terms, open, onToggle, rating }: {
+  hit: WireHit; rank: number; info: RepoInfo; terms: readonly string[]; open: boolean; onToggle: () => void; rating: Rating | null;
 }) {
   const termSet = useMemo(() => new Set(terms), [terms]);
   const matched = useMemo(() => matchedTerms(`${hit.qualname}\n${hit.text}\n${hit.path}`, terms), [hit, terms]);
@@ -113,6 +139,7 @@ function HitRow({ hit, rank, info, terms, open, onToggle }: {
         <span class="hit-actions">
           <button class="link-btn" type="button" onClick={copy} title="Copy path:line (c)">{copied ? "Copied ✓" : "Copy path"}</button>
           <a class="gh-link" href={githubUrl(info.repo, info.branch, hit)} target="_blank" rel="noopener" title="Open on GitHub (o)">Open on GitHub ↗</a>
+          {rating && rank <= 10 && <Vote hit={hit} rank={rank} info={info} rating={rating} />}
         </span>
       </div>
       {open && <RecentChange repo={info.repo} reference={info.branch} path={hit.path} />}
@@ -161,7 +188,7 @@ function FileRows({ hits, ranked, info }: { hits: WireHit[]; ranked?: WireFile[]
  * Results are keyboard-navigable: j/k or arrows move, Enter expands, o opens on GitHub, c
  * copies the path. Ten show at first; the ranker returns up to fifty.
  */
-function ResultList({ results, info, view }: { results: Results; info: RepoInfo; view: "functions" | "files" }) {
+function ResultList({ results, info, view, rating }: { results: Results; info: RepoInfo; view: "functions" | "files"; rating: Rating | null }) {
   const [openIds, setOpen] = useState<Set<string>>(new Set());
   const [shown, setShown] = useState(10);
   const list = useRef<HTMLOListElement>(null);
@@ -196,7 +223,7 @@ function ResultList({ results, info, view }: { results: Results; info: RepoInfo;
     <>
       <ol class="hits" aria-live="polite" ref={list} onKeyDown={onKey}>
         {results.hits.slice(0, shown).map((h, i) => (
-          <HitRow key={h.id} hit={h} rank={i + 1} info={info} terms={results.terms} open={openIds.has(h.id)} onToggle={() => toggle(h.id)} />
+          <HitRow key={h.id} hit={h} rank={i + 1} info={info} terms={results.terms} open={openIds.has(h.id)} onToggle={() => toggle(h.id)} rating={rating} />
         ))}
       </ol>
       {results.hits.length > shown && (
@@ -222,7 +249,15 @@ export function Search({ active, request }: { active: boolean; request: URLSearc
   const lastRequest = useRef<string | null>(null);
   const [repoInput, setRepoInput] = useState(request.get("repo") ?? "");
   const [includeTests, setIncludeTests] = useState(false);
-  const [query, setQuery] = useState(request.get("q") ?? "");
+  const [query, setQueryText] = useState(request.get("q") ?? "");
+  const [source, setSource] = useState<QuerySource>(request.get("q") != null ? "link" : "typed");
+  const [issueUrl, setIssueUrl] = useState<string | null>(null);
+  const setQuery = (text: string | ((q: string) => string), from: QuerySource = "typed", issue: string | null = null) => {
+    setQueryText(text);
+    setSource(from);
+    setIssueUrl(issue);
+  };
+  const recorded = useRef<Set<string>>(new Set());
   const [semanticOn, setSemanticOn] = useState(true);
   const [view, setView] = useState<"functions" | "files">("functions");
   const [recent, setRecent] = useState<string[]>(() => load("recentRepos", []));
@@ -252,13 +287,13 @@ export function Search({ active, request }: { active: boolean; request: URLSearc
     if (!active || !repo || key === lastRequest.current) return;
     lastRequest.current = key;
     setRepoInput(repo);
-    if (request.get("q") != null) setQuery(request.get("q")!);
+    if (request.get("q") != null) setQuery(request.get("q")!, "link");
     start(repo);
     if (issue && /^\d+$/.test(issue)) {
       fetch(`https://api.github.com/repos/${repo.replace(/^https?:\/\/github\.com\//, "").split("/").slice(0, 2).join("/")}/issues/${issue}`)
         .then((r) => (r.ok ? (r.json() as Promise<GitIssue>) : Promise.reject(new Error(`HTTP ${r.status}`))))
-        .then((i) => setQuery(`${i.title}\n\n${(i.body ?? "").slice(0, 1500)}`))
-        .catch(() => setQuery((q) => q || `#${issue}`));
+        .then((i) => setQuery(`${i.title}\n\n${(i.body ?? "").slice(0, 1500)}`, "issue", i.html_url))
+        .catch(() => setQuery((q) => q || `#${issue}`, "link"));
     }
   }, [active, request]);
 
@@ -268,8 +303,22 @@ export function Search({ active, request }: { active: boolean; request: URLSearc
     const list = [info.repo, ...recent.filter((r) => r.toLowerCase() !== info.repo.toLowerCase())].slice(0, 6);
     setRecent(list);
     save("recentRepos", list);
-    if (!query && PRESETS[info.repo]) setQuery(PRESETS[info.repo][0]);
+    if (!query && PRESETS[info.repo]) setQuery(PRESETS[info.repo][0], "preset");
   }, [info]);
+
+  const session = useMemo(() => newSession(), [query, info?.repo]);
+  const rating: Rating | null = feedbackEnabled && w.results ? { session, stage: w.results.stage, issue: issueUrl } : null;
+
+  useEffect(() => {
+    if (!feedbackEnabled || !info || info.partial || !w.results || !query.trim()) return;
+    const stage = w.results.stage;
+    const t = setTimeout(() => {
+      if (recorded.current.has(session)) return;
+      recorded.current.add(session);
+      recordSearch(info.repo, source, stage, session);
+    }, 4000);
+    return () => clearTimeout(t);
+  }, [w.results, session]);
 
   // The one place searches start from: typing, chips, the semantic switch and new repositories.
   useEffect(() => {
@@ -351,7 +400,7 @@ export function Search({ active, request }: { active: boolean; request: URLSearc
   return (
     <div class="container app" id="search-app">
       <PageHero kicker="Search" title="Search a repository">
-        <p>Downloads a public Python repository into this tab, parses it with Tree-sitter (WebAssembly) and ranks every function against your bug report with learned rankers. No server of ours is involved.</p>
+        <p>Downloads a public Python repository into this tab, parses it with Tree-sitter (WebAssembly) and ranks every function against your bug report with learned rankers. The search runs entirely in this tab: your bug report is never sent anywhere.</p>
       </PageHero>
 
       <form class="card frame repo-card" onSubmit={submit}>
@@ -426,13 +475,13 @@ export function Search({ active, request }: { active: boolean; request: URLSearc
               rows={Math.min(10, Math.max(3, query.split("\n").length))}
               placeholder="Paste an issue or a traceback, or describe what goes wrong… (press / to focus)" aria-label="Bug report" />
             <div class="chips">
-              {(PRESETS[info.repo] ?? []).map((ex) => <button key={ex} class="chip" type="button" onClick={() => setQuery(ex)}>{ex}</button>)}
+              {(PRESETS[info.repo] ?? []).map((ex) => <button key={ex} class="chip" type="button" onClick={() => setQuery(ex, "preset")}>{ex}</button>)}
               {issues == null && <button class="chip accent" type="button" onClick={fetchIssues}>Use an open issue from {info.repo}</button>}
               {issues === "loading" && <span class="muted small">Fetching open issues…</span>}
               {typeof issues === "string" && issues !== "loading" && <span class="muted small">{issues}</span>}
               {Array.isArray(issues) && issues.map((i) => (
                 <button key={i.number} class="chip issue" type="button" title={i.html_url}
-                  onClick={() => setQuery(`${i.title}\n\n${(i.body ?? "").slice(0, 1500)}`)}>#{i.number} {i.title}</button>
+                  onClick={() => setQuery(`${i.title}\n\n${(i.body ?? "").slice(0, 1500)}`, "issue", i.html_url)}>#{i.number} {i.title}</button>
               ))}
             </div>
             <div class="toolbar">
@@ -460,8 +509,11 @@ export function Search({ active, request }: { active: boolean; request: URLSearc
             RepoMap && w.map ? <RepoMap files={w.map} hits={w.results?.hits.slice(0, 10).map((h) => h.path) ?? []} onPick={toResult} />
               : <p class="muted small">{info.partial ? "The map is drawn once the repository finishes loading." : "Drawing the map…"}</p>
           )}
-          {w.results ? <ResultList results={w.results} info={info} view={view} /> : query.trim() ? <Skeleton /> : null}
-          <p class="fineprint">How accurate is this? <a href={href("benchmarks")}>See the benchmarks</a>.</p>
+          {w.results ? <ResultList results={w.results} info={info} view={view} rating={rating} /> : query.trim() ? <Skeleton /> : null}
+          <p class="fineprint">
+            How accurate is this? <a href={href("benchmarks")}>See the benchmarks</a>.
+            {feedbackEnabled && " Searches are counted by repository, and 👍/👎 records the function you rated and its rank. Your bug report never leaves this tab; if it came from a public GitHub issue, that issue's link is kept with your vote."}
+          </p>
         </>
       )}
     </div>

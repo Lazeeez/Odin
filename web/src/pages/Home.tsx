@@ -1,4 +1,4 @@
-import { useRef, useState } from "preact/hooks";
+import { useEffect, useRef, useState } from "preact/hooks";
 import { Bookmarklet } from "../components/Bookmarklet.tsx";
 import { Seer } from "../components/Emblem.tsx";
 import { Divider, HeroSky, ICONS, Icon, RuneRing } from "../components/Myth.tsx";
@@ -8,8 +8,27 @@ import showcase from "../assets/showcase.json";
 import { useReveal } from "../lib/reveal.ts";
 import { load, save } from "../lib/storage.ts";
 import { href } from "../lib/router.ts";
+import { fetchUsage, type Usage } from "../lib/feedback.ts";
 
 const EXAMPLES = ["pallets/flask", "psf/requests", "AtsushiSakai/PythonRobotics"];
+const SHOW_USAGE_FROM = 100;
+const SHOW_RATING_FROM = 30;
+
+function UsageLine() {
+  const [usage, setUsage] = useState<Usage | null>(null);
+  useEffect(() => {
+    void fetchUsage().then(setUsage);
+  }, []);
+  if (!usage || usage.searches < SHOW_USAGE_FROM) return null;
+  const rated = usage.up + usage.down;
+  const since = usage.since ? new Date(`${usage.since}T00:00:00Z`).toLocaleDateString(undefined, { month: "long", year: "numeric", timeZone: "UTC" }) : null;
+  return (
+    <p class="quickstart-usage">
+      {usage.searches.toLocaleString()} searches on {usage.repos.toLocaleString()} repositories{since && ` since ${since}`}
+      {rated >= SHOW_RATING_FROM && ` · ${Math.round((100 * usage.up) / rated)}% of ${rated.toLocaleString()} rated results marked as the right place`}
+    </p>
+  );
+}
 
 function QuickStart() {
   const [repo, setRepo] = useState("");
@@ -29,6 +48,7 @@ function QuickStart() {
           <span key={name}>{i > 0 && (i === EXAMPLES.length - 1 ? " or " : ", ")}<a href={href("search", null, { repo: name })}>{name}</a></span>
         ))}
       </p>
+      <UsageLine />
     </form>
   );
 }

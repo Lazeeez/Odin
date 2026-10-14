@@ -16,10 +16,22 @@ Odin's website and its archive relay run as one Cloudflare Worker: static files 
 ```sh
 cd web
 npm ci --ignore-scripts
-VITE_ARCHIVE_PROXY=/relay npm run build
+VITE_ARCHIVE_PROXY=/relay VITE_API=/api npm run build
 cd ../deploy/cloudflare
 npx wrangler deploy
 ```
+
+`VITE_API=/api` turns on search counts and the 👍/👎 buttons ([ADR 0022](decisions/0022-website-feedback.md)); a build without it sends nothing. They need the D1 database once:
+
+```sh
+cd deploy/cloudflare
+npx wrangler d1 create odin          # copy the printed database_id into wrangler.jsonc
+npx wrangler d1 execute odin --remote --file schema.sql
+```
+
+To try the Worker and the database locally, put `ALLOWED_ORIGINS="http://localhost:8787,http://allfather.dev"` in `deploy/cloudflare/.dev.vars` (ignored by git; in local mode wrangler rewrites the Origin header to the route's host), apply the schema with `--local` instead of `--remote`, and run `npx wrangler dev --local --port 8787`.
+
+Reading the data: `npx wrangler d1 execute odin --remote --command "SELECT repo, SUM(n) FROM searches GROUP BY repo ORDER BY 2 DESC LIMIT 20"`.
 
 In Git Bash on Windows, prefix the build with `MSYS_NO_PATHCONV=1`: without it the shell rewrites `/relay` into a Windows path and the site silently falls back to GitHub's API.
 
