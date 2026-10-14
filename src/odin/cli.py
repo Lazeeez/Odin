@@ -312,7 +312,7 @@ def cmd_ce_train(args: argparse.Namespace) -> None:
                     fh.write(json.dumps({"qid": r["qid"], "teacher": r["teacher"]}) + "\n")
     train_cross_encoder(
         train_records, args.out, epochs=args.epochs, group=args.group, lr=args.lr,
-        distill=args.distill if args.distill_from else 0.0, base=args.base,
+        distill=args.distill if args.distill_from else 0.0, base=args.base, full=args.full,
     )  # fmt: skip
     print(f"wrote {args.out}")
 
@@ -492,6 +492,9 @@ def main(argv: list[str] | None = None) -> None:
     ct.add_argument("--data", type=Path, default=Path("results/ce_train_ltr_negatives.jsonl"))
     ct.add_argument("--out", type=Path, default=Path("models/ce_adapter"))
     ct.add_argument("--base", help="base reranker model; the default is Qwen3-Reranker-0.6B")
+    ct.add_argument(
+        "--full", action="store_true", help="update every weight instead of a LoRA adapter"
+    )
     ct.add_argument(
         "--distill-from", type=Path, default=None,
         help="a reranker recipe (e.g. models/reranker.json) whose ensemble to distill into one model",

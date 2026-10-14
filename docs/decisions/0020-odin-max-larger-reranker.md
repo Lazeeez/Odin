@@ -42,6 +42,14 @@ Fixed before looking:
 - **If it is adopted**, the 8B base is the next step, under the same rule against the 4B one.
 - **If it is not**, it is written up as a negative result, and the next lever in the error analysis's order is taken instead.
 
+### A second candidate: full fine-tuning
+
+Added on 2026-10-15, before any training data for this test existed and before either candidate was trained.
+
+- **What differs.** Every weight of the 4B model is updated, instead of a LoRA adapter of rank 16. Learning rate 1e-5 instead of 1e-4, the usual tenfold reduction for full fine-tuning; weights, gradients and optimizer state in bf16 to fit one H100. Same data, epochs, group size, loss and prompt.
+- **How it is compared.** Each candidate gets its own depth and weight from validation by the existing rule. Each is tested against the current reranker by the rule above. If both pass, the one with the higher function recall@10 on the held-out fold is adopted, and the difference between them is tested and reported; if that difference is not significant, LoRA is preferred, because its adapter is 2,000 times smaller to store and ship.
+- **Why it might not help.** With about 4,000 training issues, full fine-tuning can overfit where LoRA does not. The test decides.
+
 ### Cost to report
 
 Training GPU-hours, the GPU, scoring time per issue at each depth, and the dollar cost per issue at the public price of that GPU, so the result can go on the accuracy-against-cost chart.

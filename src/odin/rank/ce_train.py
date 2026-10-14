@@ -119,6 +119,7 @@ def train_cross_encoder(
     distill: float = 0.0,
     temperature: float = 1.0,
     base: str | None = None,
+    full: bool = False,
 ) -> None:
     """LoRA fine-tuning with a listwise loss: gold vs its hardest negatives, same issue.
 
@@ -132,18 +133,23 @@ def train_cross_encoder(
     random.seed(seed)
     torch.manual_seed(seed)
     ce = CrossEncoder(base=base)
-    model = get_peft_model(
-        ce.model,
-        LoraConfig(
-            r=16, lora_alpha=32, lora_dropout=0.05, target_modules=LORA_TARGETS,
-            task_type="CAUSAL_LM",
-        ),
-    )  # fmt: skip
-    for p in model.parameters():
-        if p.requires_grad:
-            p.data = p.data.float()  # fp32 adapters on a bf16 base for stable updates
+    if full:
+        model = ce.model
+        for p in model.parameters():
+            p.requires_grad_(True)
+    else:
+        model = get_peft_model(
+            ce.model,
+            LoraConfig(
+                r=16, lora_alpha=32, lora_dropout=0.05, target_modules=LORA_TARGETS,
+                task_type="CAUSAL_LM",
+            ),
+        )  # fmt: skip
+        for p in model.parameters():
+            if p.requires_grad:
+                p.data = p.data.float()  # fp32 adapters on a bf16 base for stable updates
+        model.enable_input_require_grads()
     model.gradient_checkpointing_enable(gradient_checkpointing_kwargs={"use_reentrant": False})
-    model.enable_input_require_grads()
     model.train()
     ce.model = model
     params = [p for p in model.parameters() if p.requires_grad]
@@ -191,12 +197,24 @@ def train_cross_encoder(
                 log(f"step {step}/{total} loss {running:.3f} ({rate:.2f} steps/s)")
     out_dir.mkdir(parents=True, exist_ok=True)
     # fp32 was for stable updates; inference merges into a bf16 model, so ship fp16 (half size).
-    for p in params:
-        p.data = p.data.half()
-    model.save_pretrained(str(out_dir))
+    if full:
+        model.save_pretrained(str(out_dir))
+        ce.tok.save_pretrained(str(out_dir))
+    else:
+        for p in params:
+            p.data = p.data.half()
+        model.save_pretrained(str(out_dir))
     (out_dir / "training.json").write_text(
         json.dumps(
-            {"records": len(usable), "epochs": epochs, "group": group, "lr": lr, "distill": distill}
+            {
+                "records": len(usable),
+                "epochs": epochs,
+                "group": group,
+                "lr": lr,
+                "distill": distill,
+                "base": ce.base,
+                "full_fine_tuning": full,
+            }
         ),
         encoding="utf-8",
     )
