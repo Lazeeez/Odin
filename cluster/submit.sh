@@ -2,7 +2,7 @@
 . "$(dirname "$0")/common.sh"
 MANIFEST="$(realpath "$1")"
 NAME="$(manifest_field "$MANIFEST" name)"
-HOURS="$(manifest_field "$MANIFEST" expected.wall_hours)"
+HOURS="${WALL_HOURS:-$(manifest_field "$MANIFEST" expected.wall_hours)}"
 RUN_DIR="$ODIN_SCRATCH/runs/$NAME"
 mkdir -p "$RUN_DIR" "$ODIN_RESULTS"
 sbatch --account="$SLURM_ACCOUNT" --partition="$SLURM_PARTITION" ${SLURM_QOS:+--qos="$SLURM_QOS"} \
