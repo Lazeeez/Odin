@@ -8,6 +8,7 @@ Odin's website and its archive relay run as one Cloudflare Worker: static files 
 |---|---|
 | The Worker `odin` (site and relay) on `allfather.dev` | live, in the Cloudflare account `lajatm9@gmail.com` |
 | `www.allfather.dev` | serves the same site; pages declare `allfather.dev` as canonical |
+| D1 database `odin` (search counts and votes, [ADR 0022](decisions/0022-website-feedback.md)) | live since 2026-10-15; checked with a real vote from a browser on `allfather.dev`, then the test rows were deleted |
 | GitHub Pages site | being removed by the owner; see "GitHub Pages" |
 | A first copy of the Worker in the other Cloudflare account (`odin.lajat69.workers.dev`) | still there from the first attempt; delete it from that account's dashboard |
 

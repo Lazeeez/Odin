@@ -14,7 +14,7 @@
     { "pattern": "www.allfather.dev", "custom_domain": true, "zone_name": "allfather.dev" }
   ],
   "d1_databases": [
-    { "binding": "DB", "database_name": "odin", "database_id": "TO_BE_CREATED" }
+    { "binding": "DB", "database_name": "odin", "database_id": "61e04158-1354-4853-9c02-f8bc0cf48069" }
   ],
   "ratelimits": [
     { "name": "LIMITER", "namespace_id": "1001", "simple": { "limit": 30, "period": 60 } }
