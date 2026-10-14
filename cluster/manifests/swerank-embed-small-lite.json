@@ -16,7 +16,10 @@
   "trust_remote_code": true,
   "max_doc_tokens": 512,
   "max_query_tokens": 512,
-  "exclude_tests": true
+  "exclude_tests": true,
+  "also_fetch": [
+   "Snowflake/snowflake-arctic-embed-m-long"
+  ]
  },
  "expected": {
   "hardware": "one GPU with 6 GB or more",

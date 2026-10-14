@@ -2,7 +2,7 @@
 
 Every heavy experiment is a **manifest** in `cluster/manifests/`. A job ranks the issues a manifest names into a run directory. It never sees ground truth: scoring happens when the run is imported back into the repository.
 
-**Not yet tried on PACE.** The job code is tested on the laptop with `--local`. The Slurm wrapper, `setup.sh` and `fetch.sh` have not run on a cluster. Run `preflight.sh` first and send back anything it prints as `MISSING`.
+**Being brought up on PACE (ICE), 2026-10-14.** `preflight.sh` and `setup.sh` pass there. The first job failed because it resolved packages offline; `fetch.sh` now builds the job's environment in advance. No job has completed on the cluster yet.
 
 ## Once per cluster account
 
@@ -51,7 +51,7 @@ uv run --extra dense odin run --manifest cluster/manifests/NAME.json --out /tmp/
 |---|---|---|---|
 | `swerank-embed-small-lite` | SweRankEmbed-Small (137M) as the retriever over Odin's index, on Lite | one GPU, 6 GB; the `transformers<5` overlay in the manifest | about 30 GPU-minutes; fits the laptop |
 
-A manifest's `environment.with` lists packages that replace the locked ones for that job; `submit.sh` passes them to `uv run`.
+A manifest's `environment.with` lists packages that replace the locked ones for that job. `fetch.sh` builds a separate environment for such a manifest under `$ODIN_SCRATCH/envs/NAME` on the login node, and the job runs from it: compute nodes have no internet, so nothing is resolved or installed at job time. A manifest without `environment.with` runs from the repository's own `.venv`.
 
 ## What is not here yet
 

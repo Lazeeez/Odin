@@ -101,15 +101,21 @@ def fetch(manifest_path: Path) -> dict:
 
     manifest = load_manifest(manifest_path)
     instances = issues_of(manifest, None)
+    print(f"dataset ready: {len(instances)} issues", flush=True)
     spec = manifest["retriever"]
     if spec["kind"] == "dense":
         from huggingface_hub import snapshot_download
 
         snapshot_download(spec["model"], revision=spec["revision"])
+        for also in spec.get("also_fetch", []):
+            snapshot_download(also)
+        print(f"model ready: {spec['model']}", flush=True)
+    repositories = sorted({i.repo for i in instances})
+    print(f"fetching {len(repositories)} repositories; this is the slow part", flush=True)
     mirrors = BM25Retriever(exclude_tests=spec.get("exclude_tests", True), analysis_cache=False)
     mirrors.warmup([Query(i.instance_id, i.repo, i.base_commit, "") for i in instances])
     mirrors.close()
-    return {"issues": len(instances), "repositories": len({i.repo for i in instances})}
+    return {"issues": len(instances), "repositories": len(repositories)}
 
 
 def execute(manifest_path: Path, out: Path, limit: int | None = None) -> dict:

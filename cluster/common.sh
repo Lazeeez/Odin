@@ -17,9 +17,10 @@ for k in sys.argv[2].split("."): v=v.get(k, "") if isinstance(v, dict) else ""
 print(" ".join(v) if isinstance(v, list) else v)' "$1" "$2"
 }
 
-uv_overlay() {
-  local args=()
-  for package in $(manifest_field "$1" environment.with); do args+=(--with "$package"); done
-  for index in $(manifest_field "$1" environment.index); do args+=(--index "$index" --index-strategy unsafe-best-match); done
-  echo "${args[@]:-}"
+job_env() {
+  if [ -n "$(manifest_field "$1" environment.with)" ]; then
+    echo "$ODIN_SCRATCH/envs/$(manifest_field "$1" name)"
+  else
+    echo "$ROOT/.venv"
+  fi
 }
