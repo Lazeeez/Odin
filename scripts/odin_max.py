@@ -160,7 +160,7 @@ def score_tasks(name: str, adapters: list[Path], base: str | None) -> int:
     done = set()
     if target.exists():
         done = {json.loads(line)["qid"] for line in target.open(encoding="utf-8")}
-    members = [CrossEncoder(adapter=a, base=base) for a in adapters]
+    members = [CrossEncoder(adapter=a, base=base) for a in adapters] or [CrossEncoder(base=base)]
     with target.open("a", encoding="utf-8", newline="\n") as handle:
         for n, line in enumerate((WORK / "eval_tasks.jsonl").open(encoding="utf-8"), start=1):
             task = json.loads(line)
