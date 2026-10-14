@@ -35,6 +35,10 @@
   "index": [
    "https://download.pytorch.org/whl/cu130"
   ],
-  "why": "the model's own code needs transformers 4"
+  "why": "the model's own code needs transformers 4, which needs older huggingface-hub and tokenizers than the project declares",
+  "without": [
+   "huggingface-hub",
+   "tokenizers"
+  ]
  }
 }
