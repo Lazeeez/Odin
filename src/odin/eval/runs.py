@@ -95,8 +95,13 @@ def issues_of(manifest: dict, limit: int | None) -> list:
     return instances[:limit] if limit else instances
 
 
+CODE_ONLY = ["*.py", "*.json", "*.txt"]
+DOWNLOAD_WORKERS = 2
+
+
 def fetch(manifest_path: Path) -> dict:
-    from odin.eval.runner import Query
+    from collections import defaultdict
+
     from odin.search.retriever import BM25Retriever
 
     manifest = load_manifest(manifest_path)
@@ -106,16 +111,20 @@ def fetch(manifest_path: Path) -> dict:
     if spec["kind"] == "dense":
         from huggingface_hub import snapshot_download
 
-        snapshot_download(spec["model"], revision=spec["revision"])
+        snapshot_download(spec["model"], revision=spec["revision"], max_workers=DOWNLOAD_WORKERS)
         for also in spec.get("also_fetch", []):
-            snapshot_download(also)
+            snapshot_download(also, allow_patterns=CODE_ONLY, max_workers=DOWNLOAD_WORKERS)
         print(f"model ready: {spec['model']}", flush=True)
-    repositories = sorted({i.repo for i in instances})
-    print(f"fetching {len(repositories)} repositories; this is the slow part", flush=True)
+    commits: dict[str, set[str]] = defaultdict(set)
+    for instance in instances:
+        commits[instance.repo].add(instance.base_commit)
+    print(f"fetching {len(commits)} repositories, one at a time", flush=True)
     mirrors = BM25Retriever(exclude_tests=spec.get("exclude_tests", True), analysis_cache=False)
-    mirrors.warmup([Query(i.instance_id, i.repo, i.base_commit, "") for i in instances])
+    for n, repo in enumerate(sorted(commits), start=1):
+        mirrors.indexer.prefetch(repo, commits[repo])
+        print(f"  {n}/{len(commits)} {repo}: {len(commits[repo])} commits", flush=True)
     mirrors.close()
-    return {"issues": len(instances), "repositories": len(repositories)}
+    return {"issues": len(instances), "repositories": len(commits)}
 
 
 def execute(manifest_path: Path, out: Path, limit: int | None = None) -> dict:
