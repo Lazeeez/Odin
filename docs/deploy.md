@@ -69,7 +69,7 @@ Left to clean up in the accounts, not in the repository:
 | The relay's routing and allowlist | `web/test/relay.test.ts` | passes |
 | `allfather.dev` itself | a headless browser on the live domain: home page, a search on `psf/requests` through `/relay`, Explore, Benchmarks | works; cross-origin isolated; the relay answers 403 to `curl` and to another origin |
 | Cloudflare Web Analytics | the zone injects its beacon script; the policy allows `static.cloudflareinsights.com` and `cloudflareinsights.com` | the script loads on the live site with no policy violation |
-| The rerank stage under the policy | needs a manual session | not tested |
+| The rerank stage under the policy | a headless browser on the live domain, after a visitor reported "Language-model rerank unavailable" | failed until 2026-10-15: the ONNX runtime imports its module from a `blob:` URL, which `script-src` did not allow, so both the WebGPU and the WASM backends failed; with `blob:` added, the rerank of the top 20 completes (1.1 s) with no policy violation |
 
 ## Decisions
 
