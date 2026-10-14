@@ -114,3 +114,16 @@ Twenty tests were run across the two; three were the declared deciding ones.
 - odin-fast's rankers are the ones in `models/more-data/` from now on. The shipped `models/ltr_*.txt` stay as they are until odin-fast is frozen, so every published row still reproduces.
 - The reranker's depth and blend weights are chosen again on validation against the new ranker's scores, by the existing rule.
 - Lite, the 30 unseen projects and the holdout were not evaluated.
+
+### The reranker's settings, chosen again
+
+By the existing rule (`odin ce-tune`: depth and weight by function MRR on the 250 validation issues, file weight by file MRR, then the largest skip margin whose MRR stays within the tolerance), against the larger-data rankers. The result is in `models/more-data/reranker.json`; the full grid is in `results/more-data/reranker_choice.json`.
+
+| Setting | Shipped | Chosen again | Validation evidence |
+|---|---|---|---|
+| Depth | 20 | 20 | function MRR 0.625 at depth 20, 0.610 at 10, 0.621 at 30 |
+| Function blend weight | 2.0 | 2.0 | MRR 0.618 at 1.0, 0.625 at 2.0, 0.622 at 4.0 |
+| File blend weight | 0.5 | 2.0 | file MRR 0.849 at 0.5, 0.865 at 2.0 |
+| Skip margin | never skip | 2.0 | skips the reranker for 6.8% of issues; function MRR 0.623 against 0.625 without skipping |
+
+Depth 50 is outside the existing grid (10, 20, 30) and was not tried; it belongs to the odin-max reranker work, where the reranker changes too.
