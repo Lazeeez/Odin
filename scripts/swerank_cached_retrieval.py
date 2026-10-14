@@ -11,7 +11,22 @@ import torch
 from datasets import load_dataset
 from sentence_transformers import SentenceTransformer
 
-QUERY_PREFIX = "Represent this query for searching relevant code"
+QUERY_PREFIXES = {
+    "swerankembed-small": "Represent this query for searching relevant code",
+    "swerankembed-large": (
+        "Instruct: Given a github issue, identify the code that needs to be changed to fix the "
+        "issue.\nQuery"
+    ),
+}
+
+
+def query_prefix(model: str) -> str:
+    for marker, prefix in QUERY_PREFIXES.items():
+        if marker in model.lower():
+            return prefix
+    raise SystemExit(f"no query prefix is known for {model}")
+
+
 TOP = 100
 
 
@@ -70,6 +85,7 @@ def main() -> int:
     if args.results_file.exists():
         sys.exit(f"{args.results_file} exists; results are never overwritten")
 
+    prefix = query_prefix(args.model)
     model = SentenceTransformer(args.model, revision=args.revision, trust_remote_code=True)
     model = model.to(torch.bfloat16)
     model.max_seq_length = args.sequence_length
@@ -108,7 +124,7 @@ def main() -> int:
         model.max_seq_length = args.query_length or args.sequence_length
         for query in read_jsonl(args.dataset_dir / folder / "queries.jsonl"):
             vector = model.encode(
-                [f"{QUERY_PREFIX}: {query['text']}", "dummy"],
+                [f"{prefix}: {query['text']}", "dummy"],
                 batch_size=args.batch_size,
                 convert_to_tensor=True,
                 show_progress_bar=False,
