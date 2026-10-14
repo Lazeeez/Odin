@@ -2,7 +2,18 @@
 
 Every heavy experiment is a **manifest** in `cluster/manifests/`. A job ranks the issues a manifest names into a run directory. It never sees ground truth: scoring happens when the run is imported back into the repository.
 
-**Being brought up on PACE (ICE), 2026-10-14.** `preflight.sh` and `setup.sh` pass there. The first job failed because it resolved packages offline; `fetch.sh` now builds the job's environment in advance. No job has completed on the cluster yet.
+**Working on PACE (ICE) since 2026-10-14.** The first job, `swerank-embed-small-lite` on one L40S, reproduced the laptop's run of the same manifest: identical recall, hit, all@k and MRR on all 291 issues, the same top 10 for 290 of them, and 99.65% of top-100 items in common (`results/runs/swerank-embed-small-lite-pace/`).
+
+What it took to get there, each fixed in the scripts:
+
+- jobs resolved Python packages offline and failed; `fetch.sh` now builds each job's environment in advance;
+- a model's older `transformers` conflicted with the project's pins; a manifest can now replace and drop packages;
+- the login node killed a fetch that downloaded too much at once; it now downloads less and one project at a time;
+- forced offline mode broke one model's own loading code; offline mode is now a site setting, off on ICE, whose compute nodes reach the internet;
+- the shared scratch filesystem made jobs crawl; jobs now work from the node's local disk;
+- parsing workers forked after PyTorch started deadlocked on Linux; they are now started with spawn.
+
+Two submissions were killed before the third finished. Their 143 rankings carry no invocation record, because records were written only at the end; a run now records each invocation when it starts and stamps every ranking with the commit and Slurm job that produced it.
 
 ## Once per cluster account
 
