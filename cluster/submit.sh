@@ -5,7 +5,7 @@ NAME="$(manifest_field "$MANIFEST" name)"
 HOURS="$(manifest_field "$MANIFEST" expected.wall_hours)"
 RUN_DIR="$ODIN_SCRATCH/runs/$NAME"
 mkdir -p "$RUN_DIR" "$ODIN_RESULTS"
-sbatch --account="$SLURM_ACCOUNT" --partition="$SLURM_PARTITION" \
+sbatch --account="$SLURM_ACCOUNT" --partition="$SLURM_PARTITION" ${SLURM_QOS:+--qos="$SLURM_QOS"} \
   --gres="gpu:$GPU_TYPE:${GPUS:-1}" --cpus-per-task="${CPUS:-8}" --mem="${MEM:-32G}" \
   --time="${HOURS:-2}:00:00" --job-name="odin-$NAME" \
   --output="$RUN_DIR/slurm-%j.log" \

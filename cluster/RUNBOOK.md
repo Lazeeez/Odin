@@ -8,12 +8,12 @@ Every heavy experiment is a **manifest** in `cluster/manifests/`. A job ranks th
 
 ```sh
 git clone <repository> ~/odin && cd ~/odin
-cp cluster/site.env.example cluster/site.env     # then fill in the five values
+cp cluster/site.env.example cluster/site.env     # then fill in the values
 bash cluster/preflight.sh                        # checks the account, partition and paths
 bash cluster/setup.sh                            # uv and the locked environment, on the login node
 ```
 
-`site.env` holds the Slurm account and partition, the GPU type, and two directories: one on project storage for results, one on scratch for caches. It is git-ignored.
+`site.env` holds the Slurm account, partition and (where the cluster requires one) QOS, the GPU type, and two directories: one on project storage for results, one on scratch for caches. It is git-ignored.
 
 ## For each experiment
 
