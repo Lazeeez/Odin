@@ -251,25 +251,40 @@ def check_comparison(rows: list[list[str]], report: Report) -> None:
 
 
 def check_cost(text: str, report: Report) -> None:
-    perf = RESULTS / "perf" / "cascade_2026-10-13.json"
-    summary = json.loads(perf.read_text(encoding="utf-8"))["summary"]
-    price = json.loads(
+    perf = RESULTS / "perf"
+    prices = json.loads(
         (ROOT / "docs" / "data" / "published_cost_accuracy.json").read_text(encoding="utf-8")
-    )["gpu_price"]["dollars_per_hour"]
+    )
+    laptop = json.loads((perf / "cascade_2026-10-13.json").read_text(encoding="utf-8"))["summary"]
+    l40s = json.loads((perf / "cascade_pace-l40s-warm.json").read_text(encoding="utf-8"))["summary"]
     stated = re.search(
-        r"takes ([\d.]+) seconds per issue on a laptop GPU \(RTX 4050, 6 GB\), "
-        r"median ([\d.]+) seconds, and the reranker is (\d+)% of that.*?about \$([\d.]+) per issue",
+        r"takes ([\d.]+) seconds per issue on an NVIDIA L40S \(median ([\d.]+)\).*?"
+        r"about \$([\d.]+) per issue",
         text,
     )
-    mean_s = summary["total"]["mean_ms"] / 1000
+    seconds = l40s["total"]["mean_ms"] / 1000
     actual = (
-        mean_s,
-        summary["total"]["p50_ms"] / 1000,
-        100 * summary["reranker"]["mean_ms"] / summary["total"]["mean_ms"],
-        mean_s * price / 3600,
+        seconds,
+        l40s["total"]["p50_ms"] / 1000,
+        seconds * prices["gpu_price_l40s"]["dollars_per_hour"] / 3600,
+    )
+    for shown, value, places in zip(stated.groups(), actual, (2, 2, 4), strict=True):
+        report.expect("cost l40s", float(shown), value, places)
+    stated = re.search(
+        r"\(RTX 4050\) the same cascade takes ([\d.]+) seconds per issue, median ([\d.]+) "
+        r"seconds, and the reranker is (\d+)% of that; priced the same way, that is about "
+        r"\$([\d.]+) per issue",
+        text,
+    )
+    seconds = laptop["total"]["mean_ms"] / 1000
+    actual = (
+        seconds,
+        laptop["total"]["p50_ms"] / 1000,
+        100 * laptop["reranker"]["mean_ms"] / laptop["total"]["mean_ms"],
+        seconds * prices["gpu_price"]["dollars_per_hour"] / 3600,
     )
     for shown, value, places in zip(stated.groups(), actual, (1, 1, 0, 4), strict=True):
-        report.expect("cost", float(shown), value, places)
+        report.expect("cost laptop", float(shown), value, places)
 
 
 def check_prose(text: str, report: Report) -> None:

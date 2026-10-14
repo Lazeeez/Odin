@@ -12,14 +12,88 @@
   "source": "https://calculator.holori.com/aws/ec2/g5.xlarge/us-east-1, as listed on 2026-10-13"
  },
  "systems": [
-  {"label": "OpenHands, Claude 3.5", "dollars_per_issue": 0.79, "function_acc_at_10": 70.07, "accuracy_source": "L4", "cost_source": "L5", "label_side": "left"},
-  {"label": "SWE-agent, Claude 3.5", "dollars_per_issue": 0.67, "function_acc_at_10": 64.60, "accuracy_source": "L4", "cost_source": "L5", "label_side": "left", "label_shift": 14},
-  {"label": "MoatlessTools, Claude 3.5", "dollars_per_issue": 0.46, "function_acc_at_10": 64.96, "accuracy_source": "L4", "cost_source": "L5", "label_side": "left", "label_shift": -8},
-  {"label": "LocAgent, Claude 3.5", "dollars_per_issue": 0.66, "function_acc_at_10": 77.37, "accuracy_source": "L4", "cost_source": "L5", "label_side": "left", "label_shift": -10},
-  {"label": "LocAgent, Qwen2.5-32B", "dollars_per_issue": 0.09, "function_acc_at_10": 77.01, "accuracy_source": "L4", "cost_source": "L5", "label_side": "left", "label_shift": -12},
-  {"label": "LocAgent, Qwen2.5-7B", "dollars_per_issue": 0.05, "function_acc_at_10": 71.53, "accuracy_source": "L4", "cost_source": "L5", "label_side": "left"},
-  {"label": "SweRank + GPT-4.1", "dollars_per_issue": 0.16, "function_acc_at_10": 87.96, "accuracy_source": "S1", "cost_source": "S5", "label_side": "right"},
-  {"label": "SweRankLLM-Large (32B)", "dollars_per_issue": 0.015, "function_acc_at_10": 88.69, "accuracy_source": "S1", "cost_source": "S5", "label_side": "right", "label_shift": -8},
-  {"label": "SweRankLLM-Small (7B)", "dollars_per_issue": 0.011, "function_acc_at_10": 86.13, "accuracy_source": "S1", "cost_source": "S5", "label_side": "left", "label_shift": 8}
- ]
+  {
+   "label": "OpenHands, Claude 3.5",
+   "dollars_per_issue": 0.79,
+   "function_acc_at_10": 70.07,
+   "accuracy_source": "L4",
+   "cost_source": "L5",
+   "label_side": "left"
+  },
+  {
+   "label": "SWE-agent, Claude 3.5",
+   "dollars_per_issue": 0.67,
+   "function_acc_at_10": 64.6,
+   "accuracy_source": "L4",
+   "cost_source": "L5",
+   "label_side": "left",
+   "label_shift": 14
+  },
+  {
+   "label": "MoatlessTools, Claude 3.5",
+   "dollars_per_issue": 0.46,
+   "function_acc_at_10": 64.96,
+   "accuracy_source": "L4",
+   "cost_source": "L5",
+   "label_side": "left",
+   "label_shift": -8
+  },
+  {
+   "label": "LocAgent, Claude 3.5",
+   "dollars_per_issue": 0.66,
+   "function_acc_at_10": 77.37,
+   "accuracy_source": "L4",
+   "cost_source": "L5",
+   "label_side": "left",
+   "label_shift": -10
+  },
+  {
+   "label": "LocAgent, Qwen2.5-32B",
+   "dollars_per_issue": 0.09,
+   "function_acc_at_10": 77.01,
+   "accuracy_source": "L4",
+   "cost_source": "L5",
+   "label_side": "left",
+   "label_shift": -12
+  },
+  {
+   "label": "LocAgent, Qwen2.5-7B",
+   "dollars_per_issue": 0.05,
+   "function_acc_at_10": 71.53,
+   "accuracy_source": "L4",
+   "cost_source": "L5",
+   "label_side": "left"
+  },
+  {
+   "label": "SweRank + GPT-4.1",
+   "dollars_per_issue": 0.16,
+   "function_acc_at_10": 87.96,
+   "accuracy_source": "S1",
+   "cost_source": "S5",
+   "label_side": "right"
+  },
+  {
+   "label": "SweRankLLM-Large (32B)",
+   "dollars_per_issue": 0.015,
+   "function_acc_at_10": 88.69,
+   "accuracy_source": "S1",
+   "cost_source": "S5",
+   "label_side": "right",
+   "label_shift": -8
+  },
+  {
+   "label": "SweRankLLM-Small (7B)",
+   "dollars_per_issue": 0.011,
+   "function_acc_at_10": 86.13,
+   "accuracy_source": "S1",
+   "cost_source": "S5",
+   "label_side": "left",
+   "label_shift": 8
+  }
+ ],
+ "gpu_price_l40s": {
+  "dollars_per_hour": 1.861,
+  "what": "AWS g6e.xlarge (one L40S, 48 GB), on demand, us-east-1",
+  "source": "https://calculator.holori.com/aws/ec2/g6e.xlarge/us-east-1, as listed on 2026-10-14"
+ }
 }

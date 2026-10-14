@@ -37,7 +37,7 @@ Odin is level with the best agent of the LocAgent paper at function level and be
 
 ### What it costs
 
-The full cascade takes 8.8 seconds per issue on a laptop GPU (RTX 4050, 6 GB), median 3.5 seconds, and the reranker is 96% of that. At a public GPU rental price that is about $0.0025 per issue, against $0.011 to $0.015 for SweRank's rerankers and $0.46 to $0.79 for agents running Claude 3.5, as their papers report them. The stage-by-stage table, the assumptions behind the dollar figure and the chart are in [docs/cost.md](docs/cost.md).
+The full cascade takes 0.44 seconds per issue on an NVIDIA L40S (median 0.40), and the reranker is the largest stage. At a public rental price for that GPU that is about $0.0002 per issue, against $0.011 to $0.015 for SweRank's rerankers and $0.46 to $0.79 for agents running Claude 3.5, as their papers report them. On the laptop's 6 GB GPU (RTX 4050) the same cascade takes 8.8 seconds per issue, median 3.5 seconds, and the reranker is 96% of that; priced the same way, that is about $0.0025 per issue. The stage-by-stage table, the assumptions behind the dollar figure and the chart are in [docs/cost.md](docs/cost.md).
 
 ![Function Acc@10 against cost per issue on SWE-bench Lite](docs/img/cost-accuracy.svg)
 

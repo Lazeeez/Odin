@@ -6,19 +6,20 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 PUBLISHED = ROOT / "docs" / "data" / "published_cost_accuracy.json"
 CASCADE = ROOT / "results" / "perf" / "cascade_2026-10-13.json"
+CASCADE_L40S = ROOT / "results" / "perf" / "cascade_pace-l40s-warm.json"
 BATCHING = ROOT / "results" / "perf" / "bench_batching_2026-10-13.json"
 PROTOCOL = ROOT / "results" / "comparison" / "locagent-lite_2026-10-13.json"
 OUT = ROOT / "docs" / "img" / "cost-accuracy.svg"
 
 WIDTH, HEIGHT = 860, 500
 LEFT, RIGHT, TOP, BOTTOM = 64, 24, 64, 56
-X_RANGE = (0.001, 2.0)
+X_RANGE = (0.0001, 2.0)
 Y_RANGE = (60.0, 92.0)
-X_TICKS = (0.001, 0.01, 0.1, 1.0)
+X_TICKS = (0.0001, 0.001, 0.01, 0.1, 1.0)
 Y_TICKS = (60, 70, 80, 90)
 SURFACE, INK, SECONDARY, MUTED, GRID = "#fcfcfb", "#0b0b0b", "#52514e", "#898781", "#e7e6e2"
 SERIES = {"published": "#2a78d6", "odin": "#eb6834"}
-LEGEND = {"published": "Published systems, as reported", "odin": "Odin, measured on a laptop GPU"}
+LEGEND = {"published": "Published systems, as reported", "odin": "Odin, measured here"}
 
 
 def odin_costs() -> dict:
@@ -34,7 +35,12 @@ def odin_costs() -> dict:
     embed_seconds = cascade["mean_units_in_snapshot"] / throughput
     stages = json.loads(PROTOCOL.read_text(encoding="utf-8"))["stages"]
     accuracy = 100 * stages["ltr-ce-notests"]["acc"]["function"]["acc@10"]
+    l40s = json.loads(CASCADE_L40S.read_text(encoding="utf-8"))
+    l40s_seconds = l40s["summary"]["total"]["mean_ms"] / 1000
+    l40s_price = published["gpu_price_l40s"]["dollars_per_hour"] / 3600
     return {
+        "l40s_seconds_per_issue": l40s_seconds,
+        "l40s_dollars_per_issue": l40s_seconds * l40s_price,
         "seconds_per_issue": seconds,
         "embed_seconds_per_repository": embed_seconds,
         "dollars_per_issue": seconds * dollars_per_second,
@@ -133,7 +139,24 @@ def render() -> str:
         f'stroke="{SERIES["odin"]}" stroke-width="2"/>'
     )
     parts.append(
-        point("odin", odin["dollars_per_issue"], odin["function_acc_at_10"], "Odin", "left", 0)
+        point(
+            "odin",
+            odin["dollars_per_issue"],
+            odin["function_acc_at_10"],
+            "Odin, laptop",
+            "left",
+            -14,
+        )
+    )
+    parts.append(
+        point(
+            "odin",
+            odin["l40s_dollars_per_issue"],
+            odin["function_acc_at_10"],
+            "Odin, L40S",
+            "right",
+            -14,
+        )
     )
     parts.append(
         point(
