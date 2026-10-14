@@ -172,6 +172,7 @@ test("sections that render after their data arrives still reveal on scroll", asy
 });
 
 test("asking for another repository mid-load cancels the first and loads the new one", async ({ page }) => {
+  await page.route(/odin-e2e\/missing/, (route) => route.fulfill({ status: 404, contentType: "application/json", body: "{}" }));
   // Slow the first repository's files down so the second request lands while it is loading.
   await page.route("https://raw.githubusercontent.com/odin-e2e/fixture/**", async (route) => {
     await new Promise((r) => setTimeout(r, 1500));
@@ -184,6 +185,7 @@ test("asking for another repository mid-load cancels the first and loads the new
 });
 
 test("pressing Enter on another repository mid-load switches to it", async ({ page }) => {
+  await page.route(/odin-e2e\/missing/, (route) => route.fulfill({ status: 404, contentType: "application/json", body: "{}" }));
   await page.route("https://raw.githubusercontent.com/odin-e2e/fixture/**", async (route) => {
     await new Promise((r) => setTimeout(r, 1500));
     await route.fallback();
@@ -193,7 +195,7 @@ test("pressing Enter on another repository mid-load switches to it", async ({ pa
   await page.fill("#repo-input", "odin-e2e/missing");
   await expect(page.getByRole("button", { name: "Load", exact: true })).toBeEnabled();
   await page.press("#repo-input", "Enter");
-  await expect(page.locator(".progress-text.error")).toBeVisible();
+  await expect(page.locator(".progress-text.error")).toContainText("Couldn't find");
   await expect(page.locator(".repo-summary")).toHaveCount(0);
 });
 

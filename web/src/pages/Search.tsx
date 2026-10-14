@@ -258,10 +258,16 @@ export function Search({ active, request }: { active: boolean; request: URLSearc
   const [query, setQueryText] = useState(request.get("q") ?? "");
   const [source, setSource] = useState<QuerySource>(request.get("q") != null ? "link" : "typed");
   const [issueUrl, setIssueUrl] = useState<string | null>(null);
+  const [issueNote, setIssueNote] = useState<{ text: string; url: string | null } | null>(null);
+  const issuePending = useRef(false);
   const setQuery = (text: string | ((q: string) => string), from: QuerySource = "typed", issue: string | null = null) => {
     setQueryText(text);
     setSource(from);
     setIssueUrl(issue);
+    if (from !== "link") {
+      issuePending.current = false;
+      setIssueNote(null);
+    }
   };
   const recorded = useRef<Set<string>>(new Set());
   const [semanticOn, setSemanticOn] = useState(true);
@@ -294,10 +300,22 @@ export function Search({ active, request }: { active: boolean; request: URLSearc
     } catch {
       return;
     }
+    const url = `https://github.com/${repo}/issues/${issue}`;
+    issuePending.current = true;
+    setIssueNote({ text: `Fetching issue #${issue} from GitHub…`, url: null });
     fetch(`https://api.github.com/repos/${repo}/issues/${issue}`)
-      .then((r) => (r.ok ? (r.json() as Promise<GitIssue>) : Promise.reject(new Error(`HTTP ${r.status}`))))
-      .then((i) => setQuery(`${i.title}\n\n${(i.body ?? "").slice(0, 1500)}`, "issue", i.html_url))
-      .catch(() => setQuery((q) => q || `#${issue}`, "link"));
+      .then((r) => (r.ok ? (r.json() as Promise<GitIssue>) : Promise.reject(new Error(String(r.status)))))
+      .then((i) => {
+        issuePending.current = false;
+        setQuery(`${i.title}\n\n${(i.body ?? "").slice(0, 1500)}`, "issue", i.html_url);
+      })
+      .catch((err: unknown) => {
+        const status = err instanceof Error ? err.message : "";
+        const why = status === "403" || status === "429" ? "GitHub's hourly limit for your network is used up"
+          : status === "404" ? "it doesn't exist or isn't public"
+          : "GitHub couldn't be reached";
+        setIssueNote({ text: `Couldn't fetch issue #${issue}: ${why}. Paste its text into the box above:`, url });
+      });
   };
 
   // A link, the home page or the GitHub bookmarklet asked for a repository, maybe with a query or
@@ -321,7 +339,7 @@ export function Search({ active, request }: { active: boolean; request: URLSearc
     const list = [info.repo, ...recent.filter((r) => r.toLowerCase() !== info.repo.toLowerCase())].slice(0, 6);
     setRecent(list);
     save("recentRepos", list);
-    if (!query && PRESETS[info.repo]) setQuery(PRESETS[info.repo][0], "preset");
+    if (!query && !issuePending.current && PRESETS[info.repo]) setQuery(PRESETS[info.repo][0], "preset");
   }, [info]);
 
   const session = useMemo(() => newSession(), [query, info?.repo]);
@@ -498,6 +516,12 @@ export function Search({ active, request }: { active: boolean; request: URLSearc
             <textarea ref={queryBox} id="demo-query" value={query} onInput={(e) => setQuery(e.currentTarget.value)}
               rows={Math.min(10, Math.max(3, query.split("\n").length))}
               placeholder="Paste an issue or a traceback, or describe what goes wrong… (press / to focus)" aria-label="Bug report" />
+            {issueNote && (
+              <p class="note issue-note" role="status">
+                {issueNote.text}
+                {issueNote.url && <> <a href={issueNote.url} target="_blank" rel="noopener">open the issue on GitHub ↗</a></>}
+              </p>
+            )}
             <div class="chips">
               {(PRESETS[info.repo] ?? []).map((ex) => <button key={ex} class="chip preset" type="button" title={ex} onClick={() => setQuery(ex, "preset")}>{ex}</button>)}
               {issues == null && <button class="chip accent" type="button" onClick={fetchIssues}>Use an open issue from {info.repo}</button>}
