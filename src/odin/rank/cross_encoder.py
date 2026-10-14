@@ -39,6 +39,15 @@ class CrossEncoderEnsemble:
         return out / len(self.members)
 
 
+def base_model_of(adapter: Path | None) -> str:
+    import json
+
+    config = Path(adapter) / "adapter_config.json" if adapter is not None else None
+    if config is not None and config.exists():
+        return json.loads(config.read_text(encoding="utf-8"))["base_model_name_or_path"]
+    return BASE_MODEL
+
+
 class CrossEncoder:
     """An LLM reranker that reads the issue and one candidate together and answers yes/no.
 
@@ -55,15 +64,18 @@ class CrossEncoder:
         max_query_tokens: int = 512,
         max_doc_tokens: int = 256,
         batch: int = 32,
+        base: str | None = None,
     ) -> None:
         import torch
         from transformers import AutoModelForCausalLM, AutoTokenizer
 
         self.torch = torch
         self.device = device
-        self.tok = AutoTokenizer.from_pretrained(BASE_MODEL)
+        base = base or base_model_of(adapter)
+        self.base = base
+        self.tok = AutoTokenizer.from_pretrained(base)
         dtype = torch.bfloat16 if device.startswith("cuda") else torch.float32
-        model = AutoModelForCausalLM.from_pretrained(BASE_MODEL, dtype=dtype).to(device)
+        model = AutoModelForCausalLM.from_pretrained(base, dtype=dtype).to(device)
         if adapter is not None:
             from peft import PeftModel
 

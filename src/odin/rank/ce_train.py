@@ -118,6 +118,7 @@ def train_cross_encoder(
     log: Callable[[str], None] = print,
     distill: float = 0.0,
     temperature: float = 1.0,
+    base: str | None = None,
 ) -> None:
     """LoRA fine-tuning with a listwise loss: gold vs its hardest negatives, same issue.
 
@@ -130,7 +131,7 @@ def train_cross_encoder(
 
     random.seed(seed)
     torch.manual_seed(seed)
-    ce = CrossEncoder()
+    ce = CrossEncoder(base=base)
     model = get_peft_model(
         ce.model,
         LoraConfig(

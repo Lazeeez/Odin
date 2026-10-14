@@ -18,6 +18,8 @@ results/*
 !results/dev-path/
 !results/validation-path/
 !results/more-data/
+!results/odin-max/
+results/odin-max/work/
 results/more-data/parts/
 !results/*_lite_test.json
 !results/browser_old_vs_new.json
