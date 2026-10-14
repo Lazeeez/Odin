@@ -290,11 +290,56 @@ def unseen_projects() -> int:
     return 0
 
 
+def retune_reranker() -> int:
+    from odin.rank.ce_tune import save_choice, tune_cross_encoder
+    from odin.rank.cross_encoder import CrossEncoderEnsemble
+    from odin.search.dense import SentenceEncoder
+    from odin.search.retriever import HybridRetriever
+
+    target = MODELS / "reranker.json"
+    if target.exists():
+        sys.exit(f"{target} exists; results are never overwritten")
+    in_lite = {g.instance_id for g in read_gold(GOLD / "swebench_lite_test.jsonl")}
+    gold = [g for g in read_gold(GOLD / "swebench_full_test.jsonl") if g.instance_id not in in_lite]
+    text = {i.instance_id: i.problem_statement for i in load_instances("full", "test")}
+    data = {
+        level: merge_training(RankingData.load(SWE_BENCH[level]), load_parts(level))
+        for level in LEVEL_SETTINGS
+    }
+    rounds = {
+        level: json.loads((MODELS / f"{name}.json").read_text(encoding="utf-8"))["rounds"]
+        for level, (_, name) in LEVEL_SETTINGS.items()
+    }
+    shipped = json.loads((MODEL_DIR / "reranker.json").read_text(encoding="utf-8"))
+    adapters = [Path(a) for a in shipped["adapters"]]
+    retriever = HybridRetriever(SentenceEncoder(), fusion=DEV_SELECTED_FUSION)
+    result = tune_cross_encoder(
+        retriever,
+        DEV_SELECTED_FUSION,
+        CrossEncoderEnsemble(adapters),
+        gold,
+        text,
+        data,
+        rounds=rounds,
+    )
+    retriever.close()
+    save_choice(result, target, adapters)
+    report = OUT / "reranker_choice.json"
+    report.write_text(
+        json.dumps(result | {"provenance": provenance()}, indent=1, default=list) + "\n",
+        encoding="utf-8",
+        newline="\n",
+    )
+    print("chosen", result["chosen_function"], result["chosen_file"], result["chosen_skip"])
+    return 0
+
+
 STEPS = {
     "features": build_features,
     "train": train_models,
     "unseen-projects": unseen_projects,
     "validation": validation_test,
+    "retune-reranker": retune_reranker,
 }
 
 

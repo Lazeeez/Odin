@@ -41,6 +41,7 @@ def tune_cross_encoder(
     queries: dict[str, str],
     data: dict[str, RankingData],
     progress: Callable[[int, int], None] | None = None,
+    rounds: dict[str, int] | None = None,
 ) -> dict:
     """Choose reranking depth and blend weights on validation issues the reranker never saw.
 
@@ -52,9 +53,11 @@ def tune_cross_encoder(
     val = validation_split([g.instance_id for g in gold if g.functions or g.classes])
     models = {}
     for level, (_, _, path) in LEVELS.items():
-        rounds = json.loads(path.with_suffix(".json").read_text(encoding="utf-8"))["rounds"]
+        n_rounds = (rounds or {}).get(level) or json.loads(
+            path.with_suffix(".json").read_text(encoding="utf-8")
+        )["rounds"]
         d = _without(data[level], val)
-        m = lgb.LGBMRanker(n_estimators=rounds, random_state=0, **LGBM_PARAMS)
+        m = lgb.LGBMRanker(n_estimators=n_rounds, random_state=0, **LGBM_PARAMS)
         m.fit(d.X, d.y, group=d.group)
         models[level] = m
     extractor = FeatureExtractor(retriever, fusion, memory=issue_memory(retriever))
