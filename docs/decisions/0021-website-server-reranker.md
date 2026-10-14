@@ -1,0 +1,53 @@
+# 0021: Does the fine-tuned reranker improve the website?
+
+## Status
+
+Proposed, 2026-10-15. The test and its decision rule were written before any candidate list was built. The outcome section is added after the test.
+
+## Context
+
+The website (allfather.dev) runs everything in the visitor's browser: Tree-sitter parsing, BM25, a static embedding model, LambdaMART rankers and a MiniLM rerank stage ([ADR 0011](0011-website-at-scale.md)). On the 30 projects it never trained on, the MiniLM stage adds nothing (function hit@10 0.7724 before and after it). The full pipeline's fine-tuned reranker (two LoRA adapters on Qwen3-Reranker-0.6B, [ADR 0007](0007-fine-tuned-cross-encoder.md)) is the strongest stage Odin has, but it does not fit in a browser:
+
+| In the browser, measured 2026-10-15 | Download | 20 candidates | 50 candidates |
+|---|---|---|---|
+| Intel integrated graphics, gen-12lp (what Chrome and Edge chose on a Windows laptop) | 433 MB (4-bit) | 57 s | 139 s |
+| RTX 4050 laptop GPU, 4-bit | 433 MB | 6.7 s | 15 s |
+| RTX 4050 laptop GPU, 8-bit | 653 MB | 10.2 s | 24.6 s |
+
+The 4-bit export also moves scores by up to 4 logits. (`scripts/export_browser_reranker.py`; onnxruntime-web 1.30, WebGPU.)
+
+The alternative is a small server that receives the issue and the website's top candidates (a few kilobytes), runs the reranker on a GPU and returns their scores; everything else stays in the browser, and the browser's own ranking is shown first and kept if the server does not answer. It would run on a free tier (Modal's monthly credits), so it costs nothing, but it adds a moving part to a site that has none. This test decides whether the gain is worth that.
+
+## The test
+
+### Data
+
+The SWE-rebench training issues of the 119 projects the website's rankers train on, with a function-level target. The reranker's adapters were trained on SWE-bench only, so none of these issues or projects was seen by the reranker. SWE-bench issues are excluded: the adapters trained on them.
+
+The website's scores for each issue are out of fold: the instant, semantic and rerank stages are cross-validated by project exactly as `scripts/browser_ltr.py` does when it trains the shipped rankers, so every issue is ranked by models that never saw its project.
+
+### Baseline and candidate
+
+- **Baseline:** the website's final order, as shipped (the rerank stage over the semantic stage's top 20, the semantic order below).
+- **Candidate:** the reranker ensemble as the full pipeline runs it (both adapters, bf16, z-scored and averaged), applied to the top K of the website's order and blended with it: `z(base) + w * z(reranker)` over those K, where `base` is minus the log of the website's rank (1-based, plus one). Below K the website's order is kept.
+- K is 20 or 50; w is one of 0.25, 0.5, 1, 2, 4 or the reranker alone.
+
+### Choosing K and w without fooling ourselves
+
+The 119 projects are split in two by a seeded random split. K and w are chosen on one half by function hit@10 and applied to the other, then the other way round. Every issue is scored with a setting chosen on projects it is not in, and the results are pooled.
+
+### Decision rule
+
+Fixed before looking:
+
+- **Build the server** if pooled function hit@10 improves by at least 2.0 points with p < 0.05 in a paired bootstrap. A smaller gain does not justify a server on a site that otherwise has none.
+- **Otherwise** the result is written up as a negative result, and the website's accuracy work moves to what runs in the browser.
+- Hit@1, hit@5, MRR, recall@10 and all@10, and each half's chosen setting, are reported and do not decide.
+
+### What is not touched
+
+Lite, the 30 unseen projects, the sealed holdout and the post-cutoff set are not evaluated. If the server is built, the website's final configuration is scored once on Lite and the 30 unseen projects, and those runs are logged in `results/test-evals.log`.
+
+### Where it runs
+
+The laptop builds the candidate lists (website order, unit texts and gold) into `results/website-rerank/work/`; PACE scores them with `scripts/odin_max.py score` and never sees a label at scoring time; the laptop computes every metric.

@@ -153,16 +153,16 @@ def eval_tasks() -> int:
     return 0
 
 
-def score_tasks(name: str, adapters: list[Path], base: str | None) -> int:
+def score_tasks(name: str, adapters: list[Path], base: str | None, tasks: Path) -> int:
     from odin.rank.cross_encoder import CrossEncoder
 
-    target = WORK / f"scores_{name}.jsonl"
+    target = tasks.parent / f"scores_{name}.jsonl"
     done = set()
     if target.exists():
         done = {json.loads(line)["qid"] for line in target.open(encoding="utf-8")}
     members = [CrossEncoder(adapter=a, base=base) for a in adapters] or [CrossEncoder(base=base)]
     with target.open("a", encoding="utf-8", newline="\n") as handle:
-        for n, line in enumerate((WORK / "eval_tasks.jsonl").open(encoding="utf-8"), start=1):
+        for n, line in enumerate(tasks.open(encoding="utf-8"), start=1):
             task = json.loads(line)
             if task["qid"] in done:
                 continue
@@ -244,13 +244,14 @@ def main() -> int:
     ap.add_argument("--base")
     ap.add_argument("--current", default="current")
     ap.add_argument("--candidate")
+    ap.add_argument("--tasks", type=Path, default=WORK / "eval_tasks.jsonl")
     args = ap.parse_args()
     if args.step == "train-data":
         return train_data()
     if args.step == "eval-tasks":
         return eval_tasks()
     if args.step == "score":
-        return score_tasks(args.name, args.adapter, args.base)
+        return score_tasks(args.name, args.adapter, args.base, args.tasks)
     return evaluate(args.current, args.candidate)
 
 
