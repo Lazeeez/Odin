@@ -38,6 +38,7 @@ bash cluster/submit.sh cluster/manifests/NAME.json     # prints the job id and t
 - The working tree must be clean. A run from uncommitted code is refused at import.
 - A job that is killed or times out is resubmitted with the same command. Finished issues are skipped; at most the issue in progress is lost.
 - A job copies the repository and the shared cache (git mirrors, embeddings, analysis cache) to the node's local disk before it starts, works there, and copies the cache back when it ends. On ICE the shared scratch is a network filesystem and the nodes have an 11 TB local disk at `/tmp`; set `ODIN_LOCAL_DISK=0` to work on scratch directly.
+- The analysis cache (a SQLite database) is not copied either way: each job builds its own on the node. A copy taken while a killed job was still writing it corrupted the shared one once, and rebuilding it costs a few minutes of parsing.
 - Raise a job's time limit with `WALL_HOURS=6 bash cluster/submit.sh ...`.
 - When the job ends, the run directory is copied from scratch to `$ODIN_RESULTS/NAME/`.
 

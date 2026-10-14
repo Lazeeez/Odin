@@ -8,12 +8,12 @@ nvidia-smi --query-gpu=name,memory.total --format=csv,noheader
 stamp "copying the repository and the cache to node-local disk at $WORK"
 mkdir -p "$WORK/.cache" "$OUT"
 rsync -a --exclude .cache --exclude .venv "$ROOT/" "$WORK/"
-rsync -a "$SHARED_CACHE/" "$WORK/.cache/"
+rsync -a --exclude "analysis.sqlite*" "$SHARED_CACHE/" "$WORK/.cache/"
 finish() {
   stamp "copying results and the cache back"
   rsync -a "$WORK/results/" "$OUT/results/"
   rsync -a "$WORK/models/" "$OUT/models/"
-  rsync -a "$WORK/.cache/" "$SHARED_CACHE/"
+  rsync -a --exclude "analysis.sqlite*" "$WORK/.cache/" "$SHARED_CACHE/"
   rm -rf "$WORK"
   stamp "results in $OUT"
 }

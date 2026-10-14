@@ -14,8 +14,8 @@ if [ "${ODIN_LOCAL_DISK:-1}" = "1" ] && [ -n "${SLURM_JOB_ID:-}" ]; then
   stamp "copying the repository and the cache to node-local disk at $WORK"
   mkdir -p "$WORK/.cache"
   rsync -a --exclude .cache --exclude .venv "$ROOT/" "$WORK/"
-  rsync -a "$SHARED_CACHE/" "$WORK/.cache/"
-  trap 'stamp "copying the cache back"; rsync -a "$WORK/.cache/" "$SHARED_CACHE/"; rm -rf "$WORK"' EXIT
+  rsync -a --exclude "analysis.sqlite*" "$SHARED_CACHE/" "$WORK/.cache/"
+  trap 'stamp "copying the cache back"; rsync -a --exclude "analysis.sqlite*" "$WORK/.cache/" "$SHARED_CACHE/"; rm -rf "$WORK"' EXIT
   stamp "copied: $(du -sh "$WORK/.cache" | cut -f1) of cache"
   cd "$WORK"
 else
