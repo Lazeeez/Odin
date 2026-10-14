@@ -6,9 +6,9 @@ import re
 from collections import Counter
 from collections.abc import Callable, Iterable, Sequence
 from concurrent.futures import ProcessPoolExecutor
-from multiprocessing import get_context
 from dataclasses import dataclass, field, replace
 from itertools import repeat
+from multiprocessing import get_context
 
 import numpy as np
 import scipy.sparse as sp
