@@ -8,7 +8,7 @@ Where Odin stands on SWE-bench Lite when it is scored the way other papers score
 - **Under CoSIL's protocol, odin-fast is ahead of CoSIL, Agentless and OrcaLoca** (each with a 32B model) on nine of ten numbers, and 2.3 points behind CoSIL on function Top-1.
 - **Under LocAgent's protocol, at file level Odin is behind both LocAgent and SweRank.** File Acc@1 is 69.0% against 77.7% and 83.2%.
 - **Odin's reranker is far smaller.** It has 0.6 billion parameters and runs on a 6 GB laptop GPU. SweRank's rerankers have 7 and 32 billion, and its best retriever 7 billion.
-- **Odin costs about a quarter of a cent per issue** on its laptop timings at a public GPU rental price, against one to two cents for SweRank's rerankers and 46 to 79 cents for the agents ([cost.md](cost.md)).
+- **Odin costs about two hundredths of a cent per issue on an L40S** (0.44 s per issue) at a public GPU rental price, and a quarter of a cent with its laptop timings, against one to two cents for SweRank's rerankers and 46 to 79 cents for the agents ([cost.md](cost.md)).
 - **Every other system's row is copied from its paper**, except SweRankEmbed-Small, which was reproduced here (74.8% function Acc@10 against the paper's 74.45%) and also run inside Odin's index, where it scores about 9 points lower. The cause is that Odin embeds functions without their file path; removing the path from the authors' own corpus costs the model the same 10 points.
 
 ## The protocol
@@ -120,7 +120,7 @@ SweRankEmbed-Small was run as the only retriever over Odin's own units, with tes
 | SweRank reranker | GPT-4.1 | $0.16 | reported, S5 |
 | SweRankLLM-Large | 32B | $0.015 | reported, S5 |
 | SweRankLLM-Small | 7B | $0.011 | reported, S5 |
-| Odin (odin-fast) | 0.5B + 0.6B | $0.0025, or $0.017 for the first issue on a repository | measured here: [cost.md](cost.md) |
+| Odin (odin-fast) | 0.5B + 0.6B | $0.0002 on an L40S; $0.0025 with the laptop's timings | measured here: [cost.md](cost.md) |
 
 L5 and S5 are Table 5 of each paper.
 
