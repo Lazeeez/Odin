@@ -6,6 +6,7 @@ import re
 from collections import Counter
 from collections.abc import Callable, Iterable, Sequence
 from concurrent.futures import ProcessPoolExecutor
+from multiprocessing import get_context
 from dataclasses import dataclass, field, replace
 from itertools import repeat
 
@@ -294,7 +295,7 @@ class SnapshotIndexer:
         if len(oids) >= _PARALLEL_MIN_BLOBS and self.workers > 1:
             # tree-sitter parsing holds the GIL, so fan out to processes, not threads.
             if self._pool is None:
-                self._pool = ProcessPoolExecutor(self.workers)
+                self._pool = ProcessPoolExecutor(self.workers, mp_context=get_context("spawn"))
             return list(
                 self._pool.map(
                     analyze_blob, sources, repeat(self.tokenizer), repeat(keep), chunksize=32
