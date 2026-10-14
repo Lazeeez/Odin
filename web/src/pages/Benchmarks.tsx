@@ -91,13 +91,15 @@ export function Benchmarks({ summary, lite, failed }: { summary: Summary | null;
           <p class="kicker">In your browser</p>
           <h2>On projects it has never seen</h2>
           <p class="card-lede">
-            The <a href={href("search")}>search page</a> runs a lighter pipeline on your device. Its rankers were trained on 120 other
+            The <a href={href("search")}>search page</a> runs a lighter pipeline on your device. Its rankers were trained on 131 other
             projects; these {lite.held_out.unseen.keyword.n} bugs come from 30 projects that were kept out of training entirely, the
             situation the search page is in every time you paste a new repository.
           </p>
           <BrowserComparison e={lite.held_out.unseen} depth={lite.depth} />
+          <p class="note">Share of bugs with a function the real fix changed in the top 10.</p>
           <h3 class="subhead">Finding the file</h3>
           <FileComparison e={lite.held_out.unseen} />
+          <p class="note">Share of bugs with a file the real fix changed in the top 5.</p>
         </section>
       )}
 

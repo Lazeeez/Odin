@@ -183,6 +183,20 @@ test("asking for another repository mid-load cancels the first and loads the new
   await expect(page.locator(".progress-text.error")).toContainText("Couldn't find");
 });
 
+test("pressing Enter on another repository mid-load switches to it", async ({ page }) => {
+  await page.route("https://raw.githubusercontent.com/odin-e2e/fixture/**", async (route) => {
+    await new Promise((r) => setTimeout(r, 1500));
+    await route.fallback();
+  });
+  await page.goto(`./#/search?repo=${encodeURIComponent(REPO)}`);
+  await expect(page.locator(".progress-text")).toBeVisible();
+  await page.fill("#repo-input", "odin-e2e/missing");
+  await expect(page.getByRole("button", { name: "Load", exact: true })).toBeEnabled();
+  await page.press("#repo-input", "Enter");
+  await expect(page.locator(".progress-text.error")).toBeVisible();
+  await expect(page.locator(".repo-summary")).toHaveCount(0);
+});
+
 test("the landing page shows a real example bug, with the fix marked", async ({ page }) => {
   await page.goto("./");
   await expect(page.locator(".preview-issue p")).not.toBeEmpty();

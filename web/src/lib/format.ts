@@ -1,4 +1,5 @@
 export const pct = (x: number): string => `${(100 * x).toFixed(1)}%`;
+export const duration = (ms: number): string => (ms < 1000 ? `${Math.max(1, Math.round(ms))} ms` : `${(ms / 1000).toFixed(1)} s`);
 export const fixed3 = (x: number): string => x.toFixed(3);
 export const metricLabel = (metric: string, x: number): string => (metric === "mrr" ? fixed3(x) : pct(x));
 

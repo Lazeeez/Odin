@@ -42,6 +42,7 @@ export interface WireFile {
   path: string;
   score: number;
   functions: WireHit[];
+  count: number;
 }
 
 /** Which ranker produced a result list: see web/src/engine/rank.ts. */

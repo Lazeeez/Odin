@@ -42,6 +42,10 @@ export function parseRepo(input: string): RepoRef {
   return { owner: m[1], name: m[2], ref: ref ? decodeURIComponent(ref) : null };
 }
 
+export function issueNumber(input: string): string | null {
+  return input.match(/(?:^|github\.com\/)[\w.-]+\/[\w.-]+\/(?:issues|pull)\/(\d+)/i)?.[1] ?? null;
+}
+
 /** A path or ref as URL segments: spaces, "#" and non-ASCII escaped, slashes kept. */
 export const encodePath = (p: string): string => p.split("/").map(encodeURIComponent).join("/");
 

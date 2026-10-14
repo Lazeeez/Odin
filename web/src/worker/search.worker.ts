@@ -240,7 +240,7 @@ const wire = (c: Pick<Candidate, "unit" | "score" | "bm25"> & Partial<Candidate>
   id: c.unit.id, path: c.unit.path, qualname: c.unit.qualname, kind: c.unit.kind, line: c.unit.line,
   text: c.unit.text, score: c.score, bm25: c.bm25, semantic: c.semantic ?? null, reasons: c.reasons ?? [],
 });
-const wireFile = (f: FileCandidate): WireFile => ({ path: f.path, score: f.score, functions: f.units.slice(0, 4).map(wire) });
+const wireFile = (f: FileCandidate): WireFile => ({ path: f.path, score: f.score, functions: f.units.slice(0, 4).map(wire), count: f.units.length });
 
 async function load(input: string, includeTests: boolean): Promise<void> {
   state.controller = new AbortController();

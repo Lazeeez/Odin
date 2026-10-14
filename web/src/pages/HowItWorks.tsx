@@ -10,7 +10,7 @@ import { href } from "../lib/router.ts";
 /** The browser's journey, each step in plain words first, then the detail for engineers. */
 const JOURNEY: [keyof typeof ICONS, string, string, string][] = [
   ["raven", "Fetch", "Odin's ravens fly to GitHub and bring back the project's Python files.",
-    "The file list comes from GitHub's API (one request), the files from GitHub's file server sixteen at a time, or the whole repository as one archive through an optional relay. jsDelivr stands in if GitHub's API is down."],
+    "The whole repository arrives as one archive through Odin's relay, which only passes GitHub's own download through. If the relay is down, the file list comes from GitHub's API and the files sixteen at a time; jsDelivr stands in if GitHub's API is down."],
   ["tree", "Read", "Every file is split into its functions, methods and classes.",
     "Tree-sitter, compiled to WebAssembly, parses on up to four threads, exactly like the Python engine. Big repositories are searchable while they are still loading."],
   ["ansuz", "Index", "A word index is built, so any word in the report can be looked up instantly.",
@@ -38,7 +38,7 @@ export function HowItWorks({ summary }: { summary: Summary | null }) {
       <section class="block reveal">
         <p class="kicker">In your browser</p>
         <h2>What happens when you press Search</h2>
-        <p class="section-lede">When you <a href={href("search")}>search a repository</a>, everything below runs in Web Workers in your tab; no server of ours is involved.</p>
+        <p class="section-lede">When you <a href={href("search")}>search a repository</a>, everything below runs in Web Workers in your tab. The only server of ours is the relay that passes the repository download through, and your bug report is never sent anywhere.</p>
         <ol class="journey">
           {JOURNEY.map(([icon, title, plain, detail], i) => (
             <li key={title} class="reveal" style={{ "--d": `${i * 0.08}s` }}>

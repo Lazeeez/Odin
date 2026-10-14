@@ -5,13 +5,14 @@ import { PageHero } from "../components/PageHero.tsx";
 import { RecentChange } from "../components/RecentChange.tsx";
 import { RuneProgress } from "../components/RuneProgress.tsx";
 import { Seg } from "../components/Seg.tsx";
-import { githubUrl, parseRepo } from "../engine/github.ts";
+import { githubUrl, issueNumber, parseRepo } from "../engine/github.ts";
 import { feedbackEnabled, newSession, type QuerySource, recordSearch, recordVote } from "../lib/feedback.ts";
 import { type Results, useSearchWorker } from "../hooks/useSearchWorker.ts";
 import { highlightPython, matchedTerms } from "../lib/highlight.ts";
 import { href, replaceHash } from "../lib/router.ts";
 import { useLazy } from "../lib/lazy.ts";
 import { load, save } from "../lib/storage.ts";
+import { duration } from "../lib/format.ts";
 import type { RankStage, RepoInfo, WireFile, WireHit } from "../worker/protocol.ts";
 
 const PRESETS: Record<string, string[]> = {
@@ -152,12 +153,13 @@ function HitRow({ hit, rank, info, terms, open, onToggle, rating }: {
 /** Files from the file ranker when the semantic stage ran; else grouped from the function list. */
 function FileRows({ hits, ranked, info }: { hits: WireHit[]; ranked?: WireFile[]; info: RepoInfo }) {
   const files = useMemo(() => {
-    if (ranked) return ranked.map((f) => ({ path: f.path, score: f.score, funcs: f.functions }));
-    const byPath = new Map<string, { path: string; score: number; funcs: WireHit[] }>();
+    if (ranked) return ranked.map((f) => ({ path: f.path, score: f.score, funcs: f.functions, count: f.count }));
+    const byPath = new Map<string, { path: string; score: number; funcs: WireHit[]; count: number }>();
     for (const h of hits) {
-      const f = byPath.get(h.path) ?? { path: h.path, score: -Infinity, funcs: [] };
+      const f = byPath.get(h.path) ?? { path: h.path, score: -Infinity, funcs: [], count: 0 };
       f.score = Math.max(f.score, h.score);
       f.funcs.push(h);
+      f.count++;
       byPath.set(h.path, f);
     }
     return [...byPath.values()].sort((a, b) => b.score - a.score).slice(0, 10);
@@ -170,7 +172,7 @@ function FileRows({ hits, ranked, info }: { hits: WireHit[]; ranked?: WireFile[]
             <span class="rank">{i + 1}</span>
             <span class="hit-main">
               <span class="qual">{f.path}</span>
-              <span class="path">{f.funcs.length ? `${f.funcs.length} candidate function${f.funcs.length > 1 ? "s" : ""}` : "named in the issue or close in meaning"}</span>
+              <span class="path">{f.count ? `${f.count} candidate function${f.count > 1 ? "s" : ""}` : "named in the issue or close in meaning"}</span>
             </span>
           </div>
           <div class="funcs">
@@ -219,8 +221,12 @@ function ResultList({ results, info, view, rating }: { results: Results; info: R
     else n.add(id);
     return n;
   });
+  const noWordMatched = results.hits.every((h) => h.bm25 <= 0);
   return (
     <>
+      {noWordMatched && (
+        <p class="note no-match">None of these words appear in the code, so these are only the functions closest in meaning. Try names from the code, an error message or a parameter.</p>
+      )}
       <ol class="hits" aria-live="polite" ref={list} onKeyDown={onKey}>
         {results.hits.slice(0, shown).map((h, i) => (
           <HitRow key={h.id} hit={h} rank={i + 1} info={info} terms={results.terms} open={openIds.has(h.id)} onToggle={() => toggle(h.id)} rating={rating} />
@@ -273,9 +279,25 @@ export function Search({ active, request }: { active: boolean; request: URLSearc
   const toResult = (path: string) =>
     document.querySelector(`.hits li[data-copy^="${CSS.escape(path)}:"]`)?.scrollIntoView({ behavior: "smooth", block: "center" });
 
+  const loadingInput = useRef<string | null>(null);
   const start = (input: string, tests = includeTests) => {
     setIssues(null);
+    loadingInput.current = input.trim().toLowerCase();
     w.load(input, tests);
+  };
+
+  const importIssue = (repoInputText: string, issue: string) => {
+    let repo: string;
+    try {
+      const r = parseRepo(repoInputText);
+      repo = `${r.owner}/${r.name}`;
+    } catch {
+      return;
+    }
+    fetch(`https://api.github.com/repos/${repo}/issues/${issue}`)
+      .then((r) => (r.ok ? (r.json() as Promise<GitIssue>) : Promise.reject(new Error(`HTTP ${r.status}`))))
+      .then((i) => setQuery(`${i.title}\n\n${(i.body ?? "").slice(0, 1500)}`, "issue", i.html_url))
+      .catch(() => setQuery((q) => q || `#${issue}`, "link"));
   };
 
   // A link, the home page or the GitHub bookmarklet asked for a repository, maybe with a query or
@@ -289,12 +311,8 @@ export function Search({ active, request }: { active: boolean; request: URLSearc
     setRepoInput(repo);
     if (request.get("q") != null) setQuery(request.get("q")!, "link");
     start(repo);
-    if (issue && /^\d+$/.test(issue)) {
-      fetch(`https://api.github.com/repos/${repo.replace(/^https?:\/\/github\.com\//, "").split("/").slice(0, 2).join("/")}/issues/${issue}`)
-        .then((r) => (r.ok ? (r.json() as Promise<GitIssue>) : Promise.reject(new Error(`HTTP ${r.status}`))))
-        .then((i) => setQuery(`${i.title}\n\n${(i.body ?? "").slice(0, 1500)}`, "issue", i.html_url))
-        .catch(() => setQuery((q) => q || `#${issue}`, "link"));
-    }
+    const fromLink = issue && /^\d+$/.test(issue) ? issue : issueNumber(repo);
+    if (fromLink) importIssue(repo, fromLink);
   }, [active, request]);
 
   // A repository finished loading: remember it and offer an example query.
@@ -348,15 +366,21 @@ export function Search({ active, request }: { active: boolean; request: URLSearc
   const submit = (e: Event) => {
     e.preventDefault();
     if (!repoInput.trim()) return;
+    const issue = issueNumber(repoInput);
+    if (w.loading && repoInput.trim().toLowerCase() === loadingInput.current) return;
     try {
       const r = parseRepo(repoInput);
       const same = info && `${r.owner}/${r.name}`.toLowerCase() === info.repo.toLowerCase() && !r.ref;
-      if (same && !w.loading) return queryBox.current?.focus();
+      if (same && !w.loading) {
+        if (issue) importIssue(repoInput, issue);
+        return queryBox.current?.focus();
+      }
     } catch {
       /* invalid input: the loader explains */
     }
     setQuery("");
     start(repoInput);
+    if (issue) importIssue(repoInput, issue);
   };
 
   const pick = (name: string) => {
@@ -408,7 +432,7 @@ export function Search({ active, request }: { active: boolean; request: URLSearc
         <div class="input-row">
           <input id="repo-input" type="text" value={repoInput} onInput={(e) => setRepoInput(e.currentTarget.value)}
             placeholder="owner/name or a GitHub link" autoComplete="off" spellcheck={false} />
-          <button class="btn primary" type="submit" disabled={w.loading || !repoInput.trim()}>{w.loading ? <><Seer size="sm" />Loading…</> : "Load"}</button>
+          <button class="btn primary" type="submit" disabled={!repoInput.trim()}>{w.loading && repoInput.trim().toLowerCase() === loadingInput.current ? <><Seer size="sm" />Loading…</> : "Load"}</button>
         </div>
         <div class="row-between">
           <div class="chips">
@@ -459,11 +483,11 @@ export function Search({ active, request }: { active: boolean; request: URLSearc
             {info.partial ? (
               <span class="note live">Still loading: searching the {info.partial.filesDone.toLocaleString()}{info.partial.filesTotal ? ` of ${info.partial.filesTotal.toLocaleString()}` : ""} files parsed so far. Results refresh when it finishes.</span>
             ) : (
-              <span class="muted">{info.fromCache ? "from your browser's cache" : `ready in ${(info.timings.loadMs / 1000).toFixed(1)} s`}</span>
+              <span class="muted">{info.fromCache ? "from your browser's cache" : `ready in ${duration(info.timings.loadMs)}`}</span>
             )}
             {!info.partial && w.semanticIndex && (
               <span class="muted" title="Every function embedded with a static code model, for search by meaning">
-                {w.semanticIndex.state === "building" ? <Seer size="sm" text="building the semantic index…" /> : w.semanticIndex.state === "ready" ? `· semantic index ready in ${(w.semanticIndex.ms / 1000).toFixed(1)} s` : "· semantic index unavailable"}
+                {w.semanticIndex.state === "building" ? <Seer size="sm" text="building the semantic index…" /> : w.semanticIndex.state === "ready" ? `· semantic index ready in ${duration(w.semanticIndex.ms)}` : "· semantic index unavailable"}
               </span>
             )}
             {info.notes.map((n) => <span class="note" key={n}>{n}</span>)}
@@ -475,7 +499,7 @@ export function Search({ active, request }: { active: boolean; request: URLSearc
               rows={Math.min(10, Math.max(3, query.split("\n").length))}
               placeholder="Paste an issue or a traceback, or describe what goes wrong… (press / to focus)" aria-label="Bug report" />
             <div class="chips">
-              {(PRESETS[info.repo] ?? []).map((ex) => <button key={ex} class="chip" type="button" onClick={() => setQuery(ex, "preset")}>{ex}</button>)}
+              {(PRESETS[info.repo] ?? []).map((ex) => <button key={ex} class="chip preset" type="button" title={ex} onClick={() => setQuery(ex, "preset")}>{ex}</button>)}
               {issues == null && <button class="chip accent" type="button" onClick={fetchIssues}>Use an open issue from {info.repo}</button>}
               {issues === "loading" && <span class="muted small">Fetching open issues…</span>}
               {typeof issues === "string" && issues !== "loading" && <span class="muted small">{issues}</span>}
@@ -490,9 +514,11 @@ export function Search({ active, request }: { active: boolean; request: URLSearc
                 <input type="checkbox" checked={semanticOn} onChange={(e) => setSemanticOn(e.currentTarget.checked)} />
                 <span class="track" aria-hidden="true" />Language-model rerank
               </label>
-              <button class={`link-btn push${showMap ? " on" : ""}`} type="button" aria-pressed={showMap} onClick={() => setShowMap(!showMap)}
-                title="The repository as a tree, with the results lit up">{showMap ? "Hide the map" : "Show the map"}</button>
-              <button class="link-btn" type="button" onClick={share}>{copied ? "Link copied ✓" : "Copy link"}</button>
+              <span class="toolbar-links push">
+                <button class={`link-btn${showMap ? " on" : ""}`} type="button" aria-pressed={showMap} onClick={() => setShowMap(!showMap)}
+                  title="The repository as a tree, with the results lit up">{showMap ? "Hide the map" : "Show the map"}</button>
+                <button class="link-btn" type="button" onClick={share}>{copied ? "Link copied ✓" : "Copy link"}</button>
+              </span>
             </div>
           </div>
 

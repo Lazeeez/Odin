@@ -8,6 +8,7 @@ import showcase from "../assets/showcase.json";
 import { useReveal } from "../lib/reveal.ts";
 import { load, save } from "../lib/storage.ts";
 import { href } from "../lib/router.ts";
+import { issueNumber } from "../engine/github.ts";
 import { fetchUsage, type Usage } from "../lib/feedback.ts";
 
 const EXAMPLES = ["pallets/flask", "psf/requests", "AtsushiSakai/PythonRobotics"];
@@ -33,7 +34,7 @@ function UsageLine() {
 function QuickStart() {
   const [repo, setRepo] = useState("");
   const go = (name: string) => {
-    location.hash = href("search", null, { repo: name.trim() });
+    location.hash = href("search", null, { repo: name.trim(), issue: issueNumber(name) ?? undefined });
   };
   return (
     <form class="quickstart" onSubmit={(e) => { e.preventDefault(); if (repo.trim()) go(repo); }}>
@@ -102,10 +103,10 @@ function Preview() {
 }
 
 const FEATURES: [keyof typeof ICONS, string, string][] = [
-  ["raven", "Any public Python repository", "One GitHub API call lists the tree; files stream in 16 at a time, or as a single tarball through an optional relay, and Tree-sitter (WebAssembly) splits them into functions on up to four worker threads."],
+  ["raven", "Any public Python repository", "The whole repository arrives as one archive, streamed and unpacked in the browser, and Tree-sitter (WebAssembly) splits it into functions on up to four worker threads. Without the relay, files come straight from GitHub, 16 at a time."],
   ["ansuz", "Reads bug reports like a developer", "Traceback frames, backticked identifiers, dotted module paths and error strings are extracted as separate signals, scored with BM25 over the issue, its title and its quoted code, then weighed by a LambdaMART ranker."],
   ["eye", "Sees meaning, not just words", "In the background a 16 MB int8 static code-embedding model (Model2Vec potion-code-16M) embeds every function at thousands per second; cosine similarity to the issue feeds a second ranker."],
-  ["shield", "Private by design", "No backend: parsing, indexing, embedding and ranking run in Web Workers. Repositories are cached in IndexedDB by git tree hash, and queries never leave the tab."],
+  ["shield", "Private by design", "Parsing, indexing, embedding and ranking run in Web Workers. Repositories are cached in IndexedDB by git tree hash, and your bug report never leaves the tab; only search counts and your 👍/👎 votes are recorded."],
 ];
 
 const STEPS: [string, string, string][] = [
