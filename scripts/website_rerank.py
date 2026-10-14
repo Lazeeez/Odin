@@ -53,6 +53,7 @@ def website_orders(train: list, snaps) -> list[list[str]]:
 def build_tasks() -> int:
     if TASKS.exists():
         sys.exit(f"{TASKS} exists")
+    sys.modules["__main__"].Item = bl.Item
     snaps = bl.Snapshots()
     parts = {name: bl.build(name, spec, snaps) for name, spec in bl.TRAIN.items()}
     train = parts["swe-bench"] + parts["rebench"]

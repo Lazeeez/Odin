@@ -1,0 +1,190 @@
+{
+ "settings_chosen_on_validation": {
+  "current": [
+   20,
+   2.0
+  ],
+  "max-4b-lora": [
+   20,
+   2.0
+  ]
+ },
+ "held-out fold": {
+  "issues": 608,
+  "current": {
+   "n": 608,
+   "mrr": 0.5998,
+   "recall@1": 0.2183,
+   "hit@1": 0.4918,
+   "all@1": 0.1447,
+   "recall@5": 0.4296,
+   "hit@5": 0.7401,
+   "all@5": 0.2812,
+   "recall@10": 0.5201,
+   "hit@10": 0.8141,
+   "all@10": 0.3438
+  },
+  "max-4b-lora": {
+   "n": 608,
+   "mrr": 0.6494,
+   "recall@1": 0.2618,
+   "hit@1": 0.5559,
+   "all@1": 0.1694,
+   "recall@5": 0.4669,
+   "hit@5": 0.7747,
+   "all@5": 0.3141,
+   "recall@10": 0.5377,
+   "hit@10": 0.8174,
+   "all@10": 0.3586
+  },
+  "paired": {
+   "recall@10": {
+    "delta": 0.0176,
+    "ci95": [
+     0.0032,
+     0.0321
+    ],
+    "p_value": 0.0176,
+    "wins": 87,
+    "losses": 44
+   },
+   "mrr": {
+    "delta": 0.0496,
+    "ci95": [
+     0.0275,
+     0.0712
+    ],
+    "p_value": 0.0,
+    "wins": 133,
+    "losses": 76
+   },
+   "hit@10": {
+    "delta": 0.0033,
+    "ci95": [
+     -0.0115,
+     0.0197
+    ],
+    "p_value": 0.7674,
+    "wins": 13,
+    "losses": 11
+   },
+   "all@10": {
+    "delta": 0.0148,
+    "ci95": [
+     -0.0033,
+     0.0345
+    ],
+    "p_value": 0.133,
+    "wins": 21,
+    "losses": 12
+   },
+   "recall@1": {
+    "delta": 0.0436,
+    "ci95": [
+     0.0234,
+     0.0644
+    ],
+    "p_value": 0.0,
+    "wins": 75,
+    "losses": 36
+   }
+  }
+ },
+ "validation": {
+  "issues": 250,
+  "current": {
+   "n": 250,
+   "mrr": 0.6167,
+   "recall@1": 0.3146,
+   "hit@1": 0.512,
+   "all@1": 0.228,
+   "recall@5": 0.589,
+   "hit@5": 0.764,
+   "all@5": 0.472,
+   "recall@10": 0.6725,
+   "hit@10": 0.84,
+   "all@10": 0.568
+  },
+  "max-4b-lora": {
+   "n": 250,
+   "mrr": 0.6643,
+   "recall@1": 0.3759,
+   "hit@1": 0.584,
+   "all@1": 0.284,
+   "recall@5": 0.6076,
+   "hit@5": 0.76,
+   "all@5": 0.496,
+   "recall@10": 0.6913,
+   "hit@10": 0.836,
+   "all@10": 0.588
+  },
+  "paired": {
+   "recall@10": {
+    "delta": 0.0188,
+    "ci95": [
+     -0.005,
+     0.0421
+    ],
+    "p_value": 0.1194,
+    "wins": 22,
+    "losses": 10
+   },
+   "mrr": {
+    "delta": 0.0476,
+    "ci95": [
+     0.0171,
+     0.0782
+    ],
+    "p_value": 0.0014,
+    "wins": 49,
+    "losses": 30
+   },
+   "hit@10": {
+    "delta": -0.004,
+    "ci95": [
+     -0.032,
+     0.024
+    ],
+    "p_value": 0.8834,
+    "wins": 6,
+    "losses": 7
+   },
+   "all@10": {
+    "delta": 0.02,
+    "ci95": [
+     -0.008,
+     0.048
+    ],
+    "p_value": 0.2024,
+    "wins": 9,
+    "losses": 4
+   },
+   "recall@1": {
+    "delta": 0.0613,
+    "ci95": [
+     0.0269,
+     0.098
+    ],
+    "p_value": 0.0008,
+    "wins": 26,
+    "losses": 8
+   }
+  }
+ },
+ "provenance": {
+  "timestamp": "2026-10-14T18:34:22+00:00",
+  "git_commit": "3cbd5b00cd65d1e54e8f6ad5f4bcbfa8ced54ffc",
+  "git_dirty": false,
+  "python": "3.11.16",
+  "platform": "Windows-10-10.0.26200-SP0",
+  "packages": {
+   "numpy": "2.4.6",
+   "scipy": "1.17.1",
+   "tree-sitter": "0.26.0",
+   "lightgbm": "4.7.0",
+   "torch": "2.14.0+cu130",
+   "sentence-transformers": "6.1.0"
+  },
+  "models": {}
+ }
+}

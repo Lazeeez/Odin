@@ -53,3 +53,30 @@ Added on 2026-10-15, before any training data for this test existed and before e
 ### Cost to report
 
 Training GPU-hours, the GPU, scoring time per issue at each depth, and the dollar cost per issue at the public price of that GPU, so the result can go on the accuracy-against-cost chart.
+
+## Outcome
+
+Measured 2026-10-15. Results: [lever1_max-4b-lora.json](../../results/odin-max/lever1_max-4b-lora.json), [lever1_max-4b-full.json](../../results/odin-max/lever1_max-4b-full.json), [lever1_lora_vs_full.json](../../results/odin-max/lever1_lora_vs_full.json). All three rerankers were scored on PACE H100s from the same candidate lists; the current one is the two shipped 0.6B adapters.
+
+**Both candidates pass the rule, and the 4B LoRA adapter is adopted for odin-max.**
+
+Held-out fold, 608 issues from projects no stage had seen, function level:
+
+| | recall@10 | MRR | hit@1 | hit@10 | all@10 |
+|---|---|---|---|---|---|
+| current (two 0.6B adapters) | 0.520 | 0.600 | 0.492 | 0.814 | 0.344 |
+| 4B LoRA | 0.538 | 0.649 | 0.556 | 0.817 | 0.359 |
+| 4B full fine-tuning | 0.542 | 0.641 | 0.548 | 0.824 | 0.364 |
+
+| Paired bootstrap, against current | recall@10 (decides) | MRR | recall@1 |
+|---|---|---|---|
+| 4B LoRA | +0.018, p = 0.018 | +0.050, p < 0.001 | +0.044, p < 0.001 |
+| 4B full fine-tuning | +0.022, p < 0.001 | +0.041, p < 0.001 | +0.034, p < 0.001 |
+
+Validation, 250 issues: neither is worse. LoRA: recall@10 +0.019 (p = 0.12), MRR +0.048 (p = 0.001). Full: recall@10 +0.014 (p = 0.14), MRR +0.056 (p < 0.001).
+
+- **Full fine-tuning against LoRA is not significant** on any metric (fold recall@10 +0.005, p = 0.30; MRR -0.009, p = 0.24), so by the rule LoRA is preferred: tens of megabytes to ship instead of 8 GB.
+- **Depth 50 was not chosen.** Validation chose depth 20 and weight 2.0 for every reranker, so the 17 misses the error analysis found between 21st and 50th are not reached by this lever.
+- **The gain is at the top of the list, not in the top 10.** First place improves by about six points; hit@10 does not move significantly. A larger reranker reorders what the ranker already found; it does not find more.
+- **Training cost:** 8,514 steps on one H100, about 58 minutes for LoRA and 48 for full fine-tuning (from the logged step rates). Per-issue scoring time was not measured separately in these jobs; it is measured with the cost benchmark before the result goes on the cost chart.
+- **Next**, by the rule, is the 8B base against the 4B LoRA. odin-max work is paused while the website is the priority (2026-10-15).
