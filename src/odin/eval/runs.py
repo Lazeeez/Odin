@@ -142,6 +142,18 @@ def execute(manifest_path: Path, out: Path, limit: int | None = None) -> dict:
     rankings = out / "rankings"
     todo = [i for i in instances if not (rankings / f"{i.instance_id}.json").exists()]
     started = time.perf_counter()
+    produced_by = {
+        "commit": code["git_commit"],
+        "slurm_job": os.environ.get("SLURM_JOB_ID", ""),
+        "started": datetime.now(UTC).isoformat(timespec="seconds"),
+    }
+    previous = read_json(out / "run.json")["invocations"] if (out / "run.json").exists() else []
+    opening = {"started": produced_by["started"], "finished": None, "provenance": code} | {
+        "manifest_sha256": sha256(kept),
+        "local": limit is not None,
+        "hardware": hardware(),
+    }
+    write_json(out / "run.json", {"invocations": [*previous, opening]})
     if todo:
         retriever = build_retriever(manifest["retriever"])
         level, top = manifest["level"], manifest["top_k"]
@@ -161,6 +173,7 @@ def execute(manifest_path: Path, out: Path, limit: int | None = None) -> dict:
                     "ranked": ranked,
                     "index_ms": round((t1 - t0) * 1000, 1),
                     "query_ms": round((t2 - t1) * 1000, 2),
+                    "produced_by": produced_by,
                 },
             )
         retriever.close()
@@ -169,14 +182,14 @@ def execute(manifest_path: Path, out: Path, limit: int | None = None) -> dict:
         "manifest_sha256": sha256(kept),
         "local": limit is not None,
         "issues": len(instances),
+        "started": produced_by["started"],
         "ranked_in_this_invocation": len(todo),
         "seconds_this_invocation": round(time.perf_counter() - started, 1),
         "finished": datetime.now(UTC).isoformat(timespec="seconds"),
         "hardware": hardware(),
         "provenance": code,
     }
-    invocations = read_json(out / "run.json")["invocations"] if (out / "run.json").exists() else []
-    write_json(out / "run.json", {"invocations": [*invocations, record]})
+    write_json(out / "run.json", {"invocations": [*previous, record]})
     seal(out)
     return record
 
