@@ -30,6 +30,7 @@ Function-level files score 291 of the 300 Lite issues: the 9 whose fix touches o
 | `comparison/locagent-lite_2026-10-13.json` | the stored rankings of four stages scored under the LocAgent protocol, with per-issue outcomes ([docs/comparison.md](../docs/comparison.md), `scripts/score_protocol.py`) |
 | `comparison/cosil-lite_2026-10-14.json` | the four stages scored under the CoSIL protocol |
 | `reproductions/swerank-embed-small_lite_2026-10-14.json` | SweRankEmbed-Small reproduced with its authors' corpora and evaluator: sources, settings, the check against their unmodified script, and the rankings |
+| `reproductions/swerank-embed-large_lite_2026-10-14.json`, `reproductions/swerank-llm-small_lite_2026-10-14.json`, `reproductions/swerank-llm-large_lite_2026-10-14.json` | SweRank's 7B retriever and its 7B and 32B rerankers reproduced on PACE with the authors' pipeline: sources, revisions, environment changes, hardware, and the top 100 for each of the 274 issues |
 | `runs/swerank-embed-small-lite-pace/result.json` | the same manifest run on a PACE L40S: identical metrics to the laptop run, the first check that the cluster pipeline gives the same answers |
 | `runs/NAME/result.json` | a manifest run, verified and scored by `odin import-run` ([ADR 0015](../docs/decisions/0015-manifest-runs.md)). `swerank-embed-small-lite` is SweRankEmbed-Small inside Odin's index |
 | `perf/unit_slots_2026-10-13.json` | unit slots and distinct unit texts over the evaluated snapshots (`benchmarks/count_unit_slots.py`) |
@@ -41,7 +42,7 @@ Each `*` stands for `_file_lite_test.json` and `_function_lite_test.json`.
 
 ## Test-set evaluations
 
-[test-evals.log](test-evals.log) lists every evaluation on a held-out test set, with the reason it was run and what was decided from it: 81 on SWE-bench Lite and 2 on the unseen-project set as of 2026-10-14. New evaluations append a line.
+[test-evals.log](test-evals.log) lists every evaluation on a held-out test set, with the reason it was run and what was decided from it: 84 on SWE-bench Lite and 2 on the unseen-project set as of 2026-10-14. New evaluations append a line.
 
 Thirteen files in this folder (`random`, `oracle`, the `bm25-*`, `dense-notests` and `hybrid-notests` rows) were written before provenance was recorded. They are kept, and each was run again on 2026-10-13 into `provenance/` with a provenance block; the README check reads the re-run where one exists.
 

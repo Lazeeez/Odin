@@ -36,8 +36,11 @@ LocAgent's, which SweRank reuses. Read from LocAgent's `evaluation/eval_metric.p
 | SweRankEmbed-Small | 137M | reproduced | 67.15 | 87.23 | 91.24 | 79.20 | 85.04 | 63.50 | 74.82 |
 | SweRankEmbed-Small | 137M | in Odin's index | 57.30 | 81.39 | 86.50 | 74.09 | 81.02 | 57.66 | 65.69 |
 | SweRankEmbed-Large | 7B | reported, S1 | 72.63 | 91.24 | 94.16 | 84.31 | 89.78 | 71.90 | 82.12 |
+| SweRankEmbed-Large | 7B | reproduced | 72.63 | 88.69 | 92.34 | 83.94 | 89.42 | 71.17 | 81.02 |
 | SweRankEmbed-Large + SweRankLLM-Small | 7B + 7B | reported, S1 | 78.10 | 92.34 | 94.53 | 89.05 | 92.70 | 79.56 | 86.13 |
+| SweRankEmbed-Large + SweRankLLM-Small | 7B + 7B | reproduced | 79.56 | 92.70 | 94.53 | 90.15 | 92.70 | 81.39 | 85.77 |
 | SweRankEmbed-Large + SweRankLLM-Large | 7B + 32B | reported, S1 | 83.21 | 94.89 | 95.99 | 90.88 | 93.43 | 81.39 | 88.69 |
+| SweRankEmbed-Large + SweRankLLM-Large | 7B + 32B | reproduced | 81.39 | 94.16 | 95.26 | 90.51 | 93.07 | 82.85 | 88.69 |
 | SweRankEmbed-Large + GPT-4.1 | 7B + API | reported, S1 | 82.12 | 95.62 | 97.08 | 93.07 | 93.43 | 81.75 | 87.96 |
 | Odin: code-aware BM25 | none | scored here | 46.72 | 67.52 | 74.45 | 58.39 | 64.96 | 41.24 | 51.46 |
 | Odin: + embeddings (hybrid) | 0.5B | scored here | 58.03 | 79.93 | 86.13 | 71.17 | 76.64 | 56.57 | 64.96 |
@@ -50,6 +53,7 @@ Sources:
 - **S1** is Table 1 of SweRank, [arXiv:2505.07849v1](https://arxiv.org/abs/2505.07849v1). Its rerankers run on SweRankEmbed-Large's candidates.
 - **Reproduced** means the authors' corpora, queries, labels and evaluator, run again here: [results/reproductions/swerank-embed-small_lite_2026-10-14.json](../results/reproductions/swerank-embed-small_lite_2026-10-14.json). One difference from their script is stated there: embeddings are cached across issues, which was checked against their unmodified script on 20 issues (the same seven numbers; 99.2% of the top-100 items in common).
 - **In Odin's index** means the published model run through Odin's chunker, index and harness as the only retriever ([ADR 0015](decisions/0015-manifest-runs.md)): run `swerank-embed-small-lite`, imported into `results/runs/` and scored into [results/comparison/locagent-lite_swerank-embed-small_2026-10-13.json](../results/comparison/locagent-lite_swerank-embed-small_2026-10-13.json).
+- **The larger SweRank models were reproduced on Georgia Tech's PACE cluster** (one H100 for the 7B models, one H200 for the 32B reranker) with the authors' code, data and evaluator: [results/reproductions/](../results/reproductions/). Every number is within 2.6 points of the paper, and function Acc@10 of the full SweRank system is exactly the paper's 88.69. The stated differences are two data-loading library versions, a retriever cache checked against the authors' script on 20 issues, and running the rerankers in one process on one GPU.
 - **Scored here** means Odin's committed rankings (`results/*_lite_test.json`) scored by `scripts/score_protocol.py` into [results/comparison/locagent-lite_2026-10-13.json](../results/comparison/locagent-lite_2026-10-13.json). The Odin rows exclude test files from the index, as every Odin row does.
 
 Reading the Odin rows:
@@ -133,7 +137,7 @@ L5 and S5 are Table 5 of each paper.
 
 ## Not done yet
 
-- **Only SweRank's 137M retriever has been reproduced.** Its 7B retriever and its 7B and 32B rerankers need the cluster.
+- **SweRank's four models are reproduced; no other system is.** The agents (LocAgent, OpenHands, SWE-agent and others) are reported numbers only.
 - **Other protocols.** Agentless and OrcaLoca also report match rates in their own papers, on their own subsets; only CoSIL's evaluation of them is implemented here.
 - **Loc-Bench**, the non-SWE-bench benchmark both papers also report on (560 issues), belongs to phase 5.
 - **A deeper Odin run** to replace the module lower bound.
