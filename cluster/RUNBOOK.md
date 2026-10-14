@@ -23,7 +23,7 @@ bash cluster/fetch.sh  cluster/manifests/NAME.json     # login node: models, dat
 bash cluster/submit.sh cluster/manifests/NAME.json     # prints the job id and the run directory
 ```
 
-- Compute nodes have no internet, so `fetch.sh` must finish before `submit.sh`.
+- `fetch.sh` must finish before `submit.sh`. Whether compute nodes can reach the internet differs by cluster; set `ODIN_OFFLINE=1` in `site.env` to force Hugging Face's offline mode in jobs. Some models' own loading code does not work in offline mode (SweRankEmbed-Small is one), so leave it at 0 where nodes have internet.
 - The working tree must be clean. A run from uncommitted code is refused at import.
 - A job that is killed or times out is resubmitted with the same command. Finished issues are skipped; at most the issue in progress is lost.
 - When the job ends, the run directory is copied from scratch to `$ODIN_RESULTS/NAME/`.

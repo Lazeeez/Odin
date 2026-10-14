@@ -1,6 +1,8 @@
 #!/bin/bash
 . "$SLURM_SUBMIT_DIR/cluster/common.sh" 2>/dev/null || . "$(dirname "$MANIFEST")/../common.sh"
-export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
+if [ "${ODIN_OFFLINE:-0}" = "1" ]; then
+  export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
+fi
 NAME="$(manifest_field "$MANIFEST" name)"
 ENV="$(job_env "$MANIFEST")"
 cd "$ROOT"
