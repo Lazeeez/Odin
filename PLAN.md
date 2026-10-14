@@ -102,6 +102,8 @@ Each lever is an ablation on top of the previous best, with a paired bootstrap a
 | 2026-10-14 | odin-fast is frozen and evaluated on the holdout only after the SweRank reproduction and the cheap phase 11 levers are decided on validation; the contamination study gets its own 73-issue post-cutoff set; a final holdout run may report its stages as pre-declared by-products ([ADR 0017](docs/decisions/0017-holdout-freeze-and-contamination-set.md)). |
 | 2026-10-14 | Path-aware embeddings are not adopted for odin-fast: +3.2 points of recall@10 for the hybrid retriever on dev (p = 0.001), but +1.4 for the full cascade on validation (p = 0.164) ([ADR 0018](docs/decisions/0018-file-path-in-embedded-text.md)). |
 | 2026-10-14 | odin-fast's rankers are trained on 120 more projects: +0.7 points of function recall@10 on held-out projects (p = 0.002), and the full cascade is not worse on validation ([ADR 0019](docs/decisions/0019-more-ranker-training-data.md)). |
+| 2026-10-14 | odin-max (phase 11) starts on PACE after the SweRank reproductions finish. Its first lever is a larger reranker (4B, then 8B) trained on more data, reranking the top 50. |
+| 2026-10-14 | CC-BY-NC components are acceptable for odin-max, so SweRank's models may be used as parts; odin-max is then non-commercial, as odin-fast already is through its embedding model. |
 | 2026-10-13 | Where a baseline reports results with an open model, it is reproduced on PACE with the same model in preference to quoting the paper. |
 
 ## Constraints
