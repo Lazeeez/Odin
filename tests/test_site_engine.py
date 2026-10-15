@@ -156,7 +156,7 @@ def _python_index(units):
     docs = [
         vocab.vectorize(
             code_counts(
-                f"{u['qualname']}\n{u['text']}\n{' '.join(re.split(r'[/._-]+', u['path'].removesuffix('.py')))}"
+                f"{u['qualname']}\n{u['text']}\n{' '.join(re.split(r'[/._-]+', _stem(u['path'])))}"
             )
         )
         for u in units
@@ -177,6 +177,12 @@ def _python_index(units):
     return fn, names, scores
 
 
+def _stem(path: str) -> str:
+    if path.endswith(".py") or "." not in path:
+        return path.removesuffix(".py")
+    return path.rsplit(".", 1)[0]
+
+
 def _src_units():
     return [
         {"path": str(p.relative_to(ROOT)).replace("\\", "/"), **u}
@@ -186,9 +192,39 @@ def _src_units():
     ]
 
 
+def _web_units():
+    return [
+        {"path": str(p.relative_to(ROOT)).replace("\\", "/"), **u}
+        for folder in ("web/src/engine", "web/src/worker")
+        for p in sorted((ROOT / folder).glob("*.ts"))
+        for u in python_units(p)
+        if u["text"].strip()
+    ]
+
+
+MULTI_QUERIES = [
+    "TypeError: Cannot read properties of undefined (reading 'units')\n"
+    "    at rankUnits (web/src/engine/rank.ts:180:12)\n"
+    "    at search (web/src/worker/search.worker.ts:331:18)",
+    "`blend` puts the GPU reranker's favourite below the browser's order in server.ts",
+    "the semantic index never finishes building for repositories with many files",
+    "`BM25.search` finds nothing once `pathText` in web/src/engine/tokenize.ts drops the extension"
+    " (engine/bm25 module)\n```\nconst kw = index.search(query, k);\nconst text = pathText(u.path);\n```",
+]
+
+
 @pytest.mark.skipif(NODE is None, reason="needs Node 24 and `npm ci` in web/")
 def test_js_rank_features_match_python():
     """Every ranking stage must see the same candidates, features and scores as training."""
+    _rank_parity(_src_units(), RANK_QUERIES, multilang=False)
+
+
+@pytest.mark.skipif(NODE is None, reason="needs Node 24 and `npm ci` in web/")
+def test_js_rank_features_match_python_for_other_languages():
+    _rank_parity(_web_units(), MULTI_QUERIES, multilang=True)
+
+
+def _rank_parity(units: list[dict], queries: list[str], multilang: bool) -> None:
     from collections import Counter
 
     import numpy as np
@@ -197,7 +233,6 @@ def test_js_rank_features_match_python():
     from odin.rank.features import issue_fields
     from odin.rank.mentions import Mentions
 
-    units = _src_units()
     trees = ROOT / "web/src/assets/ranker.json"
     model = json.loads(trees.read_text()) if trees.exists() else {}
     if "semantic" not in model:  # before the first training run: features only
@@ -212,13 +247,14 @@ def test_js_rank_features_match_python():
     assert model["file"]["features"] == FILE_FEATURES
     # Similarities are inputs here (the static encoder has its own test): any fixed values do.
     rng = np.random.default_rng(0)
-    sims = [rng.uniform(-0.2, 0.9, (2, len(units))).astype(np.float32) for _ in RANK_QUERIES]
+    sims = [rng.uniform(-0.2, 0.9, (2, len(units))).astype(np.float32) for _ in queries]
     out = subprocess.run(
         [NODE, str(ROOT / "tests/js/rank_features.mjs")],
         input=json.dumps(
             {
                 "units": units,
-                "queries": RANK_QUERIES,
+                "queries": queries,
+                "multilang": multilang,
                 "model": model,
                 "sims": [s.tolist() for s in sims],
             }
@@ -246,9 +282,9 @@ def test_js_rank_features_match_python():
         np.testing.assert_allclose([g[2] for g in got], want, rtol=1e-5, atol=1e-5)
 
     covered = Counter()
-    for q, sim, got in zip(RANK_QUERIES, sims, js, strict=True):
+    for q, sim, got in zip(queries, sims, js, strict=True):
         title, code = issue_fields(q)
-        m = Mentions.parse(q)
+        m = Mentions.parse(q, multilang=multilang)
         lex, tlex = scores(q), scores(title)
         clex = scores(code) if code else np.zeros(len(units))
         rows, X = extract(fn, lex, tlex, clex, m, names)

@@ -35,4 +35,7 @@ export function tokenize(text: string): string[] {
 }
 
 /** Path components as searchable words: django/db/models/query.py -> "django db models query". */
-export const pathText = (path: string): string => path.replace(/\.py$/, "").split(/[/._-]+/).join(" ");
+export const pathText = (path: string): string => {
+  const stem = path.endsWith(".py") || !path.includes(".") ? path.replace(/\.py$/, "") : path.slice(0, path.lastIndexOf("."));
+  return stem.split(/[/._-]+/).join(" ");
+};
