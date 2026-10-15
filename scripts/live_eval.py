@@ -33,6 +33,7 @@ MAX_PER_NIGHT = 80
 WINDOW_DAYS = 7
 ISSUE_CHARS = 1500
 KS = (1, 5, 10)
+HISTORY_NIGHTS = 120
 CLOSING = re.compile(
     r"\b(?:close[sd]?|fix(?:e[sd])?|resolve[sd]?)\s*:?\s+(?:(?:https://github\.com/)?([\w.-]+/[\w.-]+)(?:/issues/|#)|#)(\d+)",
     re.IGNORECASE,
@@ -323,6 +324,15 @@ def summary(publish: str | None) -> int:
         for line in path.open(encoding="utf-8")
     ]
     scored = [r for r in records if "top10" in r]
+    nights = []
+    for path in sorted(OUT.glob("20*.jsonl"))[-HISTORY_NIGHTS:]:
+        night = date.fromisoformat(path.stem)
+        since = (night - timedelta(days=30)).isoformat()
+        window = [
+            r for r in scored if since <= r["merged"] < (night + timedelta(days=1)).isoformat()
+        ]
+        tonight = sum(1 for line in path.open(encoding="utf-8") if '"top10"' in line)
+        nights.append({"date": path.stem, "scored": tonight, "last_30_days": summarize(window)})
     cutoff = (datetime.now(UTC) - timedelta(days=30)).isoformat()
     recent = [r for r in scored if r["merged"] >= cutoff]
     report = {
@@ -336,6 +346,7 @@ def summary(publish: str | None) -> int:
             lang: summarize([r for r in recent if r.get("language", "python") == lang])
             for lang in sorted({r.get("language", "python") for r in recent})
         },
+        "history": nights,
         "skipped": {k: sum(1 for r in records if (r.get("skipped") or "").split(":")[0] == k) for k in sorted({(r.get("skipped") or "").split(":")[0] for r in records if r.get("skipped")})},
     }  # fmt: skip
     (OUT / "summary.json").write_text(

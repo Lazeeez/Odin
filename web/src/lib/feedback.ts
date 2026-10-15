@@ -72,6 +72,8 @@ export interface LiveSummary {
   all_time: LiveWindow;
   all_time_trained_projects?: LiveWindow;
   all_time_new_projects?: LiveWindow;
+  last_30_days_by_language?: Record<string, LiveWindow>;
+  history?: { date: string; scored: number; last_30_days: LiveWindow }[];
 }
 
 export const LIVE_MIN_BUGS = 30;
