@@ -107,6 +107,7 @@ export async function touchRepo(key: string, bytes?: number): Promise<void> {
     for (const k of evict) {
       tx.objectStore("meta").delete(k);
       tx.objectStore("repos").delete(k.slice("repo|".length));
+      tx.objectStore("meta").delete(`notes|${k.slice("repo|".length)}`);
     }
     return () => undefined;
   });

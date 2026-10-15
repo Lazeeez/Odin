@@ -4,6 +4,7 @@ import { BM25, type TermCounts, unitCounts } from "./bm25.ts";
 import { chunkFile } from "./chunk.ts";
 import { untar } from "./tarball.ts";
 import { LoadError, type RepoRef, encodePath, githubApi, isTestPath, parseRepo } from "./github.ts";
+import { LanguageCensus } from "./languages.ts";
 import type { Unit } from "./types.ts";
 
 export { LoadError, githubUrl, isTestPath, parseRepo } from "./github.ts";
@@ -16,6 +17,8 @@ export interface RepoCache {
   /** A recent file listing of `ref`, so a reload costs no GitHub API request. */
   getListing?(ref: string): Promise<Listing | undefined>;
   putListing?(ref: string, listing: Listing): Promise<unknown>;
+  getNotes?(key: string): Promise<string[] | undefined>;
+  putNotes?(key: string, notes: string[]): Promise<unknown>;
 }
 
 export interface LoadedRepo {
@@ -203,6 +206,8 @@ async function fetchText(owner: string, name: string, branch: string, path: stri
  */
 export function selectFiles(listing: Pick<Listing, "files" | "scope">, includeTests: boolean, notes: string[]): Entry[] {
   const scope = listing.scope?.replace(/\/+$/, "");
+  const census = new LanguageCensus();
+  for (const f of listing.files) if (!scope || f.path.startsWith(`${scope}/`)) census.add(f.path);
   let py = listing.files.filter((f) => /\.py$/i.test(f.path) && !SKIP_DIR.test(f.path) && (!scope || f.path.startsWith(`${scope}/`)));
   const big = py.filter((f) => f.size > LIMITS.maxFileBytes).length;
   py = py.filter((f) => f.size <= LIMITS.maxFileBytes).sort((a, b) => (a.path < b.path ? -1 : a.path > b.path ? 1 : 0));
@@ -212,8 +217,10 @@ export function selectFiles(listing: Pick<Listing, "files" | "scope">, includeTe
     notes.push("This repository's Python code is all tests, so they're included.");
   }
   if (!files.length) {
-    throw new LoadError(scope ? `No Python files under ${scope}/.` : "No Python files found. Odin searches Python code only for now.");
+    throw new LoadError(scope ? `No Python files under ${scope}/.` : census.noPython());
   }
+  const languages = census.note();
+  if (languages) notes.push(languages);
   if (big) notes.push(`Skipped ${big} Python file${big > 1 ? "s" : ""} over 1 MB (usually generated code).`);
   const ordered = [...files.filter((f) => !SECONDARY.test(f.path)), ...files.filter((f) => SECONDARY.test(f.path))];
   const kept: Entry[] = [];
@@ -372,7 +379,11 @@ async function readArchive(
 
   const repo = `${owner}/${name}`;
   const folder = scope ? `${scope.replace(/\/+$/, "")}/` : "";
-  const wanted = (path: string) => /\.py$/i.test(path) && !SKIP_DIR.test(path) && path.startsWith(folder);
+  const census = new LanguageCensus();
+  const wanted = (path: string) => {
+    if (path.startsWith(folder)) census.add(path);
+    return /\.py$/i.test(path) && !SKIP_DIR.test(path) && path.startsWith(folder);
+  };
   const decoder = new TextDecoder();
   const parsed = new Map<string, Parsed>();
   const held: { path: string; text: string; size: number }[] = [];
@@ -470,7 +481,7 @@ async function readArchive(
     const index = new BM25(cached, { counts });
     return {
       repo, branch, scope, via: "archive", sha, files: new Set(cached.map((u) => u.path)).size, units: cached, index,
-      notes: [], fromCache: true, timings: { loadMs: loaded - started, indexMs: performance.now() - loaded },
+      notes: (key && (await cache?.getNotes?.(key))) || [], fromCache: true, timings: { loadMs: loaded - started, indexMs: performance.now() - loaded },
     };
   }
   if (!eligible) return null;
@@ -482,7 +493,12 @@ async function readArchive(
     notes.push(`Indexed ${kept.toLocaleString()} of ${eligible.toLocaleString()} Python files to stay within browser limits; docs, examples and vendored code went first.`);
   }
   if (unparsed) notes.push(`${unparsed} file${unparsed > 1 ? "s" : ""} could not be parsed.`);
-  if (key && cache) await cache.put(key, units);
+  const languages = census.note();
+  if (languages) notes.push(languages);
+  if (key && cache) {
+    await cache.put(key, units);
+    await cache.putNotes?.(key, notes);
+  }
   progress("Building the index", 0, 1);
   const loaded = performance.now();
   const index = new BM25(units, { counts });

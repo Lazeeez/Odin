@@ -139,6 +139,8 @@ const repoCache: RepoCache = {
     return hit && Date.now() - hit.at < LISTING_TTL_MS ? hit.listing : undefined;
   },
   putListing: (ref, listing) => idbPut("meta", `listing|${ref}`, { at: Date.now(), listing }),
+  getNotes: (key) => idbGet<string[]>("meta", `notes|${key}`),
+  putNotes: (key, notes) => idbPut("meta", `notes|${key}`, notes),
 };
 
 async function contentKey(text: string): Promise<string> {
