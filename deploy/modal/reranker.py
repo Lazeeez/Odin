@@ -70,10 +70,6 @@ class Reranker:
             m.score("warm the kernels", ["def a():\n    pass", "def b():\n    return 1"])
 
     @modal.fastapi_endpoint(method="POST", requires_proxy_auth=True)
-    def warm(self) -> dict:
-        return {"ready": True}
-
-    @modal.fastapi_endpoint(method="POST", requires_proxy_auth=True)
     def score(self, body: dict) -> dict:
         from fastapi import HTTPException
 

@@ -64,7 +64,8 @@ describe("GPU reranker proxy", () => {
         .fetch(new Request(`${SITE}/rerank/warm`, { method: "POST", headers: { "Sec-Fetch-Site": "same-origin" } }), env, ctx);
     expect((await warmUp({ ...ENV, RERANK_URL: "https://me--odin-reranker-reranker-score.modal.run" })).status).toBe(202);
     await Promise.all(waiting);
-    expect(calls.map((c) => c.url)).toEqual(["https://me--odin-reranker-reranker-warm.modal.run"]);
+    expect(calls.map((c) => c.url)).toEqual(["https://me--odin-reranker-reranker-score.modal.run"]);
+    expect(JSON.parse(calls[0].body)).toEqual({ query: "warm", texts: ["a", "b"] });
     expect(calls[0].headers.get("Modal-Key")).toBe("k");
     expect((await warmUp({ ...ENV, RERANK_URL: undefined })).status).toBe(501);
   });

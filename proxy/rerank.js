@@ -18,9 +18,10 @@ export async function warm(request, env, ctx) {
     const { success } = await env.LIMITER.limit({ key: `rw:${request.headers.get("CF-Connecting-IP") ?? "unknown"}` });
     if (!success) return reply({ error: "slow down" }, 429);
   }
-  const started = fetch(env.RERANK_URL.replace(/-score\.modal\.run/, "-warm.modal.run"), {
+  const started = fetch(env.RERANK_URL, {
     method: "POST",
-    headers: { "Modal-Key": env.MODAL_KEY, "Modal-Secret": env.MODAL_SECRET },
+    headers: { "content-type": "application/json", "Modal-Key": env.MODAL_KEY, "Modal-Secret": env.MODAL_SECRET },
+    body: JSON.stringify({ query: "warm", texts: ["a", "b"] }),
     signal: AbortSignal.timeout(TIMEOUT_MS),
   }).catch(() => null);
   if (ctx?.waitUntil) ctx.waitUntil(started);
