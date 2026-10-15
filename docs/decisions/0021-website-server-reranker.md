@@ -51,3 +51,30 @@ Lite, the 30 unseen projects, the sealed holdout and the post-cutoff set are not
 ### Where it runs
 
 The laptop builds the candidate lists (website order, unit texts and gold) into `results/website-rerank/work/`; PACE scores them with `scripts/odin_max.py score` and never sees a label at scoring time; the laptop computes every metric.
+
+## Outcome
+
+Measured 2026-10-15. Result: [server_reranker_current.json](../../results/website-rerank/server_reranker_current.json). PACE scored the candidate lists with the two shipped 0.6B adapters; the laptop computed every metric.
+
+**The rule is met: the server is built.**
+
+3,174 issues from 119 projects, every issue ranked with a setting chosen on the other half of the projects, function level:
+
+| | hit@1 | hit@5 | hit@10 | MRR | recall@10 | all@10 |
+|---|---|---|---|---|---|---|
+| website, as shipped | 0.443 | 0.708 | 0.793 | 0.557 | 0.503 | 0.328 |
+| website with the server reranker | 0.500 | 0.749 | 0.819 | 0.607 | 0.526 | 0.345 |
+
+| Paired bootstrap | delta | 95% CI | p | issues won / lost |
+|---|---|---|---|---|
+| hit@10 (decides) | +0.026 | [0.018, 0.034] | < 0.001 | 134 / 52 |
+| hit@1 | +0.057 | [0.044, 0.071] | < 0.001 | 351 / 169 |
+| MRR | +0.050 | [0.041, 0.058] | < 0.001 | 783 / 404 |
+| recall@10 | +0.023 | [0.017, 0.030] | < 0.001 | 499 / 294 |
+| all@10 | +0.017 | [0.009, 0.026] | < 0.001 | 118 / 63 |
+
+- **Both halves chose the same setting:** the top 50 of the website's order, blended with equal weight (K = 50, w = 1). It is the setting the server uses.
+- **The gain clears the 2-point bar, but the interval reaches below it** (lower bound 1.8 points). The rule asked for the point estimate and p, and both are met; the interval is reported so the margin is not overstated.
+- **The reranker alone is worse than the blend** (K = 50, reranker alone: hit@10 0.752 and 0.770 on the two choosing halves, against 0.814 and 0.824 blended): the website's order carries signal the reranker does not.
+- **The largest gain is at the top of the list:** first place improves by almost six points, as it did for odin-max ([ADR 0020](0020-odin-max-larger-reranker.md)).
+- **Next:** the server runs the two 0.6B adapters on Modal's free credits, scoring at most 50 candidates per search; the browser shows its own order first and keeps it if the server does not answer. Once built, the website's final configuration is scored once on Lite and the 30 unseen projects, and both runs are logged in `results/test-evals.log`.
