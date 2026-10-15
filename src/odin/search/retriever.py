@@ -63,6 +63,7 @@ class BM25Retriever:
         cache: RepoCache | None = None,
         name: str | None = None,
         analysis_cache: bool = True,
+        languages: frozenset[str] | None = None,
     ) -> None:
         self.name = name or f"bm25-{tokenizer}" + ("-notests" if exclude_tests else "")
         self.tokenize = TOKENIZERS[tokenizer]
@@ -80,6 +81,7 @@ class BM25Retriever:
             params or BM25Params(),
             exclude_tests=exclude_tests,
             disk=disk,
+            **({"languages": languages} if languages else {}),
         )
         self._commit: tuple[str, str] | None = None
         self._indexes: dict[str, SnapshotIndex] = {}

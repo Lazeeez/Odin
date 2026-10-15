@@ -59,6 +59,17 @@ LITE = Path("web/public/data/lite.json")  # the held-out numbers the site quotes
 TRAIN = {"swe-bench": ("full", "test", ["lite"]), "rebench": ("rebench", "train", [])}
 TEST = {"lite": ("lite", "test", []), "unseen": ("rebench", "test", [])}
 
+MULTILANG = False
+ALL_LANGUAGES = frozenset({"python", "javascript", "typescript", "tsx", "go", "java", "rust"})
+MULTILANG_SPLITS = {
+    "train": "multilang_train",
+    "multilingual": "multilang_test_multilingual",
+    "polybench": "multilang_test_polybench",
+}
+LANG_OF: dict[str, str] = {}
+LEARNED_MIN_GAIN = 0.02
+LIMIT = 0
+
 
 @dataclass
 class Item:
@@ -85,7 +96,9 @@ class Snapshots:
     """Repository snapshots with a static embedding of every unit (kept per repository)."""
 
     def __init__(self) -> None:
-        self.r = BM25Retriever(tokenizer="code", exclude_tests=True)
+        self.r = BM25Retriever(
+            tokenizer="code", exclude_tests=True, languages=ALL_LANGUAGES if MULTILANG else None
+        )
         self.static = StaticEncoder(STATIC_MODEL, STATIC_TOKENS, quantize=True)
         self._repo: str | None = None
         self._vecs: dict[bytes, np.ndarray] = {}
@@ -104,7 +117,9 @@ class Snapshots:
         }
         texts: dict[bytes, str] = {}
         for f in missing:
-            for c in chunk_file(self.r.indexer._reader.read(fn.oids[f]), ""):
+            for c in chunk_file(
+                self.r.indexer._reader.read(fn.oids[f]), fn.files[f] if MULTILANG else ""
+            ):
                 if c.kind != MODULE:
                     t = unit_text(c.qualname, c.text)
                     texts[unit_key(t)] = t
@@ -130,13 +145,40 @@ class Snapshots:
             fn.index.scores(vocab.lookup(tok(code))) if code else np.zeros(len(lex), np.float32)
         )
         qv, tv = self.static.encode([text, title])
-        return lex, title_lex, code_lex, M @ qv, M @ tv, Mentions.parse(text), title
+        return (
+            lex,
+            title_lex,
+            code_lex,
+            M @ qv,
+            M @ tv,
+            Mentions.parse(text, multilang=MULTILANG),
+            title,
+        )
 
     def close(self) -> None:
         self.r.close()
 
 
+def multilang_items(split: str) -> tuple[list, dict[str, str]]:
+    from odin.eval.ground_truth import read_gold
+
+    gold = read_gold(Path("data/gold") / f"{MULTILANG_SPLITS[split]}.jsonl")
+    queries = {}
+    for line in (Path(".cache/multilang") / f"{split}.jsonl").open(encoding="utf-8"):
+        r = json.loads(line)
+        queries[r["instance_id"]] = r["problem_statement"]
+        LANG_OF[r["instance_id"]] = r["language"]
+    return gold, queries
+
+
 def items_of(dataset: str, split: str, exclude: list[str]) -> list[Item]:
+    if dataset == "multilang":
+        gold, queries = multilang_items(split)
+        out = [
+            Item(g.instance_id, g.repo, g.base_commit, queries[g.instance_id], set(g.functions + g.classes), set(g.files))
+            for g in gold if (g.functions or g.classes) and g.instance_id in queries
+        ]  # fmt: skip
+        return sorted(out, key=lambda it: (it.repo, it.commit))
     gold, queries = _load_eval_set(
         argparse.Namespace(gold=None, dataset=dataset, split=split, repo=None, exclude=exclude)
     )
@@ -153,6 +195,13 @@ def build(name: str, spec: tuple, snaps: Snapshots) -> list[Item]:
     if path.exists():
         return pickle.loads(path.read_bytes())
     items, kept, t0 = items_of(*spec), [], time.time()
+    if LIMIT:
+        items = [
+            it
+            for repo in sorted({it.repo for it in items})[:LIMIT]
+            for it in items
+            if it.repo == repo
+        ][: 4 * LIMIT]
     snaps.r.warmup([Query(it.qid, it.repo, it.commit, "") for it in items])
     for n, it in enumerate(items, 1):
         try:
@@ -328,6 +377,58 @@ def reranked(it: Item, s_b: np.ndarray, s_c: np.ndarray) -> list[str]:
     return [u[int(it.sel[i])] for i in order(s_c)] + [u[i] for i in order(s_b) if i not in chosen]
 
 
+def baseline_order(it: Item) -> list[str]:
+    def z(v: np.ndarray) -> np.ndarray:
+        return (v - v.mean()) / v.std() if len(v) and v.std() > 0 else np.zeros_like(v)
+
+    x = it.xb
+    score = z(x[:, FEATURES.index("bm25_rel")].astype(np.float64)) + z(
+        x[:, (FEATURES + SEMANTIC).index("sem")].astype(np.float64)
+    )
+    u = unit_ids(it, it.rows_b)
+    return [u[i] for i in order(score)]
+
+
+def learned_order(it: Item, s_b: np.ndarray, s_c: np.ndarray | None) -> list[str]:
+    if s_c is not None and it.sel is not None and len(it.sel) and len(s_c) == len(it.sel):
+        return reranked(it, s_b, s_c)
+    u = unit_ids(it, it.rows_b)
+    return [u[i] for i in order(s_b)]
+
+
+def per_language(items: list[Item], s_b: list[np.ndarray], s_c: list[np.ndarray] | None) -> dict:
+    from odin.eval.metrics import metric_values, paired_bootstrap
+
+    by_lang: dict[str, list[int]] = {}
+    for i, it in enumerate(items):
+        if it.xb is None or not len(it.xb):
+            continue
+        by_lang.setdefault(LANG_OF.get(it.qid, "python"), []).append(i)
+    out = {}
+    for lang, idx in sorted(by_lang.items()):
+        learned = [
+            score(
+                learned_order(items[i], s_b[i], s_c[i] if s_c is not None else None)[:10],
+                sorted(items[i].targets),
+                [1, 5, 10],
+            )
+            for i in idx
+        ]
+        base = [
+            score(baseline_order(items[i])[:10], sorted(items[i].targets), [1, 5, 10]) for i in idx
+        ]
+        test = paired_bootstrap(metric_values(base, "hit@10"), metric_values(learned, "hit@10"))
+        out[lang] = {
+            "issues": len(idx),
+            "projects": len({items[i].repo for i in idx}),
+            "learned": aggregate(learned, [1, 5, 10]),
+            "keyword_and_meaning": aggregate(base, [1, 5, 10]),
+            "hit@10_gain": {"delta": test.delta, "ci95": list(test.ci95), "p": test.p_value},
+            "learned_ranker_used": bool(test.delta >= LEARNED_MIN_GAIN and test.p_value < 0.05),
+        }
+    return out
+
+
 def make_embedder():
     import torch
     from sentence_transformers import SentenceTransformer
@@ -405,6 +506,31 @@ def export(models: dict, meta: dict, samples: dict) -> None:
 
 
 def main() -> None:
+    global MULTILANG, CACHE, OUT, STATIC_OUT, LITE, LIMIT
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--multilang", action="store_true")
+    ap.add_argument("--limit", type=int, default=0)
+    args = ap.parse_args()
+    if args.multilang:
+        MULTILANG = True
+        CACHE = Path("results/browser_ltr_multilang")
+        OUT, STATIC_OUT, LITE = (
+            CACHE / "ranker.json",
+            CACHE / "static-model.bin",
+            CACHE / "lite.json",
+        )
+        TRAIN["multilang"] = ("multilang", "train", [])
+        TEST["multilingual"] = ("multilang", "multilingual", [])
+        TEST["polybench"] = ("multilang", "polybench", [])
+    if args.limit:
+        LIMIT = args.limit
+        CACHE = Path(f"results/browser_ltr_smoke_{LIMIT}")
+        OUT, STATIC_OUT, LITE = (
+            CACHE / "ranker.json",
+            CACHE / "static-model.bin",
+            CACHE / "lite.json",
+        )
+    CACHE.mkdir(parents=True, exist_ok=True)
     t_start = time.time()
     snaps = Snapshots()
     train = [it for name, spec in TRAIN.items() for it in build(name, spec, snaps)]
@@ -464,6 +590,13 @@ def main() -> None:
         f"  rerank stage {'ships' if ship_c else 'is left out'} (needs +{RERANK_MIN_GAIN:.3f} hit@10 over semantic)",
         flush=True,
     )
+    if MULTILANG:
+        report["cv_per_language"] = per_language(train, oof_b, per_c if ship_c else None)
+        for lang, r in report["cv_per_language"].items():
+            print(
+                f"  CV {lang:10} n={r['issues']:5} learned hit@10 {r['learned']['hit@10']:.3f} vs keyword+meaning {r['keyword_and_meaning']['hit@10']:.3f}  gain {r['hit@10_gain']['delta']:+.3f} p={r['hit@10_gain']['p']}  -> {'learned' if r['learned_ranker_used'] else 'simple'}",
+                flush=True,
+            )
 
     XF = [it.xf for it in train]
     YF = [np.array([p in it.files for p in it.fpaths], np.float32) for it in train]
@@ -533,6 +666,14 @@ def main() -> None:
             fg,
         )
         report["held_out"][name] = res
+        if MULTILANG:
+            s_c_held = [
+                model_c.predict(it.xc) if model_c is not None and len(it.sel) else None
+                for it in items
+            ]
+            report.setdefault("held_out_per_language", {})[name] = per_language(
+                items, s_b, s_c_held
+            )
         for k, v in res.items():
             print(f"{name:7} {k:20}: {fmt(v)}", flush=True)
     embed.save()
@@ -555,6 +696,8 @@ def main() -> None:
     meta = {
         "pool": POOL, "depth": DEPTH, "static": {"model": STATIC_MODEL, "maxTokens": STATIC_TOKENS}, "embedder": EMBEDDER,
         "trained_on": {k: f"{v[0]}:{v[1]}" for k, v in TRAIN.items()},
+        **({"multilang": True, "languages": sorted(ALL_LANGUAGES),
+            "simple_languages": sorted(lang for lang, r in report.get("cv_per_language", {}).items() if not r["learned_ranker_used"])} if MULTILANG else {}),
         "rounds": {"instant": rounds_a, "semantic": rounds_b, "rerank": rounds_c if ship_c else None, "file": rounds_f},
     }  # fmt: skip
     export(models, meta, samples)
