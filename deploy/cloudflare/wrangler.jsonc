@@ -1,6 +1,7 @@
 {
   "$schema": "https://unpkg.com/wrangler@4/config-schema.json",
   "name": "odin",
+  "account_id": "7809e14af83675fe17ca3ad540e5929e",
   "main": "../../proxy/cloudflare-worker.js",
   "compatibility_date": "2026-09-01",
   "assets": {
