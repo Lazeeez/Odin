@@ -337,6 +337,7 @@ async function search(id: number, query: string, semantic: boolean, server: bool
   // The rerank stage was trained on the semantic stage's candidates.
   if (!semantic || !model.rerank || !semanticStage || ranked.candidates.length < 2) return;
   const gpu = server && rerankServer ? askServer(id, query, ranked.candidates) : null;
+  if (gpu && SERVER.skipLanguageModel && ((await serverStage(id, gpu, stage, ranked.candidates, files, ranked.terms, k)) || id !== state.latest)) return;
   let final = ranked.candidates;
   let finalStage: Stage = stage;
   try {
@@ -370,7 +371,7 @@ async function search(id: number, query: string, semantic: boolean, server: bool
     if (err instanceof Superseded) return;
     post({ type: "semantic-error", id, message: err instanceof Error ? err.message : String(err) });
   }
-  if (gpu && id === state.latest) await serverStage(id, gpu, finalStage, final, files, ranked.terms, k);
+  if (gpu && !SERVER.skipLanguageModel && id === state.latest) await serverStage(id, gpu, finalStage, final, files, ranked.terms, k);
 }
 
 interface ServerJob {
@@ -397,20 +398,22 @@ function askServer(id: number, query: string, candidates: Candidate[]): ServerJo
   return job;
 }
 
-async function serverStage(id: number, job: ServerJob, stage: Stage, order: Candidate[], files: WireFile[] | undefined, terms: string[], k: number): Promise<void> {
+async function serverStage(id: number, job: ServerJob, stage: Stage, order: Candidate[], files: WireFile[] | undefined, terms: string[], k: number): Promise<boolean> {
   try {
     const byRow = await job.scores;
-    if (id !== state.latest) return;
+    if (id !== state.latest) return false;
     const head = order.slice(0, SERVER.depth);
-    if (!head.length || !head.every((c) => byRow.has(c.row))) return;
+    if (!head.length || !head.every((c) => byRow.has(c.row))) return false;
     const members = byRow.get(head[0].row)!.length;
     const scores = Array.from({ length: members }, (_, m) => head.map((c) => byRow.get(c.row)![m]));
     post({ type: "results", id, stage: "server", hits: explained(stage, blend(order, scores), k), files, terms, ms: performance.now() - job.sent });
+    return true;
   } catch (err) {
-    if (err instanceof Superseded || id !== state.latest || job.controller.signal.aborted) return;
+    if (err instanceof Superseded || id !== state.latest || job.controller.signal.aborted) return false;
     const permanent = err instanceof ServerUnavailable && err.permanent;
     if (permanent) rerankServer = null;
     post({ type: "server-error", id, message: err instanceof Error ? err.message : String(err), permanent });
+    return false;
   }
 }
 

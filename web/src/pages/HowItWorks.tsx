@@ -22,9 +22,9 @@ const JOURNEY: [keyof typeof ICONS, string, string, string][] = [
   ["eye", "Understand", "In the background, Odin learns what every function means, to find code the report never names.",
     "A static code-embedding model (16.8 MB, downloaded once) embeds every function in seconds; a second ranker adds how close each function is in meaning to the issue."],
   ["ansuz", "Reread", "The top 20 get a closer read, the way a developer would skim them.",
-    "A small language model (MiniLM: 45 MB on a GPU through WebGPU, 23 MB on the CPU, downloaded once) embeds the issue and the top 20 functions; a third ranker reorders them with that evidence. A file ranker orders whole files for the Files view."],
+    `A small language model (MiniLM: 45 MB on a GPU through WebGPU, 23 MB on the CPU, downloaded once) embeds the issue and the top 20 functions; a third ranker reorders them with that evidence. A file ranker orders whole files for the Files view.${GPU_RERANK ? " With the GPU reranker on, this step runs only if the server does not answer: the reranker does as well without it." : ""}`],
   ...(GPU_RERANK ? [["eye", "Judge", "Odin's own fine-tuned reranker reads the top 50 against the report, on a GPU server.",
-    "The full pipeline's reranker (two LoRA adapters on Qwen3-Reranker-0.6B, too large and too slow for a browser) scores the top 50 on a GPU; its scores are blended with the browser's order. On 3,174 bugs from 119 projects it lifts function hit@10 from 79.3% to 81.9%. It is optional, and the browser's ranking stays if the server does not answer."]] as typeof JOURNEY : []),
+    "The full pipeline's reranker (two LoRA adapters on Qwen3-Reranker-0.6B, too large and too slow for a browser) scores the top 50 on a GPU; its scores are blended with the browser's order, without waiting for the language model above. On 3,174 bugs from 119 projects it lifts function hit@10 from 79.3% to 81.9%. It is optional, and the browser's ranking stays if the server does not answer."]] as typeof JOURNEY : []),
   ["raven", "Remember", "The next visit to the same repository is instant.",
     "Parsed repositories are cached by git tree hash in IndexedDB. Everything runs in background threads, so the page never freezes."],
 ];

@@ -1,4 +1,4 @@
-export const SERVER = { depth: 50, weight: 1, maxChars: 8000, timeoutMs: 90_000, settleMs: 800 } as const;
+export const SERVER = { depth: 50, weight: 1, maxChars: 8000, timeoutMs: 90_000, settleMs: 500, skipLanguageModel: true } as const;
 
 export class ServerUnavailable extends Error {
   readonly permanent: boolean;
