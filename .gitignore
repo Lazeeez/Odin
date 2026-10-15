@@ -19,6 +19,8 @@ results/*
 !results/validation-path/
 !results/more-data/
 !results/odin-max/
+!results/live/
+!results/website-rerank/
 results/odin-max/work/
 results/browser-reranker/work/
 results/website-rerank/work/
