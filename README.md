@@ -7,7 +7,7 @@ The question this project answers: **given a bug report, can we find the code th
 It ships two ways:
 
 - **A research pipeline** (`src/odin`, Python): the full cascade on a GPU, evaluated on SWE-bench Lite.
-- **A website that runs entirely in the browser**, on any public Python repository: **[allfather.dev](https://allfather.dev/)**. Paste a repository and a bug report; parsing, indexing, embedding and ranking happen on your device.
+- **A website** for any public repository in Python, JavaScript, TypeScript, Go, Java or Rust: **[allfather.dev](https://allfather.dev/)**. Paste a repository and a bug report; parsing, indexing, embedding and ranking happen on your device, and an optional GPU server re-reads the top 50 with the research pipeline's fine-tuned reranker.
 
 ## Headline results
 
@@ -43,7 +43,7 @@ The full cascade takes 0.44 seconds per issue on an NVIDIA L40S (median 0.40), a
 
 ### In the browser, on projects it never saw
 
-The website runs a lighter pipeline (no GPU, no git history) with rankers trained on 7,845 issues from 192 projects: 5,115 Python issues from 131 projects, and 2,730 from 61 projects in JavaScript, TypeScript, Go, Java and Rust ([ADR 0025](docs/decisions/0025-more-languages.md)). It is scored on 30 projects kept out of training entirely, the situation of every repository a visitor pastes: 747 bugs, the 785 sampled minus the 38 with no function or class target ([ADR 0011](docs/decisions/0011-website-at-scale.md)):
+The website runs a lighter pipeline in the browser (no git history) with rankers trained on 7,845 issues from 192 projects: 5,115 Python issues from 131 projects, and 2,730 from 61 projects in JavaScript, TypeScript, Go, Java and Rust ([ADR 0025](docs/decisions/0025-more-languages.md)). It is scored on 30 projects kept out of training entirely, the situation of every repository a visitor pastes: 747 bugs, the 785 sampled minus the 38 with no function or class target ([ADR 0011](docs/decisions/0011-website-at-scale.md)):
 
 | In-browser stage | hit@1 | hit@10 | MRR |
 |---|---|---|---|
@@ -54,6 +54,14 @@ The website runs a lighter pipeline (no GPU, no git history) with rankers traine
 | **file ranker** (the file that must change) | 68.3% | **94.2%** | 0.775 |
 
 Against the Python-only ranker these replace (77.2% function hit@10 after either stage, 94.4% for files), adding five languages moved Python by under a point; that ranker's per-issue results were not kept, so the change is not tested for significance. On SWE-bench Lite (291 issues) the browser pipeline reaches 69.1% function hit@10 against the GPU pipeline's 79.4%.
+
+### The website's GPU reranker
+
+The site can send the bug report and its top 50 functions to a GPU server (Modal), where the research pipeline's fine-tuned reranker (two LoRA adapters on Qwen3-Reranker-0.6B) scores them, and blend the scores into the browser's order. Measured before it was built, out of fold on 3,174 bugs from 119 projects the reranker never trained on ([ADR 0021](docs/decisions/0021-website-server-reranker.md)): function hit@10 79.3% → 81.9% (+2.6 points, 95% interval [1.8, 3.4], p < 0.001) and hit@1 44.3% → 50.0%. With it, the browser's own language model adds nothing measurable (hit@10 81.9% with it, 81.7% without, p = 0.30), so the site skips that 50 MB download whenever the GPU answers ([ADR 0026](docs/decisions/0026-skip-browser-language-model.md)). Scoring this configuration once on Lite and the 30 unseen projects is the last step of ADR 0021 and has not run yet.
+
+### Live, on bugs fixed this week
+
+A nightly job collects bugs that popular Python projects fixed in the past week, runs the website's pipeline at the commit before each fix, and scores where the changed function ranked ([ADR 0023](docs/decisions/0023-live-accuracy.md), [results/live/](results/live/)). The first night, 2026-10-15, with the Python-only ranker: 80 bugs from 13 projects, function hit@10 66.3% [56.3, 76.3], file hit@10 90.0%. The job is paused until the repository's GitHub Actions minutes renew.
 
 ### In the browser, in other languages
 
@@ -209,7 +217,7 @@ flowchart LR
     D --> E[ranked functions and files]
 ```
 
-The same cascade in the browser, with no server of its own:
+The same cascade in the browser, with an optional GPU stage:
 
 ```mermaid
 flowchart LR
@@ -220,7 +228,8 @@ flowchart LR
     PT --> SE["static embeddings<br/>every function, int8"]
     BM --> L1["LambdaMART, instant<br/>33 features"]
     SE --> L2["LambdaMART, semantic<br/>+7 features"]
-    L1 --> L2 --> RR["MiniLM rerank<br/>top 20, WebGPU or WASM"]
+    L1 --> L2 --> GPU["fine-tuned reranker<br/>top 50, GPU server (Modal)"]
+    L2 -.->|"GPU off or no answer"| RR["MiniLM rerank<br/>top 20, WebGPU or WASM"]
     L2 --> FR[file ranker]
     PT --> IDB[(IndexedDB: parsed repos<br/>by tree hash, vectors by content)]
 ```
@@ -233,8 +242,8 @@ flowchart LR
 | Layer | Tools |
 |---|---|
 | Research pipeline | Python 3.11+, uv, Tree-sitter, NumPy/SciPy (sparse BM25), PyTorch + sentence-transformers (jina-code embeddings), LightGBM (LambdaMART), Hugging Face PEFT/LoRA on Qwen3 (cross-encoder), SQLite (analysis cache), git (blobless mirrors, `cat-file --batch`) |
-| Website | TypeScript (strict), Preact, Vite, Web Workers, Tree-sitter compiled to WebAssembly, Model2Vec static embeddings (int8), Transformers.js + ONNX Runtime (MiniLM on WebGPU or WASM), IndexedDB, a service worker (COOP/COEP isolation, offline cache) |
-| Hosting | One Cloudflare Worker at allfather.dev: static files plus a relay for repository archives at `/relay` (`deploy/cloudflare/`, `proxy/`) |
+| Website | TypeScript (strict), Preact, Vite, Web Workers, Tree-sitter compiled to WebAssembly (six languages), Model2Vec static embeddings (int8), Transformers.js + ONNX Runtime (MiniLM on WebGPU or WASM, the fallback), IndexedDB, a service worker (COOP/COEP isolation, offline cache) |
+| Hosting | One Cloudflare Worker at allfather.dev (`deploy/cloudflare/`, `proxy/`): static files, a relay for repository archives (`/relay`), a GitHub API proxy with a token and an edge cache (`/gh`), search counts and votes in D1 (`/api`), and the GPU reranker's front door (`/rerank`), which checks, rate-limits and caches requests to a Modal endpoint (`deploy/modal/reranker.py`) |
 | Quality | pytest, Vitest, Playwright end-to-end tests (desktop and phone), a Python/TypeScript parity suite, ruff, GitHub Actions CI, axe accessibility checks |
 | Data | SWE-bench (Lite, Verified, full), SWE-rebench (CC-BY-4.0) for 150 more projects |
 
@@ -301,9 +310,9 @@ Retrievers: `random`, `oracle`, `bm25-naive`, `bm25-code`, `bm25-code-notests`, 
 
 ## Website
 
-`web/` is the product site: **TypeScript + Vite + Preact**, deployed to [allfather.dev](https://allfather.dev/) as a Cloudflare Worker with static assets ([docs/deploy.md](docs/deploy.md)). Everything runs in the visitor's browser; there is no server. Pages are hash routes, so any static host works: Home, `#/search`, `#/how-it-works`, `#/benchmarks` and `#/explore/<issue>`; older `?repo=` and `#issue=` links redirect.
+`web/` is the product site: **TypeScript + Vite + Preact**, deployed to [allfather.dev](https://allfather.dev/) as a Cloudflare Worker with static assets ([docs/deploy.md](docs/deploy.md)). Searching runs in the visitor's browser; the only work done elsewhere is the optional GPU reranker. Pages are hash routes, so any static host works: Home, `#/search`, `#/how-it-works`, `#/benchmarks` and `#/explore/<issue>`; older `?repo=` and `#issue=` links redirect.
 
-- **Search any public Python repository.** It accepts `owner/name`, https or ssh URLs, and links to a branch, a folder (the search is then limited to it), a file, an issue or a pull request. Over the browser budget (6,000 files, 60 MB) it keeps the project's own code and drops docs, examples and vendored code first; committed virtualenvs are skipped. A Web Worker lists the repository through GitHub's API and downloads its Python files (or one `.tar.gz` through an optional CORS relay, `proxy/`), parser threads split them into functions with Tree-sitter compiled to WebAssembly, and a code-aware BM25 index is built. Large repositories are searchable while they load. A learned ranker (LambdaMART, exported as JSON trees) orders candidates using what the issue names: traceback frames, quoted identifiers, module paths and title matches. In the background, a static code-embedding model (Model2Vec potion-code-16M, int8, 16.8 MB) embeds every function in seconds, a second ranker adds meaning to the evidence, and a small language model (MiniLM, WebGPU or WebAssembly) reranks the top 20. A file ranker orders whole files. Parsed repositories are cached in IndexedDB by git tree hash, embeddings by content hash; the main thread never blocks.
+- **Search any public repository in Python, JavaScript, TypeScript, Go, Java or Rust.** It accepts `owner/name`, https or ssh URLs, and links to a branch, a folder (the search is then limited to it), a file, an issue or a pull request. Over the browser budget (6,000 files, 60 MB) it keeps the project's own code and drops docs, examples and vendored code first; committed virtualenvs are skipped. A Web Worker lists the repository through GitHub's API and downloads its source files (or one `.tar.gz` through an optional CORS relay, `proxy/`), parser threads split them into functions with Tree-sitter compiled to WebAssembly, and a code-aware BM25 index is built. Large repositories are searchable while they load. A learned ranker (LambdaMART, exported as JSON trees) orders candidates using what the issue names: traceback frames, quoted identifiers, module paths and title matches. In the background, a static code-embedding model (Model2Vec potion-code-16M, int8, 16.8 MB) embeds every function in seconds, a second ranker adds meaning to the evidence, and the fine-tuned reranker on a GPU server re-reads the top 50; when it is off or does not answer, a small language model in the browser (MiniLM, WebGPU or WebAssembly) reranks the top 20 instead. A file ranker orders whole files. Parsed repositories are cached in IndexedDB by git tree hash, embeddings by content hash; the main thread never blocks.
 - **Measured on projects it never saw.** `scripts/browser_ltr.py` trains the browser's rankers on 7,845 issues from 192 projects (SWE-bench minus Lite, 120 projects sampled from SWE-rebench, and 61 projects in five other languages from Multi-SWE-RL), choosing settings by project-grouped cross-validation, then scores this exact pipeline once on held-out data. On 747 bugs from 30 projects kept out of training entirely, a function the fix changed is in the top 10 for 77.0% (hit@10; keyword search alone 66.0%), and the file ranker finds the file in the top 10 for 94.2%. A parity test runs the TypeScript features, tokenizer and embeddings against the Python ones, value for value. See [ADR 0011](docs/decisions/0011-website-at-scale.md).
 - **Replayed results of the full pipeline.** Stage-by-stage metrics with confidence intervals, significance tests, per-project tables, and an explorer that tells each of the 300 Lite issues as a story: the report, the answer key, and where every stage ranked the fix. Explorer views are deep-linkable (`#/explore/django__django-11019`); *Beat Odin* (`#/explore?mode=game`) lets visitors guess the fixed file against Odin's pick.
 - **UX.** Real open issues from the loaded repository as one-click queries; "Why #1?" bars showing what each kind of evidence added to a result's score; when a result's file last changed; a map of the repository with the results lit; an "Odin this" bookmarklet that opens any GitHub issue in Odin; a command palette (Ctrl+K); Functions/Files views, syntax-highlighted code, shareable `#/search?repo=&q=` links, cancel, recent repositories, `/` to focus, and a light/dark toggle (light by default).
@@ -316,7 +325,7 @@ npm test && npm run typecheck          # Vitest + strict TypeScript
 uv run python scripts/export_site.py   # refresh web/public/data/ from results/*.json
 ```
 
-The page is 38 KB of JavaScript and 13 KB of CSS (gzipped); the map, the game and the command palette are separate 1–2 KB chunks loaded on first use. Searching adds the workers, 150 KB (gzipped) of parser WebAssembly, the 276 KB ranker and the 16.8 MB static embedding model, each fetched once and cached. The rerank model's runtime comes from jsDelivr's CDN on first use. `npm run e2e` runs the Playwright suite against a built preview.
+The page is 41 KB of JavaScript and 13 KB of CSS (gzipped); the map, the game and the command palette are separate 1–2 KB chunks loaded on first use. Searching adds the workers, about 140 KB (gzipped) of parser WebAssembly for Python and 36 to 132 KB for each other language a repository contains, the ranker (387 KB gzipped) and the 16.8 MB static embedding model, each fetched once and cached. The browser's language model, needed only when the GPU reranker is off or does not answer, comes from Hugging Face, its runtime from unpkg. `npm run e2e` runs the Playwright suite against a built preview.
 
 **Archive relay.** `proxy/cloudflare-worker.js` passes GitHub's repository archives through, so a repository downloads as one `.tar.gz` instead of one request per file: Django is ready in 3.5 s instead of 13.8 s, transformers in 5.8 s instead of about a minute. It runs in the same Worker as the site, at `/relay` on the same origin, and answers only the site's own pages. With the relay on, the file list and the commit also come from the archive, so loading makes no call to GitHub's API and its limit of 60 requests an hour does not apply ([ADR 0012](docs/decisions/0012-archive-file-list.md)). A build without `VITE_ARCHIVE_PROXY`, or a relay that is down, falls back to listing files through the API and loading them one by one.
 
@@ -404,6 +413,12 @@ docs/decisions/               why things are the way they are
 18. [Put the file path in the text that is embedded](docs/decisions/0018-file-path-in-embedded-text.md)
 19. [Train the rankers on 120 more projects](docs/decisions/0019-more-ranker-training-data.md)
 20. [odin-max, lever 1: a larger reranker trained on more data](docs/decisions/0020-odin-max-larger-reranker.md)
+21. [The fine-tuned reranker on a GPU server for the website](docs/decisions/0021-website-server-reranker.md)
+22. [Counting searches and asking "right place?" on the website](docs/decisions/0022-website-feedback.md)
+23. [Live accuracy on bugs fixed this week](docs/decisions/0023-live-accuracy.md)
+24. [GitHub API calls through the site's Worker](docs/decisions/0024-github-api-proxy.md)
+25. [Searching code in languages other than Python](docs/decisions/0025-more-languages.md)
+26. [Skipping the browser's language model when the GPU reranker answers](docs/decisions/0026-skip-browser-language-model.md)
 
 ## Adding a retriever
 
@@ -421,13 +436,16 @@ Implement `retrieve(query, level, k) -> list[str]`, returning file paths for `le
 | 6 | Learning to rank (LambdaMART), git history and past-issue features | done (ADR 0006) |
 | 7 | Fine-tuned cross-encoder reranking, shared-prefix KV cache | done (ADR 0007) |
 | 9 | In-browser rankers trained on 131 projects, static-embedding semantic index | done (ADR 0010, 0011) |
+| 10 | The fine-tuned reranker for the website on a GPU server | done (ADR 0021, 0026); one held-out scoring run left |
+| 11 | Website in JavaScript, TypeScript, Go, Java and Rust | done (ADR 0025, phase 1); C, C++, Ruby, PHP, C# next |
+| 12 | Live accuracy on bugs fixed each week | running (ADR 0023) |
 | 8 | LLM listwise reranking of the top 10 (needs an API model) | next |
 | 5 | Persistent on-disk index, incremental updates | planned |
 
 What would move the numbers further, in expected order of impact:
 
 1. **A frontier LLM as the final stage.** Published SWE-bench localization agents get their precision from large models reading candidate code. The cascade already reduces each issue to about 20 candidates, which keeps that affordable.
-2. **A bigger reranker base model** where memory allows. More epochs, LTR-mined negatives and a two-adapter ensemble were already tried and kept ([ADR 0007](docs/decisions/0007-fine-tuned-cross-encoder.md)). Fine-tuning the embedding model was tried and did not help.
+2. **A bigger reranker base model.** A 4B LoRA reranker was adopted for odin-max: first place +6 points, top 10 unchanged ([ADR 0020](docs/decisions/0020-odin-max-larger-reranker.md)); the 8B base is next. More epochs, LTR-mined negatives and a two-adapter ensemble were tried earlier and kept ([ADR 0007](docs/decisions/0007-fine-tuned-cross-encoder.md)). Fine-tuning the embedding model was tried and did not help.
 
 Tried recently and not adopted: distilling the two-adapter reranker into one (better on validation, MRR 0.634 vs 0.623, but file hit@1 fell 0.690 → 0.660 on Lite, p = 0.027; it was rejected on that Lite result, which is a decision taken on the test set, in the conservative direction), and a learned query projection for the static embeddings (semantic-only MRR 0.287 → 0.220 on held-out projects). The website's *How it works* page lists every result that did and didn't work.
 
