@@ -32,6 +32,8 @@ async function putAsset(cache, request, response) {
   }
 }
 
+const NEEDS_HEADERS = new Set(["document", "iframe", "script", "worker", "sharedworker"]);
+
 function isolated(response) {
   if (!response || response.type === "opaque" || response.status === 0) return response;
   const headers = new Headers(response.headers);
@@ -49,11 +51,12 @@ self.addEventListener("fetch", (event) => {
     const cache = await caches.open(CACHE);
     if (url.pathname.includes("/assets/")) {
       // Content-hashed file names: a cached copy can never be stale.
+      const wrap = NEEDS_HEADERS.has(request.destination) ? isolated : (r) => r;
       const hit = await cache.match(request);
-      if (hit) return isolated(hit);
+      if (hit) return wrap(hit);
       const fresh = await fetch(request);
       if (fresh.ok) event.waitUntil(putAsset(cache, request, fresh.clone()).catch(() => {}));
-      return isolated(fresh);
+      return wrap(fresh);
     }
     try {
       const fresh = await fetch(request);
