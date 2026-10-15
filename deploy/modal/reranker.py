@@ -44,7 +44,7 @@ app = modal.App("odin-reranker")
 
 @app.cls(
     image=image,
-    gpu="L4",
+    gpu=["L4", "A10G", "L40S"],
     scaledown_window=180,
     max_containers=1,
     timeout=120,
