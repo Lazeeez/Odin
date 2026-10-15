@@ -52,6 +52,9 @@ Fixed before looking, per language:
 
 - **The website searches a language** once its chunker passes the parity test. That alone makes the code searchable by keywords and meaning.
 - **The learned ranker is used for that language** if, in cross-validation, its function hit@10 on that language is better than keyword-and-meaning ranking alone by at least 2 points with p < 0.05 (paired bootstrap over issues). Otherwise the site ranks that language by the simpler signal and says so.
+- **"Keyword-and-meaning ranking alone"** is fixed here, before any cross-validation: within the same candidate pool, each unit scores z(BM25 over the issue) + z(static-embedding cosine to the issue), z-scored over the pool, equal weights, nothing tuned. It is computed from the same cross-validated items as the learned ranker.
+- **Cross-validation** is grouped by project over all training projects (Python's and the new languages' together), five folds, seeded; the per-language comparison uses each language's out-of-fold rankings.
+- **Mentions** (stack traces, source paths, module names) are parsed in multi-language mode for every issue, Python's included, in the website's rankers only; the GPU pipeline keeps its Python-only parsing.
 - **The Benchmarks page reports every language's held-out numbers,** whatever they are, next to the bug counts behind them.
 
 ### Not in scope
