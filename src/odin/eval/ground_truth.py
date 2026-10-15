@@ -8,6 +8,7 @@ from pathlib import Path
 
 from odin.eval.dataset import Instance
 from odin.eval.goldpatch import FileEdit, Insertion, parse_patch
+from odin.parsing import symbols as multi
 from odin.parsing.python_symbols import (
     CLASS,
     Symbol,
@@ -16,6 +17,14 @@ from odin.parsing.python_symbols import (
     retrieval_unit,
 )
 from odin.repos import GitError, RepoCache
+
+PYTHON_ONLY = frozenset({multi.PYTHON})
+
+
+def _indexed(path: str, languages: frozenset[str]) -> bool:
+    if languages == PYTHON_ONLY:
+        return path.endswith(".py")
+    return multi.language_of(path) in languages
 
 
 @dataclass(slots=True)
@@ -62,7 +71,9 @@ def locate(edit: FileEdit, symbols: list[Symbol]) -> tuple[set[Symbol], bool]:
     return owners, module_level
 
 
-def gold_for_instance(inst: Instance, cache: RepoCache) -> GoldEntry:
+def gold_for_instance(
+    inst: Instance, cache: RepoCache, languages: frozenset[str] = PYTHON_ONLY
+) -> GoldEntry:
     entry = GoldEntry(inst.instance_id, inst.repo, inst.base_commit)
     functions: set[str] = set()
     classes: set[str] = set()
@@ -70,7 +81,7 @@ def gold_for_instance(inst: Instance, cache: RepoCache) -> GoldEntry:
         if edit.status == "added":
             entry.added_files.append(edit.path)
             continue
-        if not edit.path.endswith(".py"):
+        if not _indexed(edit.path, languages):
             entry.non_python_files.append(edit.path)
             continue
         entry.files.append(edit.path)
@@ -79,7 +90,11 @@ def gold_for_instance(inst: Instance, cache: RepoCache) -> GoldEntry:
         except GitError as exc:
             entry.errors.append(str(exc))
             continue
-        symbols = extract_symbols(source, edit.path)
+        symbols = (
+            extract_symbols(source, edit.path)
+            if languages == PYTHON_ONLY
+            else multi.extract_symbols(source, edit.path)
+        )
         owners, module_level = locate(edit, symbols)
         if module_level:
             entry.module_level_files.append(edit.path)
@@ -90,18 +105,25 @@ def gold_for_instance(inst: Instance, cache: RepoCache) -> GoldEntry:
     return entry
 
 
-def _prefetch(inst_group: list[Instance], cache: RepoCache) -> None:
+def _prefetch(
+    inst_group: list[Instance], cache: RepoCache, languages: frozenset[str] = PYTHON_ONLY
+) -> None:
     specs: list[str] = []
     for inst in inst_group:
         cache.ensure_commit(inst.repo, inst.base_commit)
         for edit in parse_patch(inst.patch):
-            if edit.status != "added" and edit.path.endswith(".py"):
+            if edit.status != "added" and _indexed(edit.path, languages):
                 specs.append(f"{inst.base_commit}:{edit.path}")
     if inst_group:
         cache.prefetch_blobs(inst_group[0].repo, specs)
 
 
-def build_gold(instances: list[Instance], cache: RepoCache, workers: int = 8) -> list[GoldEntry]:
+def build_gold(
+    instances: list[Instance],
+    cache: RepoCache,
+    workers: int = 8,
+    languages: frozenset[str] = PYTHON_ONLY,
+) -> list[GoldEntry]:
     by_repo: dict[str, list[Instance]] = defaultdict(list)
     for inst in instances:
         by_repo[inst.repo].append(inst)
@@ -109,7 +131,7 @@ def build_gold(instances: list[Instance], cache: RepoCache, workers: int = 8) ->
     def run(group: list[Instance]) -> list[GoldEntry]:
         # A deleted or renamed repository, or one malformed patch, must not sink the rest.
         try:
-            _prefetch(group, cache)
+            _prefetch(group, cache, languages)
         except GitError as exc:
             return [
                 GoldEntry(i.instance_id, i.repo, i.base_commit, errors=[str(exc)]) for i in group
@@ -117,7 +139,7 @@ def build_gold(instances: list[Instance], cache: RepoCache, workers: int = 8) ->
         out = []
         for inst in group:
             try:
-                out.append(gold_for_instance(inst, cache))
+                out.append(gold_for_instance(inst, cache, languages))
             except Exception as exc:  # noqa: BLE001 - recorded on the entry, never silent
                 out.append(
                     GoldEntry(
