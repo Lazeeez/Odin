@@ -286,9 +286,11 @@ export function Search({ active, request }: { active: boolean; request: URLSearc
     document.querySelector(`.hits li[data-copy^="${CSS.escape(path)}:"]`)?.scrollIntoView({ behavior: "smooth", block: "center" });
 
   const loadingInput = useRef<string | null>(null);
+  const loadedTests = useRef(false);
   const start = (input: string, tests = includeTests) => {
     setIssues(null);
     loadingInput.current = input.trim().toLowerCase();
+    loadedTests.current = tests;
     w.load(input, tests);
   };
 
@@ -389,7 +391,7 @@ export function Search({ active, request }: { active: boolean; request: URLSearc
     try {
       const r = parseRepo(repoInput);
       const same = info && `${r.owner}/${r.name}`.toLowerCase() === info.repo.toLowerCase() && !r.ref;
-      if (same && !w.loading) {
+      if (same && !w.loading && loadedTests.current === includeTests) {
         if (issue) importIssue(repoInput, issue);
         return queryBox.current?.focus();
       }
@@ -460,7 +462,11 @@ export function Search({ active, request }: { active: boolean; request: URLSearc
             ))}
           </div>
           <label class="switch">
-            <input type="checkbox" checked={includeTests} onChange={(e) => setIncludeTests(e.currentTarget.checked)} />
+            <input type="checkbox" checked={includeTests} onChange={(e) => {
+              const tests = e.currentTarget.checked;
+              setIncludeTests(tests);
+              if (info && !w.loading) start(repoInput.trim() || info.repo, tests);
+            }} />
             <span class="track" aria-hidden="true" />Include tests
           </label>
         </div>
