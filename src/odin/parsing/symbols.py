@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import dataclass
-from functools import lru_cache
+from functools import cache
 
 from tree_sitter import Language, Node, Parser, Tree
 
@@ -40,7 +40,7 @@ def language_of(path: str) -> str | None:
     return EXTENSIONS.get(path[dot:].lower())
 
 
-@lru_cache(maxsize=None)
+@cache
 def _grammar(lang: str) -> Language:
     if lang == JAVASCRIPT:
         import tree_sitter_javascript as m
@@ -65,7 +65,7 @@ def _grammar(lang: str) -> Language:
     raise ValueError(f"no grammar for {lang}")
 
 
-@lru_cache(maxsize=None)
+@cache
 def _parser(lang: str) -> Parser:
     return Parser(_grammar(lang))
 
