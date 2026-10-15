@@ -252,13 +252,35 @@ def repo_folds(items: list[Item], k: int = 5) -> list[tuple[np.ndarray, np.ndarr
     return [(idx[fold != f], idx[fold == f]) for f in range(k)]
 
 
+MAX_GROUP = 10_000
+
+
+def trainable(d: RankingData) -> RankingData:
+    """LightGBM refuses a query with over MAX_GROUP candidates: such a query trains on its gold
+    rows and its best-scoring others by keyword (column 0); predictions still cover every row."""
+    if d.group.max(initial=0) <= MAX_GROUP:
+        return d
+    starts = np.r_[0, np.cumsum(d.group)[:-1]]
+    rows, sizes = [], []
+    for s, g in zip(starts, d.group, strict=True):
+        r = np.arange(s, s + g)
+        if g > MAX_GROUP:
+            pos, neg = r[d.y[r] > 0], r[d.y[r] <= 0]
+            neg = neg[np.argsort(-d.X[neg, 0], kind="stable")][: MAX_GROUP - len(pos)]
+            r = np.sort(np.concatenate([pos, neg]))
+        rows.append(r)
+        sizes.append(len(r))
+    keep = np.concatenate(rows)
+    return RankingData(d.X[keep], d.y[keep], np.array(sizes), d.n_gold, d.qids)
+
+
 def cv(data: RankingData, splits, max_rounds: int = 1500, seed: int = 0) -> tuple[int, np.ndarray]:
     """Round count by mean NDCG@10 over project folds, then out-of-fold scores at that count."""
     import lightgbm as lgb
 
     curves = []
     for tr_q, te_q in splits:
-        tr, te = data.split(tr_q), data.split(te_q)
+        tr, te = trainable(data.split(tr_q)), trainable(data.split(te_q))
         model = lgb.LGBMRanker(n_estimators=max_rounds, random_state=seed, **LGBM_PARAMS)
         model.fit(
             tr.X, tr.y, group=tr.group, eval_set=[(te.X, te.y)], eval_group=[te.group], eval_at=[10]
@@ -270,7 +292,8 @@ def cv(data: RankingData, splits, max_rounds: int = 1500, seed: int = 0) -> tupl
     for tr_q, te_q in splits:
         tr, te = data.split(tr_q), data.split(te_q)
         model = lgb.LGBMRanker(n_estimators=best, random_state=seed, **LGBM_PARAMS)
-        model.fit(tr.X, tr.y, group=tr.group)
+        fold = trainable(tr)
+        model.fit(fold.X, fold.y, group=fold.group)
         pred, at = model.predict(te.X), 0
         for q in te_q:
             oof[starts[q] : starts[q + 1]] = pred[at : at + data.group[q]]
@@ -305,6 +328,7 @@ def fit(data: RankingData, rounds: int, seed: int = 0):
     import lightgbm as lgb
 
     model = lgb.LGBMRanker(n_estimators=rounds, random_state=seed, **LGBM_PARAMS)
+    data = trainable(data)
     model.fit(data.X, data.y, group=data.group)
     return model
 
