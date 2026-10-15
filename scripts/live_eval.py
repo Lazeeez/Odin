@@ -21,6 +21,7 @@ from odin.eval.dataset import Instance  # noqa: E402
 from odin.eval.ground_truth import gold_for_instance  # noqa: E402
 from odin.eval.metrics import aggregate, score  # noqa: E402
 from odin.index.snapshot import _is_test_path  # noqa: E402
+from odin.parsing import symbols as multi  # noqa: E402
 from odin.repos import RepoCache  # noqa: E402
 
 PROJECTS = ROOT / "data" / "live" / "projects.json"
@@ -148,7 +149,11 @@ def instance(c: dict) -> tuple[Instance | None, dict]:
 
 def trained_projects() -> set[str]:
     repos = set()
-    for name in ("swebench_full_test.jsonl", "swebench_rebench_train.jsonl"):
+    for name in (
+        "swebench_full_test.jsonl",
+        "swebench_rebench_train.jsonl",
+        "multilang_train.jsonl",
+    ):
         for line in (GOLD / name).open(encoding="utf-8"):
             repos.add(json.loads(line)["repo"].lower())
     return repos
@@ -161,6 +166,10 @@ class Site:
         self.bl = bl
         self.ranker = json.loads(RANKER.read_text(encoding="utf-8"))
         self.sha = hashlib.sha256(RANKER.read_bytes()).hexdigest()
+        meta = self.ranker["meta"]
+        bl.MULTILANG = bool(meta.get("multilang"))
+        self.languages = frozenset(meta.get("languages", ["python"]))
+        self.is_test = multi.is_test_path if bl.MULTILANG else _is_test_path
         self.snaps = bl.Snapshots()
         self.embed = bl.make_embedder()
 
@@ -205,6 +214,15 @@ class Site:
         self.snaps.close()
 
 
+def language_of_fix(targets: set[str]) -> str:
+    counts: dict[str, int] = {}
+    for u in targets:
+        lang = multi.language_of(u.split("::")[0]) or "python"
+        lang = "typescript" if lang == "tsx" else lang
+        counts[lang] = counts.get(lang, 0) + 1
+    return max(sorted(counts), key=counts.get) if counts else "python"
+
+
 def first_rank(ranked: list[str], gold: set[str]) -> int | None:
     return next((i + 1 for i, u in enumerate(ranked) if u in gold), None)
 
@@ -231,14 +249,18 @@ def run(until: date, days: int, limit: int) -> int:
             try:
                 inst, record = instance(c)
                 if inst is not None:
-                    gold = gold_for_instance(inst, cache)
+                    gold = gold_for_instance(inst, cache, site.languages)
                     targets = {
                         u
                         for u in gold.functions + gold.classes
-                        if not _is_test_path(u.split("::")[0])
+                        if not site.is_test(u.split("::")[0])
                     }
-                    files = {f for f in gold.files if not _is_test_path(f)}
-                    record |= {"gold_functions": sorted(targets), "gold_files": sorted(files)}
+                    files = {f for f in gold.files if not site.is_test(f)}
+                    record |= {
+                        "gold_functions": sorted(targets),
+                        "gold_files": sorted(files),
+                        "language": language_of_fix(targets),
+                    }
                     if not targets:
                         record["skipped"] = "the fix changes no function or class outside tests"
                     else:
@@ -310,6 +332,10 @@ def summary(publish: str | None) -> int:
         "all_time": summarize(scored),
         "all_time_trained_projects": summarize([r for r in scored if r["trained_project"]]),
         "all_time_new_projects": summarize([r for r in scored if not r["trained_project"]]),
+        "last_30_days_by_language": {
+            lang: summarize([r for r in recent if r.get("language", "python") == lang])
+            for lang in sorted({r.get("language", "python") for r in recent})
+        },
         "skipped": {k: sum(1 for r in records if (r.get("skipped") or "").split(":")[0] == k) for k in sorted({(r.get("skipped") or "").split(":")[0] for r in records if r.get("skipped")})},
     }  # fmt: skip
     (OUT / "summary.json").write_text(
