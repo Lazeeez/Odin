@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted, 2026-10-15. The data, the splits and the decision rule were fixed before any multi-language data was built. Outcomes are added per phase.
+Accepted, 2026-10-15. The data, the splits and the decision rule were fixed before any multi-language data was built. Phase 1 is measured and shipped; its outcome is below.
 
 ## Context
 
@@ -65,3 +65,40 @@ The GPU pipeline (odin-fast and odin-max) stays Python-only; its benchmarks are 
 
 - Grammars are loaded only for the languages a repository contains, from the site itself (0.2 to 1.5 MB each for phase 1, gzipped smaller), and cached.
 - The site's headline numbers stay Python's until each language has its own held-out number; no number from one language is quoted for another.
+
+## Outcome, phase 1
+
+Measured 2026-10-15 on PACE. Results: [report.json](../../results/browser_ltr_multilang/report.json) (the cross-validation per language and every issue's result), and the site's copy in [lite.json](../../web/public/data/lite.json).
+
+**Every phase-1 language passes the rule, so the website ranks all six languages with the learned ranker.**
+
+Training: 7,845 issues from 192 projects, 5,115 of them Python from 131 projects and 2,730 from 61 Multi-SWE-RL projects. Answer keys were built twice, on PACE and on a laptop, and matched byte for byte.
+
+| Cross-validation, by language | Issues | Projects | Learned ranker | Keywords and meaning | Gain, hit@10 |
+|---|---|---|---|---|---|
+| Python | 5,115 | 131 | 78.6% | 65.7% | +12.9 [11.9, 14.1] |
+| Go | 816 | 14 | 69.6% | 56.2% | +13.4 [10.4, 16.4] |
+| Java | 768 | 11 | 62.4% | 38.8% | +23.6 [20.2, 27.1] |
+| TypeScript | 586 | 18 | 57.2% | 39.4% | +17.7 [14.2, 21.3] |
+| JavaScript | 438 | 18 | 69.6% | 57.3% | +12.3 [8.2, 16.4] |
+| Rust | 122 | 10 | 73.8% | 52.5% | +21.3 [13.1, 29.5] |
+
+Every gain clears 2 points with p < 0.0001 (paired bootstrap over issues).
+
+Held out, run once (the run was repeated with the same seed, data and code to label issues by language, and every total matched; both runs are in `results/test-evals.log`):
+
+| Language | Test set | Bugs | Learned ranker | Keywords and meaning | Gain, hit@10 |
+|---|---|---|---|---|---|
+| Go | SWE-bench Multilingual | 37 | 62.2% | 46.0% | +16.2 (p = 0.026) |
+| Java | SWE-bench Multilingual | 43 | 76.7% | 67.4% | +9.3 (p = 0.13) |
+| JavaScript | SWE-bench Multilingual | 26 | 57.7% | 50.0% | +7.7 (p = 0.44) |
+| Rust | SWE-bench Multilingual | 41 | 63.4% | 48.8% | +14.6 (p = 0.099) |
+| TypeScript | SWE-bench Multilingual | 14 | 50.0% | 21.4% | +28.6 (p = 0.016) |
+| Java | SWE-PolyBench | 125 | 67.2% | 55.2% | +12.0 (p < 0.001) |
+| JavaScript | SWE-PolyBench | 115 | 77.4% | 55.6% | +21.7 (p < 0.001) |
+| TypeScript | SWE-PolyBench | 100 | 59.0% | 44.0% | +15.0 (p < 0.001) |
+
+- **Every held-out gain is positive;** the smaller SWE-bench Multilingual sets are not significant on their own, as expected at 14 to 43 bugs.
+- **Python moved by under a point:** on the 30 unseen projects, function hit@10 is 77.0% after the semantic stage and 76.3% after the MiniLM stage, against 77.2% for the Python-only ranker; files 94.2% against 94.4%. On Lite, 69.1% either way. The Python-only ranker's per-issue results were not kept, so this is not tested for significance.
+- **Fixed on the way:** 9 Lucene bugs failed to parse (Python's recursion limit on deeply nested Java), so both engines now walk syntax trees with an explicit stack, in the same order; one issue had 19,484 candidates, over LightGBM's limit for a query, so training keeps each issue's gold and best keyword matches up to 10,000; the browser indexed a file's extension as a path word for non-Python files where training did not, now fixed and covered by a parity test on TypeScript files.
+- **Phase 2** (C, C++, Ruby, PHP, C#) is not started.

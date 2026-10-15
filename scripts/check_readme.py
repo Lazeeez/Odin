@@ -148,6 +148,29 @@ def check_browser(rows: list[list[str]], report: Report) -> None:
         report.expect(f"{where} mrr", numbers(row[3])[0], metrics["mrr"], 3)
 
 
+LANGUAGE_NAMES = {
+    "Go": "go",
+    "Java": "java",
+    "JavaScript": "javascript",
+    "Rust": "rust",
+    "TypeScript": "typescript",
+}
+TEST_SETS = {"SWE-bench Multilingual": "multilingual", "SWE-PolyBench": "polybench"}
+
+
+def check_languages(rows: list[list[str]], report: Report) -> None:
+    sets = json.loads(LITE.read_text(encoding="utf-8"))["held_out_per_language"]
+    for row in rows[1:]:
+        e = sets[TEST_SETS[row[1]]][LANGUAGE_NAMES[row[0]]]
+        where = f"language {row[0]} {row[1]}"
+        report.expect(f"{where} bugs", numbers(row[2])[0], e["issues"], 0)
+        report.expect(f"{where} odin", numbers(row[3])[0], 100 * e["learned"]["hit@10"], 1)
+        report.expect(
+            f"{where} baseline", numbers(row[4])[0], 100 * e["keyword_and_meaning"]["hit@10"], 1
+        )
+        report.expect(f"{where} change", numbers(row[5])[0], 100 * e["hit@10_gain"]["delta"], 1)
+
+
 def check_per_repo(rows: list[list[str]], report: Report) -> None:
     bm25 = load("bm25-code-notests", "function")["summary"]["by_repo"]
     hybrid = load("hybrid-notests", "function")["summary"]["by_repo"]
@@ -406,6 +429,7 @@ def main() -> int:
     report = Report()
     check_headline(found["Headline results"], report)
     check_browser(found["In the browser, on projects it never saw"], report)
+    check_languages(found["In the browser, in other languages"], report)
     check_retrievers(found["Every retriever"], report)
     check_steps(
         found[
