@@ -189,12 +189,20 @@ def items_of(dataset: str, split: str, exclude: list[str]) -> list[Item]:
     return sorted(out, key=lambda it: (it.repo, it.commit))
 
 
+def labelled(spec: tuple, items: list[Item]) -> list[Item]:
+    if spec[0] == "multilang":
+        multilang_items(spec[1])
+    else:
+        LANG_OF.update({it.qid: "python" for it in items})
+    return items
+
+
 def build(name: str, spec: tuple, snaps: Snapshots) -> list[Item]:
     """Pass 1: candidate pools and features of the instant and semantic stages."""
     path = CACHE / f"items_{name}.pkl"
     if path.exists() and not LIMIT:
-        return pickle.loads(path.read_bytes())
-    items, kept, t0 = items_of(*spec), [], time.time()
+        return labelled(spec, pickle.loads(path.read_bytes()))
+    items, kept, t0 = labelled(spec, items_of(*spec)), [], time.time()
     if LIMIT:
         items = [
             it
@@ -432,8 +440,8 @@ def per_language(items: list[Item], s_b: list[np.ndarray], s_c: list[np.ndarray]
     for i, it in enumerate(items):
         if it.xb is None or not len(it.xb):
             continue
-        by_lang.setdefault(LANG_OF.get(it.qid, "python"), []).append(i)
-    out = {}
+        by_lang.setdefault(LANG_OF[it.qid], []).append(i)
+    out, rows = {}, []
     for lang, idx in sorted(by_lang.items()):
         learned = [
             score(
@@ -455,7 +463,11 @@ def per_language(items: list[Item], s_b: list[np.ndarray], s_c: list[np.ndarray]
             "hit@10_gain": {"delta": test.delta, "ci95": list(test.ci95), "p": test.p_value},
             "learned_ranker_used": bool(test.delta >= LEARNED_MIN_GAIN and test.p_value < 0.05),
         }
-    return out
+        rows += [
+            {"qid": items[i].qid, "language": lang, "learned_hit@10": a.hit[10], "keyword_and_meaning_hit@10": b.hit[10]}
+            for i, a, b in zip(idx, learned, base, strict=True)
+        ]  # fmt: skip
+    return out, rows
 
 
 def make_embedder():
@@ -539,6 +551,7 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--multilang", action="store_true")
     ap.add_argument("--limit", type=int, default=0)
+    ap.add_argument("--note", default="")
     args = ap.parse_args()
     if args.multilang:
         MULTILANG = True
@@ -618,7 +631,9 @@ def main() -> None:
         flush=True,
     )
     if MULTILANG:
-        report["cv_per_language"] = per_language(train, oof_b, per_c if ship_c else None)
+        report["cv_per_language"], report["cv_per_issue"] = per_language(
+            train, oof_b, per_c if ship_c else None
+        )
         for lang, r in report["cv_per_language"].items():
             print(
                 f"  CV {lang:10} n={r['issues']:5} learned hit@10 {r['learned']['hit@10']:.3f} vs keyword+meaning {r['keyword_and_meaning']['hit@10']:.3f}  gain {r['hit@10_gain']['delta']:+.3f} p={r['hit@10_gain']['p']}  -> {'learned' if r['learned_ranker_used'] else 'simple'}",
@@ -698,16 +713,20 @@ def main() -> None:
                 model_c.predict(it.xc) if model_c is not None and len(it.sel) else None
                 for it in items
             ]
-            report.setdefault("held_out_per_language", {})[name] = per_language(
-                items, s_b, s_c_held
-            )
+            summary, rows = per_language(items, s_b, s_c_held)
+            report.setdefault("held_out_per_language", {})[name] = summary
+            report.setdefault("held_out_per_issue", {})[name] = rows
         for k, v in res.items():
             print(f"{name:7} {k:20}: {fmt(v)}", flush=True)
         if MULTILANG:
             with Path("results/test-evals.log").open("a", encoding="utf-8") as log:
                 log.write(
                     f"{time.strftime('%Y-%m-%d')} | {name} | website-multilang | file and function | {LITE.as_posix()} | "
-                    "ADR 0025 phase 1, run once; which languages use the learned ranker was fixed by cross-validation before this ran\n"
+                    + (
+                        args.note
+                        or "ADR 0025 phase 1, run once; which languages use the learned ranker was fixed by cross-validation before this ran"
+                    )
+                    + "\n"
                 )
     embed.save()
 
