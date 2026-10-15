@@ -2,6 +2,7 @@
 // same units as Python: tests/test_site_engine.py compares them on real code.
 import { Language, Parser } from "web-tree-sitter";
 import type { Node, Tree } from "web-tree-sitter";
+import { type Found, type Lang, RULES } from "./languages-rules.ts";
 import type { Chunk, UnitKind } from "./types.ts";
 
 const DEFS = new Set(["function_definition", "class_definition"]);
@@ -19,7 +20,33 @@ interface SymbolSpan {
   nested: boolean;
 }
 
-export function extractSymbols(tree: Tree): SymbolSpan[] {
+function walk(node: Node, rule: (n: Node) => Found | null, scope: string[], parentKind: UnitKind | null, inFunc: boolean, out: SymbolSpan[]): void {
+  for (const child of node.namedChildren) {
+    if (!child) continue;
+    const f = rule(child);
+    if (!f) {
+      walk(child, rule, scope, parentKind, inFunc, out);
+      continue;
+    }
+    const qual = [...scope, f.name];
+    if (!f.unit) {
+      if (f.body) walk(f.body, rule, qual, f.kind, inFunc, out);
+      continue;
+    }
+    let kind = f.kind as UnitKind;
+    if (kind === "function" && parentKind === "class") kind = "method";
+    out.push({ qualname: qual.join("."), kind, startLine: f.start.startPosition.row + 1, endLine: f.end.endPosition.row + 1, nested: inFunc });
+    if (f.body) walk(f.body, rule, qual, kind, inFunc || kind !== "class", out);
+  }
+}
+
+export function extractSymbols(tree: Tree, lang: Lang = "python"): SymbolSpan[] {
+  if (lang !== "python") {
+    const out: SymbolSpan[] = [];
+    walk(tree.rootNode, RULES[lang], [], null, false, out);
+    out.sort((a, b) => a.startLine - b.startLine || b.endLine - a.endLine);
+    return out;
+  }
   const out: SymbolSpan[] = [];
   const stack: [Node, string[], UnitKind | null, boolean][] = [[tree.rootNode, [], null, false]];
   while (stack.length) {
@@ -61,11 +88,11 @@ function splitLines(text: string): string[] {
 }
 
 /** Split one file into units. Each unit owns the lines no inner unit claims. */
-export function chunkFile(parser: Parser, source: string): Chunk[] {
+export function chunkFile(parser: Parser, source: string, lang: Lang = "python"): Chunk[] {
   const tree = parser.parse(source);
   if (!tree) return [];
   const lines = splitLines(source);
-  const units = extractSymbols(tree).filter((s) => !s.nested);
+  const units = extractSymbols(tree, lang).filter((s) => !s.nested);
   tree.delete();
   const owner = new Int32Array(lines.length + 2).fill(-1);
   // Outer units come first, so inner units overwrite the lines they own.
@@ -80,8 +107,10 @@ export function chunkFile(parser: Parser, source: string): Chunk[] {
 }
 
 /** A Python parser. `runtimeWasm` and `grammarWasm` are URLs (browser) or file paths (Node). */
+let runtime: Promise<void> | null = null;
+
 export async function createParser(runtimeWasm: string, grammarWasm: string): Promise<Parser> {
-  await Parser.init({ locateFile: () => runtimeWasm });
+  await (runtime ??= Parser.init({ locateFile: () => runtimeWasm }));
   const parser = new Parser();
   parser.setLanguage(await Language.load(grammarWasm));
   return parser;
