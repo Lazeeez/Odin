@@ -41,3 +41,11 @@ The website's pipeline as shipped: the instant, semantic and rerank stages and t
 - The website gets an accuracy number that cannot have leaked into any model, refreshed every night.
 - Bugs whose issue does not describe the problem (a one-line issue, a feature request filed as a bug) count as they are. That is closer to what visitors paste than a curated benchmark, and is expected to score lower than SWE-bench.
 - The job reads public GitHub data with the workflow's own token, commits each night's file and `results/live/summary.json` to the repository (`[skip ci]`, so the nightly commit does not run the test suite), and posts the summary to the Worker's `/api/live` with a secret shared with it (`LIVE_TOKEN`, a repository secret and a Worker secret). The Worker keeps only the latest summary (D1 table `live`); the Benchmarks page and the home page read it from there.
+
+## Amendment, 2026-10-16: other languages
+
+Written before any bug from the new projects was collected, when the website started searching JavaScript, TypeScript, Go, Java and Rust ([ADR 0025](0025-more-languages.md)).
+
+- **Projects:** five active projects per new language, chosen as the Python ones were (bugs tracked in GitHub issues and closed from pull requests), are added to `data/live/projects.json`. Some are in the multi-language training data or test sets; their live bugs are newer than either, and the trained/new split reports them apart as before.
+- **Pipeline:** the job reads the language set and the multi-language flag from the shipped `ranker.json`, so it runs exactly what the site runs; answer keys cover those languages and leave tests out by each language's rules ([ADR 0027](0027-rust-test-modules.md) for Rust).
+- **Reporting:** each bug records the language of the code its fix changed, and the summary adds the last 30 days per language. Nights before this amendment are Python projects scored with the Python-only ranker; each record's `ranker_sha256` tells them apart.

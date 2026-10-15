@@ -1,5 +1,5 @@
 {
- "decided": "2026-10-15, ADR 0023: active Python projects that track bugs in GitHub issues and close them from pull requests",
+ "decided": "2026-10-15, ADR 0023: active Python projects that track bugs in GitHub issues and close them from pull requests; 2026-10-16, ADR 0023 amended for ADR 0025: five active projects per new language, chosen the same way, before any of their bugs was collected",
  "projects": [
   "psf/requests",
   "pallets/flask",
@@ -36,6 +36,31 @@
   "ipython/ipython",
   "python/mypy",
   "pypa/setuptools",
-  "mwaskom/seaborn"
+  "mwaskom/seaborn",
+  "axios/axios",
+  "expressjs/express",
+  "mochajs/mocha",
+  "eslint/eslint",
+  "markedjs/marked",
+  "colinhacks/zod",
+  "sindresorhus/ky",
+  "vitejs/vite",
+  "trpc/trpc",
+  "TanStack/query",
+  "gin-gonic/gin",
+  "spf13/cobra",
+  "junegunn/fzf",
+  "gohugoio/hugo",
+  "go-gitea/gitea",
+  "google/gson",
+  "mockito/mockito",
+  "jhy/jsoup",
+  "apache/dubbo",
+  "alibaba/fastjson2",
+  "BurntSushi/ripgrep",
+  "sharkdp/bat",
+  "sharkdp/fd",
+  "tokio-rs/axum",
+  "clap-rs/clap"
  ]
 }
