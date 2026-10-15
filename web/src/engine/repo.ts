@@ -485,7 +485,7 @@ async function readArchive(
   const loaded = performance.now();
   const index = new BM25(units, { counts });
   return {
-    repo, branch, scope, via: "archive", sha, files: kept, units, index, notes, fromCache: false,
+    repo, branch, scope, via: "archive", sha, files: new Set(units.map((u) => u.path)).size, units, index, notes, fromCache: false,
     timings: { loadMs: loaded - started, indexMs: performance.now() - loaded },
   };
 }
@@ -549,7 +549,7 @@ export async function loadRepo(
   const index = new BM25(loaded, { counts });
   return {
     repo, branch: listing.branch, scope: listing.scope, via: listing.via, sha: listing.sha,
-    files: kept.length, units: loaded, index, notes, fromCache,
+    files: new Set(loaded.map((u) => u.path)).size, units: loaded, index, notes, fromCache,
     timings: { loadMs: t1 - t0, indexMs: performance.now() - t1 },
   };
 }

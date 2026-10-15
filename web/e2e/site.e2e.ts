@@ -55,7 +55,7 @@ test("search: load a repository, describe a bug, get the right function", async 
   await page.locator(".quickstart input").fill(REPO);
   await page.locator(".quickstart button").click();
   await expect(page.locator(".repo-pill")).toContainText(REPO);
-  await expect(page.locator(".repo-summary")).toContainText("functions and classes in 3 files"); // tests left out
+  await expect(page.locator(".repo-summary")).toContainText("5 functions and classes in 2 files"); // tests left out
   // The language-model stage needs a download these tests do not make: switch it off.
   await page.locator(".toolbar .switch", { hasText: "Language-model" }).click();
   await page.locator("#demo-query").fill("load_config crashes with KeyError when the settings file is missing");
