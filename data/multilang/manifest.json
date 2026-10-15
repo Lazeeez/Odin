@@ -1,0 +1,53 @@
+{
+ "revisions": {
+  "ByteDance-Seed/Multi-SWE-RL": "9777648932daa214ba18c70c81e85821b5836f32",
+  "SWE-bench/SWE-bench_Multilingual": "846e647b9f33c0b51b739d005d13d85493c9af09",
+  "AmazonScience/SWE-PolyBench_500": "546075b4b05d17ba914e72b8f4c6d5b1ea150c1d"
+ },
+ "train": {
+  "issues": 2981,
+  "projects": 61,
+  "by_language": {
+   "go": 838,
+   "java": 922,
+   "javascript": 483,
+   "typescript": 611,
+   "rust": 127
+  }
+ },
+ "train_dropped_for_test_overlap": {
+  "caddyserver/caddy": 1,
+  "gin-gonic/gin": 1,
+  "gohugoio/hugo": 1,
+  "prometheus/prometheus": 1,
+  "axios/axios": 1,
+  "sveltejs/svelte": 1,
+  "BurntSushi/ripgrep": 1,
+  "nushell/nushell": 1,
+  "sharkdp/bat": 1,
+  "tokio-rs/tokio": 1,
+  "mui/material-ui": 1,
+  "vuejs/core": 1,
+  "microsoft/vscode": 1
+ },
+ "multilingual": {
+  "issues": 170,
+  "projects": 25,
+  "by_language": {
+   "java": 43,
+   "rust": 43,
+   "javascript": 29,
+   "typescript": 15,
+   "go": 40
+  }
+ },
+ "polybench": {
+  "issues": 375,
+  "projects": 15,
+  "by_language": {
+   "java": 125,
+   "javascript": 125,
+   "typescript": 125
+  }
+ }
+}
