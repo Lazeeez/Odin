@@ -532,7 +532,7 @@ def main() -> None:
     t_start = time.time()
     snaps = Snapshots()
     train = [it for name, spec in TRAIN.items() for it in build(name, spec, snaps)]
-    tests = {name: build(name, spec, snaps) for name, spec in TEST.items()}
+    tests = {} if LIMIT else {name: build(name, spec, snaps) for name, spec in TEST.items()}
     print(f"train: {len(train)} issues in {len({it.repo for it in train})} projects", flush=True)
     splits = repo_folds(train)
     gold = [it.targets for it in train]
@@ -674,6 +674,12 @@ def main() -> None:
             )
         for k, v in res.items():
             print(f"{name:7} {k:20}: {fmt(v)}", flush=True)
+        if MULTILANG:
+            with Path("results/test-evals.log").open("a", encoding="utf-8") as log:
+                log.write(
+                    f"{time.strftime('%Y-%m-%d')} | {name} | website-multilang | file and function | {LITE.as_posix()} | "
+                    "ADR 0025 phase 1, run once; which languages use the learned ranker was fixed by cross-validation before this ran\n"
+                )
     embed.save()
 
     # Export: trees, the static model the browser downloads, and the numbers the site quotes.
