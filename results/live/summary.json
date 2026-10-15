@@ -1,0 +1,109 @@
+{
+ "generated": "2026-10-15T03:20:41+00:00",
+ "adr": "docs/decisions/0023-live-accuracy.md",
+ "last_30_days": {
+  "bugs": 80,
+  "projects": 13,
+  "function": {
+   "mrr": 0.3954,
+   "hit@1": 0.275,
+   "recall@10": 0.5023,
+   "hit@10": 0.6625,
+   "hit@10_ci95": [
+    0.5625,
+    0.7625
+   ]
+  },
+  "file": {
+   "hit@10": 0.9,
+   "hit@10_ci95": [
+    0.8375,
+    0.9625
+   ]
+  },
+  "merged": [
+   "2026-10-08",
+   "2026-10-12"
+  ]
+ },
+ "all_time": {
+  "bugs": 80,
+  "projects": 13,
+  "function": {
+   "mrr": 0.3954,
+   "hit@1": 0.275,
+   "recall@10": 0.5023,
+   "hit@10": 0.6625,
+   "hit@10_ci95": [
+    0.5625,
+    0.7625
+   ]
+  },
+  "file": {
+   "hit@10": 0.9,
+   "hit@10_ci95": [
+    0.8375,
+    0.9625
+   ]
+  },
+  "merged": [
+   "2026-10-08",
+   "2026-10-12"
+  ]
+ },
+ "all_time_trained_projects": {
+  "bugs": 58,
+  "projects": 7,
+  "function": {
+   "mrr": 0.3911,
+   "hit@1": 0.2931,
+   "recall@10": 0.4878,
+   "hit@10": 0.6034,
+   "hit@10_ci95": [
+    0.4828,
+    0.7241
+   ]
+  },
+  "file": {
+   "hit@10": 0.9138,
+   "hit@10_ci95": [
+    0.8276,
+    0.9828
+   ]
+  },
+  "merged": [
+   "2026-10-08",
+   "2026-10-12"
+  ]
+ },
+ "all_time_new_projects": {
+  "bugs": 22,
+  "projects": 6,
+  "function": {
+   "mrr": 0.4068,
+   "hit@1": 0.2273,
+   "recall@10": 0.5404,
+   "hit@10": 0.8182,
+   "hit@10_ci95": [
+    0.6364,
+    0.9545
+   ]
+  },
+  "file": {
+   "hit@10": 0.8636,
+   "hit@10_ci95": [
+    0.6818,
+    1.0
+   ]
+  },
+  "merged": [
+   "2026-10-08",
+   "2026-10-12"
+  ]
+ },
+ "skipped": {
+  "error": 7,
+  "the closed number is a pull request, not an issue": 19,
+  "the fix changes no function or class outside tests": 23
+ }
+}
