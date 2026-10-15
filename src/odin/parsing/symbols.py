@@ -347,15 +347,21 @@ def _walk(
     in_func: bool,
     out: list[Symbol],
 ) -> None:
-    for child in node.named_children:
+    stack = [(iter(node.named_children), scope, parent_kind, in_func)]
+    while stack:
+        children, scope, parent_kind, in_func = stack[-1]
+        child = next(children, None)
+        if child is None:
+            stack.pop()
+            continue
         found = rule(child, parent_kind)
         if found is None:
-            _walk(child, rule, path, scope, parent_kind, in_func, out)
+            stack.append((iter(child.named_children), scope, parent_kind, in_func))
             continue
         qual = (*scope, found.name)
         if not found.unit:
             if found.body is not None:
-                _walk(found.body, rule, path, qual, found.kind, in_func, out)
+                stack.append((iter(found.body.named_children), qual, found.kind, in_func))
             continue
         kind = found.kind
         if kind == FUNCTION and parent_kind == CLASS:
@@ -372,7 +378,7 @@ def _walk(
             )
         )
         if found.body is not None:
-            _walk(found.body, rule, path, qual, kind, in_func or kind != CLASS, out)
+            stack.append((iter(found.body.named_children), qual, kind, in_func or kind != CLASS))
 
 
 def extract_symbols(source: bytes, path: str, tree: Tree | None = None) -> list[Symbol]:

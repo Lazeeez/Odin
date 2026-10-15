@@ -179,3 +179,9 @@ def test_test_files_in_every_language():
     ]
     assert all(is_test_path(p) for p in tests), [p for p in tests if not is_test_path(p)]
     assert not any(is_test_path(p) for p in sources), [p for p in sources if is_test_path(p)]
+
+
+def test_deeply_nested_code_does_not_exhaust_the_stack():
+    body = " + ".join(['"a"'] * 3000)
+    src = f"class Big {{\n  String s() {{ return {body}; }}\n  void t() {{}}\n}}\n".encode()
+    assert [s.qualname for s in extract_symbols(src, "Big.java")] == ["Big", "Big.s", "Big.t"]

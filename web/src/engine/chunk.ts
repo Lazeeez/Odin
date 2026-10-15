@@ -20,30 +20,39 @@ interface SymbolSpan {
   nested: boolean;
 }
 
-function walk(node: Node, rule: (n: Node) => Found | null, scope: string[], parentKind: UnitKind | null, inFunc: boolean, out: SymbolSpan[]): void {
-  for (const child of node.namedChildren) {
+function walk(node: Node, rule: (n: Node) => Found | null, out: SymbolSpan[]): void {
+  type Frame = [children: Iterator<Node | null>, scope: string[], parentKind: UnitKind | null, inFunc: boolean];
+  const stack: Frame[] = [[node.namedChildren[Symbol.iterator](), [], null, false]];
+  while (stack.length) {
+    const [children, scope, parentKind, inFunc] = stack[stack.length - 1];
+    const next = children.next();
+    if (next.done) {
+      stack.pop();
+      continue;
+    }
+    const child = next.value;
     if (!child) continue;
     const f = rule(child);
     if (!f) {
-      walk(child, rule, scope, parentKind, inFunc, out);
+      stack.push([child.namedChildren[Symbol.iterator](), scope, parentKind, inFunc]);
       continue;
     }
     const qual = [...scope, f.name];
     if (!f.unit) {
-      if (f.body) walk(f.body, rule, qual, f.kind, inFunc, out);
+      if (f.body) stack.push([f.body.namedChildren[Symbol.iterator](), qual, f.kind, inFunc]);
       continue;
     }
     let kind = f.kind as UnitKind;
     if (kind === "function" && parentKind === "class") kind = "method";
     out.push({ qualname: qual.join("."), kind, startLine: f.start.startPosition.row + 1, endLine: f.end.endPosition.row + 1, nested: inFunc });
-    if (f.body) walk(f.body, rule, qual, kind, inFunc || kind !== "class", out);
+    if (f.body) stack.push([f.body.namedChildren[Symbol.iterator](), qual, kind, inFunc || kind !== "class"]);
   }
 }
 
 export function extractSymbols(tree: Tree, lang: Lang = "python"): SymbolSpan[] {
   if (lang !== "python") {
     const out: SymbolSpan[] = [];
-    walk(tree.rootNode, RULES[lang], [], null, false, out);
+    walk(tree.rootNode, RULES[lang], out);
     out.sort((a, b) => a.startLine - b.startLine || b.endLine - a.endLine);
     return out;
   }
