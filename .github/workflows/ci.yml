@@ -47,5 +47,5 @@ jobs:
         working-directory: web
       - run: npx playwright install --with-deps chromium firefox webkit
         working-directory: web
-      - run: npm run build && npm run e2e
+      - run: VITE_RERANK_SERVER=https://rerank.odin-e2e.test/rerank npm run build && npm run e2e
         working-directory: web

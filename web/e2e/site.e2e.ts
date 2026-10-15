@@ -220,3 +220,22 @@ test("the landing page shows a real example bug, with the fix marked", async ({ 
   await expect(page.locator(".preview-results li")).toHaveCount(4);
   await expect(page.locator(".preview-results li").first().locator(".reason")).toHaveText("changed by the real fix");
 });
+
+test("the GPU reranker reorders the top results without downloading the browser's language model", async ({ page }) => {
+  const languageModel: string[] = [];
+  page.on("request", (r) => { if (/onnx|ort-wasm|transformers@/.test(r.url())) languageModel.push(r.url()); });
+  await page.route("https://rerank.odin-e2e.test/rerank/warm", (route) => route.fulfill({ status: 202, json: { warming: true } }));
+  let boosted = "";
+  await page.route("https://rerank.odin-e2e.test/rerank", async (route) => {
+    const { texts } = route.request().postDataJSON() as { texts: string[] };
+    boosted = texts[1].split("\n")[0];
+    const scores = texts.map((_, i) => (i === 1 ? 10 : 0));
+    await route.fulfill({ json: { scores: [scores, scores] } });
+  });
+  await page.goto(`./#/search?repo=${encodeURIComponent(REPO)}`);
+  await expect(page.locator(".repo-pill")).toContainText(REPO);
+  await page.locator("#demo-query").fill("load_config crashes with KeyError when the settings file is missing");
+  await expect(page.locator("p.tokens", { hasText: "Re-read the top 50" })).toBeVisible();
+  await expect(page.locator("#search-app ol.hits .qual").first()).toHaveText(boosted);
+  expect(languageModel).toEqual([]);
+});
