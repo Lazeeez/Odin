@@ -57,6 +57,7 @@ describe("archive relay", () => {
     expect(await go("/favicon.ico")).toEqual([301, `${SITE}/favicon.svg`]);
     expect(await go("/no/such/page")).toEqual([302, `${SITE}/`]);
     expect(await go("/searching")).toEqual([302, `${SITE}/`]);
+    expect(await go("/")).toEqual([404, null]);
     expect(calls).toEqual([]);
   });
 

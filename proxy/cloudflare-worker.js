@@ -24,6 +24,7 @@ const PAGES = /^\/(search|benchmarks|explore|how-it-works)(\/[^]*)?$/;
 
 const sitePath = (url, prefix) => {
   if (!prefix || url.pathname.startsWith(`${prefix}/`) || url.pathname.startsWith("/api/")) return null;
+  if (url.pathname === "/") return new Response("not found", { status: 404 });
   if (url.pathname === "/favicon.ico") return Response.redirect(`${url.origin}/favicon.svg`, 301);
   const page = url.pathname.match(PAGES);
   return page ? Response.redirect(`${url.origin}/#${url.pathname}${url.search}`, 301) : Response.redirect(`${url.origin}/`, 302);
