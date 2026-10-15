@@ -52,12 +52,12 @@ self.addEventListener("fetch", (event) => {
       const hit = await cache.match(request);
       if (hit) return isolated(hit);
       const fresh = await fetch(request);
-      if (fresh.ok) event.waitUntil(putAsset(cache, request, fresh.clone()));
+      if (fresh.ok) event.waitUntil(putAsset(cache, request, fresh.clone()).catch(() => {}));
       return isolated(fresh);
     }
     try {
       const fresh = await fetch(request);
-      if (fresh.ok) cache.put(request, fresh.clone());
+      if (fresh.ok) event.waitUntil(cache.put(request, fresh.clone()).catch(() => {}));
       return isolated(fresh);
     } catch {
       const hit = await cache.match(request, { ignoreSearch: request.mode === "navigate" });
