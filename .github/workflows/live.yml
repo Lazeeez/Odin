@@ -1,0 +1,49 @@
+name: live
+
+on:
+  schedule:
+    - cron: "41 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: live
+  cancel-in-progress: false
+
+jobs:
+  nightly:
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.2.0
+        with:
+          python-version: "3.11"
+          enable-cache: true
+      - run: uv sync --locked --extra dense
+      - uses: actions/cache@v4
+        with:
+          path: |
+            .cache/repos
+            ~/.cache/huggingface
+          key: live-${{ github.run_id }}
+          restore-keys: live-
+      - name: Score last week's fixed bugs
+        run: uv run python scripts/live_eval.py run
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Summarize
+        run: uv run python scripts/live_eval.py summary
+      - name: Keep the results
+        run: |
+          git config user.name "odin-live"
+          git config user.email "odin-live@users.noreply.github.com"
+          git add results/live
+          git diff --cached --quiet || git commit -m "Live accuracy for $(date -u +%F) [skip ci]"
+          git push
+      - name: Publish to the site
+        run: uv run python scripts/live_eval.py summary --publish https://allfather.dev/api/live
+        env:
+          LIVE_TOKEN: ${{ secrets.LIVE_TOKEN }}
