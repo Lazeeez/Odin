@@ -139,14 +139,14 @@ export interface Signals {
   sim?: Similarity;
 }
 
-export function signals(index: BM25, query: string, sim?: Similarity): Signals {
+export function signals(index: BM25, query: string, sim?: Similarity, multilang = false): Signals {
   const [title, code] = issueFields(query);
   const { scores: lex, terms } = index.scores(query);
   return {
     query, title, terms, lex, sim,
     titleLex: index.scores(title).scores,
     codeLex: code ? index.scores(code).scores : new Float64Array(index.units.length),
-    m: parseMentions(query),
+    m: parseMentions(query, multilang),
   };  // prettier-ignore
 }
 
@@ -192,7 +192,7 @@ export function rankUnits(index: BM25, model: RankerModel, stage: Stage, sig: Si
   const topFiles = new Set(topK(fileMax, P.files));
   const mentioned = new Set<number>();
   files.forEach((p, f) => {
-    if ([...m.framePaths, ...m.pyPaths].some((x) => pathMatches(x, p))) mentioned.add(f);
+    if ([...m.framePaths, ...m.pyPaths].some((x) => pathMatches(x, p, m.multilang))) mentioned.add(f);
   });
   for (let d = 0; d < n; d++) {
     const name = names[d];
@@ -229,9 +229,9 @@ export function rankUnits(index: BM25, model: RankerModel, stage: Stage, sig: Si
     const parts = u.qualname.split(".");
     const name = parts.at(-1)!;
     const cls = parts.length > 1 ? parts.at(-2)! : "";
-    const inFrames = m.framePaths.some((p) => pathMatches(p, u.path));
-    const lastFile = !!lastPath && pathMatches(lastPath, u.path);
-    const mod = moduleName(u.path);
+    const inFrames = m.framePaths.some((p) => pathMatches(p, u.path, m.multilang));
+    const lastFile = !!lastPath && pathMatches(lastPath, u.path, m.multilang);
+    const mod = moduleName(u.path, m.multilang);
     const stem = u.path.slice(u.path.lastIndexOf("/") + 1).replace(/\.py$/, "");
     const v: Record<string, number | boolean> = {
       bm25_rel: rl.lex(d), bm25_logrank: lr.lex[d],
@@ -251,7 +251,7 @@ export function rankUnits(index: BM25, model: RankerModel, stage: Stage, sig: Si
       class_in_code: !!cls && m.codeIdents.has(cls),
       frame_name: m.frameNames.has(name), frame_file: inFrames, frame_both: inFrames && m.frameNames.has(name),
       last_frame_file: lastFile, last_frame_both: lastFile && name === lastName,
-      path_mentioned: m.pyPaths.some((p) => pathMatches(p, u.path)),
+      path_mentioned: m.pyPaths.some((p) => pathMatches(p, u.path, m.multilang)),
       module_mentioned: m.dotted.has(mod) || m.dotted.has(mod.split(".").slice(-2).join(".")),
       stem_count: stem !== "__init__" ? Math.log1p(count(stem)) : 0,
     };  // prettier-ignore
@@ -333,7 +333,7 @@ export function rankFiles(
   }
   const mentioned = new Set<number>();
   files.forEach((p, f) => {
-    if ([...m.framePaths, ...m.pyPaths].some((x) => pathMatches(x, p))) mentioned.add(f);
+    if ([...m.framePaths, ...m.pyPaths].some((x) => pathMatches(x, p, m.multilang))) mentioned.add(f);
   });
   const cand = new Set<number>([...byFileUnits.keys(), ...mentioned, ...topK(fileMax, filePool.lex), ...topK(semBest, filePool.sem, false)]);
   const frows = [...cand].sort((a, b) => a - b);
@@ -354,18 +354,18 @@ export function rankFiles(
   const col = new Map(stage.features.map((f, i) => [f, i]));
   const out = frows.map((f): FileCandidate => {
     const path = files[f];
-    const mod = moduleName(path);
+    const mod = moduleName(path, m.multilang);
     const stem = path.slice(path.lastIndexOf("/") + 1).replace(/\.py$/, "");
     const v: Record<string, number | boolean> = {
       best_score_gap: bestF[f] - bestTop, best_score_logrank: lr.best[f], pool_units: Math.log1p(poolUnits[f]),
       file_max_rel: rl.fmax(f), file_max_logrank: lr.fmax[f], file_sum_rel: rl.fsum(f), file_sum_logrank: lr.fsum[f],
       title_max_rel: rl.title(f), title_max_logrank: lr.title[f], code_max_rel: rl.code(f),
       sem_gap: semBest[f] - semTop, sem_logrank: lr.sem[f], title_sem_gap: titleSemBest[f] - titleSemTop,
-      path_mentioned: m.pyPaths.some((p) => pathMatches(p, path)),
+      path_mentioned: m.pyPaths.some((p) => pathMatches(p, path, m.multilang)),
       module_mentioned: m.dotted.has(mod) || m.dotted.has(mod.split(".").slice(-2).join(".")),
       stem_count: stem !== "__init__" ? Math.log1p(m.idents.get(stem) ?? 0) : 0,
-      frame_file: m.framePaths.some((p) => pathMatches(p, path)),
-      last_frame_file: !!lastPath && pathMatches(lastPath, path),
+      frame_file: m.framePaths.some((p) => pathMatches(p, path, m.multilang)),
+      last_frame_file: !!lastPath && pathMatches(lastPath, path, m.multilang),
       any_name_in_code: agg.name_in_code[f], max_name_count: agg.name_count[f],
       any_qual_mentioned: agg.qual_mentioned[f], any_frame_both: agg.frame_both[f],
       units_in_file: Math.log1p(unitsInFile[f]), path_depth: path.split("/").length - 1, is_init_file: stem === "__init__",

@@ -78,6 +78,7 @@ class Mentions:
     frame_paths: tuple[str, ...]  # file paths in traceback frames, '/'-separated
     py_paths: tuple[str, ...]  # any *.py path mentioned
     last_frame: tuple[str, str] | None  # innermost frame (path, name): where it blew up
+    multilang: bool = False
 
     @classmethod
     def parse(cls, text: str, multilang: bool = False) -> Mentions:
@@ -101,6 +102,7 @@ class Mentions:
                 p.replace("\\", "/") for p in (_SRC_PATH if multilang else _PY_PATH).findall(text)
             ),
             last_frame=frames[-1] if frames else None,
+            multilang=multilang,
         )
 
 

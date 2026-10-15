@@ -83,7 +83,7 @@ def extract(
     top_files = {int(f) for f in top_k(file_max, POOL["files"]) if file_max[f] > 0}
     mentioned = {
         f for f, p in enumerate(fn.files)
-        if any(path_matches(x, p) for x in (*m.frame_paths, *m.py_paths))
+        if any(path_matches(x, p, m.multilang) for x in (*m.frame_paths, *m.py_paths))
     }  # fmt: skip
     wanted = {n for n, c in m.idents.items() if len(n) > 2} | m.frame_names
     for d, uid in enumerate(fn.ids):
@@ -128,9 +128,9 @@ def extract(
         parts = qual.split(".")
         name = parts[-1]
         cls = parts[-2] if len(parts) > 1 else ""
-        in_frames = any(path_matches(p, path) for p in m.frame_paths)
-        last_file = bool(last_path) and path_matches(last_path, path)
-        mod = module_name(path)
+        in_frames = any(path_matches(p, path, m.multilang) for p in m.frame_paths)
+        last_file = bool(last_path) and path_matches(last_path, path, m.multilang)
+        mod = module_name(path, m.multilang)
         stem = path.rsplit("/", 1)[-1].removesuffix(".py")
         x = X[k]
         x[col["is_method"]] = len(parts) > 1
@@ -150,7 +150,7 @@ def extract(
         x[col["frame_both"]] = in_frames and name in m.frame_names
         x[col["last_frame_file"]] = last_file
         x[col["last_frame_both"]] = last_file and name == last_name
-        x[col["path_mentioned"]] = any(path_matches(p, path) for p in m.py_paths)
+        x[col["path_mentioned"]] = any(path_matches(p, path, m.multilang) for p in m.py_paths)
         x[col["module_mentioned"]] = mod in m.dotted or ".".join(mod.split(".")[-2:]) in m.dotted
         x[col["stem_count"]] = math.log1p(m.idents[stem]) if stem != "__init__" else 0.0
     if sem is not None and title_sem is not None:
@@ -233,7 +233,7 @@ def file_features(
 
     mentioned = {
         f for f, p in enumerate(fn.files)
-        if any(path_matches(x, p) for x in (*m.frame_paths, *m.py_paths))
+        if any(path_matches(x, p, m.multilang) for x in (*m.frame_paths, *m.py_paths))
     }  # fmt: skip
     cand = set(pool_file.tolist()) | mentioned
     cand |= {int(f) for f in top_k(file_max, FILE_POOL["lex"]) if file_max[f] > 0}
@@ -266,14 +266,14 @@ def file_features(
     last_path = m.last_frame[0] if m.last_frame else ""
     for i, f in enumerate(frows):
         path = fn.files[f]
-        mod = module_name(path)
+        mod = module_name(path, m.multilang)
         stem = path.rsplit("/", 1)[-1].removesuffix(".py")
         x = XF[i]
-        x[cf["path_mentioned"]] = any(path_matches(p, path) for p in m.py_paths)
+        x[cf["path_mentioned"]] = any(path_matches(p, path, m.multilang) for p in m.py_paths)
         x[cf["module_mentioned"]] = mod in m.dotted or ".".join(mod.split(".")[-2:]) in m.dotted
         x[cf["stem_count"]] = math.log1p(m.idents[stem]) if stem != "__init__" else 0.0
-        x[cf["frame_file"]] = any(path_matches(p, path) for p in m.frame_paths)
-        x[cf["last_frame_file"]] = bool(last_path) and path_matches(last_path, path)
+        x[cf["frame_file"]] = any(path_matches(p, path, m.multilang) for p in m.frame_paths)
+        x[cf["last_frame_file"]] = bool(last_path) and path_matches(last_path, path, m.multilang)
         x[cf["path_depth"]] = path.count("/")
         x[cf["is_init_file"]] = stem == "__init__"
     return frows, XF

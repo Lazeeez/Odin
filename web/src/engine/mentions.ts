@@ -63,6 +63,7 @@ export interface Mentions {
   pyPaths: string[];
   /** The innermost frame (path, name): where it blew up. */
   lastFrame: [string, string] | null;
+  multilang: boolean;
 }
 
 const all = (re: RegExp, text: string): string[] => Array.from(text.matchAll(re), (m) => m[0]);
@@ -86,6 +87,7 @@ export function parseMentions(text: string, multilang = false): Mentions {
     framePaths: frames.map(([p]) => p),
     pyPaths: all(multilang ? SRC_PATH : PY_PATH, text).map((p) => p.replaceAll("\\", "/")),
     lastFrame: frames.at(-1) ?? null,
+    multilang,
   };
 }
 

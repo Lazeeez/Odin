@@ -319,7 +319,7 @@ async function search(id: number, query: string, semantic: boolean, k: number): 
   if (id !== state.latest) return;
   const semanticStage = sim ? model.semantic : undefined;
   const stage = semanticStage ?? model.instant;
-  const sig = signals(index, query, semanticStage ? sim : undefined);
+  const sig = signals(index, query, semanticStage ? sim : undefined, !!model.meta.multilang);
   const ranked = rankUnits(index, model, stage, sig);
   const files = semanticStage && model.file ? rankFiles(index, model.file, stage, sig, ranked).slice(0, 10).map(wireFile) : undefined;
   post({
