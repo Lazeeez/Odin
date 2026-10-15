@@ -9,6 +9,8 @@ Odin's website and its archive relay run as one Cloudflare Worker: static files 
 | The Worker `odin` (site and relay) on `allfather.dev` | live, in the Cloudflare account `lajatm9@gmail.com` |
 | `www.allfather.dev` | serves the same site; pages declare `allfather.dev` as canonical |
 | D1 database `odin` (search counts and votes, [ADR 0022](decisions/0022-website-feedback.md)) | live since 2026-10-15; checked with a real vote from a browser on `allfather.dev`, then the test rows were deleted |
+| GitHub API proxy at `/gh/` ([ADR 0024](decisions/0024-github-api-proxy.md)) | deployed 2026-10-15; answers 501 until the `GITHUB_TOKEN` secret is stored, and the site then calls GitHub directly |
+| Live accuracy ([ADR 0023](decisions/0023-live-accuracy.md)) | `/api/live` and the D1 table `live` deployed 2026-10-15; the nightly workflow `.github/workflows/live.yml` publishes once the `LIVE_TOKEN` secret is set in both the Worker and the repository; the site shows nothing until then |
 | GitHub Pages site | being removed by the owner; see "GitHub Pages" |
 | A first copy of the Worker in the other Cloudflare account (`odin.lajat69.workers.dev`) | still there from the first attempt; delete it from that account's dashboard |
 
