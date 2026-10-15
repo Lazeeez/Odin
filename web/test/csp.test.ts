@@ -12,13 +12,22 @@ const allows = (directive: string, source: string) => directives.get(directive)?
 
 const worker = readFileSync(new URL("../src/worker/search.worker.ts", import.meta.url), "utf-8");
 const cdn = new URL(worker.match(/TRANSFORMERS_CDN = "([^"]+)"/)![1]).origin;
+const runtime = new URL(worker.match(/ORT_RUNTIME = "([^"]+)"/)![1]).origin;
 
 describe("content security policy", () => {
   it("lets the rerank model load its runtime from the CDN and import it from a blob URL", () => {
     expect(allows("script-src", cdn)).toBe(true);
+    expect(allows("script-src", runtime)).toBe(true);
+    expect(allows("connect-src", runtime)).toBe(true);
     expect(allows("script-src", "blob:")).toBe(true);
     expect(allows("script-src", "'wasm-unsafe-eval'")).toBe(true);
     expect(allows("worker-src", "blob:")).toBe(true);
+  });
+
+  it("loads the same ONNX runtime build that the pinned transformers.js release uses", () => {
+    const lock = JSON.parse(readFileSync(new URL("../package-lock.json", import.meta.url), "utf-8"));
+    const version = lock.packages["node_modules/onnxruntime-web"].version;
+    expect(worker).toContain(`ORT_RUNTIME = "https://unpkg.com/onnxruntime-web@${version}/dist/"`);
   });
 
   it("lets the model and its runtime be downloaded", () => {

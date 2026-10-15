@@ -20,6 +20,7 @@ import { idbGet, idbGetMany, idbPut, idbPutMany, touchRepo, trimVectors } from "
 
 declare const self: DedicatedWorkerGlobalScope;
 const TRANSFORMERS_CDN = "https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.0";
+const ORT_RUNTIME = "https://unpkg.com/onnxruntime-web@1.31.0-dev.20260914-8d85527a0/dist/";
 const post = (msg: FromWorker) => self.postMessage(msg);
 // Set at build time when the archive relay is deployed (see proxy/cloudflare-worker.js).
 const ARCHIVE_PROXY = import.meta.env.VITE_ARCHIVE_PROXY?.replace(/\/+$/, "");
@@ -168,7 +169,10 @@ function embedder(): Promise<(job: Job) => Embed> {
     env.allowLocalModels = false;
     // Threads need SharedArrayBuffer, which needs cross-origin isolation (set up by sw.js).
     const wasm = env.backends.onnx.wasm;
-    if (wasm) wasm.numThreads = self.crossOriginIsolated ? Math.min(4, navigator.hardwareConcurrency || 1) : 1;
+    if (wasm) {
+      wasm.numThreads = self.crossOriginIsolated ? Math.min(4, navigator.hardwareConcurrency || 1) : 1;
+      wasm.wasmPaths = ORT_RUNTIME;
+    }
     const tokenizer = await AutoTokenizer.from_pretrained(SEMANTIC.model);
     let backend = await pickBackend();
     let lastPct = -1;

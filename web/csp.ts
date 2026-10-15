@@ -4,6 +4,7 @@ export const CONNECT = [
   "https://raw.githubusercontent.com",
   "https://cdn.jsdelivr.net",
   "https://data.jsdelivr.com",
+  "https://unpkg.com",
   "https://huggingface.co",
   "https://*.huggingface.co",
   "https://*.hf.co",
@@ -13,7 +14,7 @@ export const CONNECT = [
 export const contentSecurityPolicy = (inlineScripts: string[]) =>
   [
     "default-src 'self'",
-    `script-src 'self' 'wasm-unsafe-eval' blob: https://cdn.jsdelivr.net https://static.cloudflareinsights.com ${inlineScripts.map((h) => `'sha256-${h}'`).join(" ")}`,
+    `script-src 'self' 'wasm-unsafe-eval' blob: https://cdn.jsdelivr.net https://unpkg.com https://static.cloudflareinsights.com ${inlineScripts.map((h) => `'sha256-${h}'`).join(" ")}`,
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data:",
     "font-src 'self'",
