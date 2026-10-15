@@ -4,7 +4,7 @@ import { LiveSection, useLive } from "../components/Live.tsx";
 import { PageHero } from "../components/PageHero.tsx";
 import { Tile } from "../components/Tile.tsx";
 import { RepoTable, SignificanceTable, StageChart } from "../components/Results.tsx";
-import { type BrowserEval, type LanguageEval, type Lite, type Summary, stagesAt } from "../lib/data.ts";
+import { type BrowserEval, type GpuReranker, type LanguageEval, type Lite, type Summary, stagesAt } from "../lib/data.ts";
 import { pct } from "../lib/format.ts";
 import { useReveal } from "../lib/reveal.ts";
 import { href } from "../lib/router.ts";
@@ -105,6 +105,8 @@ export function Benchmarks({ summary, lite, failed }: { summary: Summary | null;
         </section>
       )}
 
+      {lite?.gpu_reranker && <Gpu g={lite.gpu_reranker} />}
+
       {lite?.held_out_per_language && <Languages sets={lite.held_out_per_language} />}
 
       {lite && fn && (
@@ -170,6 +172,47 @@ function Languages({ sets }: { sets: Record<string, Record<string, LanguageEval>
         </table>
       </div>
       <p class="note">Share of bugs with a function the real fix changed in the top 10. Bold changes are significant (p &lt; 0.05, paired bootstrap); small sets can show a gain that is not yet significant.</p>
+    </section>
+  );
+}
+
+function Gpu({ g }: { g: GpuReranker }) {
+  const rows: [string, Record<string, number>][] = [
+    ["The browser's ranking", g.website],
+    ["With the GPU reranker", g.with_reranker],
+    ["GPU reranker, no browser language model (what the site runs)", g.without_language_model],
+  ];
+  const gain = g["hit@10_gain"];
+  return (
+    <section class="card frame block reveal">
+      <p class="kicker">On a GPU server</p>
+      <h2>The fine-tuned reranker</h2>
+      <p class="card-lede">
+        The search page can send your bug report and its top 50 functions to a GPU, where the full pipeline's reranker re-reads them.
+        Measured before it was built, by cross-validation on {g.issues.toLocaleString()} bugs from {g.projects} projects the reranker never
+        trained on: function hit@10 {gain.delta >= 0 ? "+" : ""}{(gain.delta * 100).toFixed(1)} points (95% interval {(gain.ci95[0] * 100).toFixed(1)} to{" "}
+        {(gain.ci95[1] * 100).toFixed(1)}, p {gain.p_value < 0.001 ? "< 0.001" : `= ${gain.p_value.toFixed(3)}`}).
+      </p>
+      <div class="table-wrap" tabIndex={0} role="region" aria-label="The GPU reranker's effect">
+        <table>
+          <thead><tr><th>Ranking</th><th>hit@1</th><th>hit@5</th><th>hit@10</th><th>MRR</th></tr></thead>
+          <tbody>
+            {rows.map(([label, m]) => (
+              <tr key={label}>
+                <td style={{ whiteSpace: "normal" }}>{label}</td>
+                <td class="num">{pct(m["hit@1"])}</td>
+                <td class="num">{pct(m["hit@5"])}</td>
+                <td class="num">{pct(m["hit@10"])}</td>
+                <td class="num">{m.mrr.toFixed(3)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="note">
+        Cross-validated on training projects, not a held-out test: scoring this configuration once on SWE-bench Lite and the 30 unseen
+        projects is still to come. See ADR 0021 and ADR 0026 in the repository.
+      </p>
     </section>
   );
 }

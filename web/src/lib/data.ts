@@ -71,6 +71,17 @@ export interface Lite {
   depth: number;
   held_out: { lite: BrowserEval; unseen: BrowserEval };
   held_out_per_language?: Record<string, Record<string, LanguageEval>>;
+  gpu_reranker?: GpuReranker;
+}
+
+export interface GpuReranker {
+  issues: number;
+  projects: number;
+  website: Metrics;
+  with_reranker: Metrics;
+  without_language_model: Metrics;
+  "hit@10_gain": { delta: number; ci95: [number, number]; p_value: number };
+  "skip_hit@10": { delta: number; ci95: [number, number]; p_value: number };
 }
 
 export interface LanguageEval {
