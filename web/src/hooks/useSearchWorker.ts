@@ -86,7 +86,7 @@ export function useSearchWorker() {
         return;
       case "error":
         setLoadingBoth(false);
-        if (msg.cancelled && startPending()) return;
+        if (startPending()) return;
         setInfo((prev) => (prev?.partial ? null : prev)); // never leave a half-loaded repository on screen
         setStatus({ text: msg.message, fraction: null, error: !msg.cancelled });
         return;

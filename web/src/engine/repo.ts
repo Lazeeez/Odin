@@ -128,10 +128,14 @@ type Tree = { sha: string; url: string; truncated: boolean; tree: { type: string
 // List files: GitHub's tree API, falling back to jsDelivr's listing when the API is
 // rate-limited or unreachable. One API request per repository: anonymous visitors get 60
 // an hour, and HEAD (the default branch) works for both the tree API and raw file URLs.
-export async function listFiles({ owner, name, ref }: RepoRef): Promise<Listing> {
+export async function listFiles({ owner, name, ref }: RepoRef, signal: AbortSignal | null = null): Promise<Listing> {
   const candidates = refCandidates(ref);
+  const stopIfCancelled = () => {
+    if (signal?.aborted) throw new LoadError("Loading cancelled.", { cancelled: true });
+  };
   try {
     for (const [branch, scope] of candidates) {
+      stopIfCancelled();
       let tree: Tree;
       try {
         tree = await getJSON<Tree>(`https://api.github.com/repos/${owner}/${name}/git/trees/${encodeURIComponent(branch)}?recursive=1`);
@@ -155,10 +159,12 @@ export async function listFiles({ owner, name, ref }: RepoRef): Promise<Listing>
     if (!(err instanceof LoadError && err.useMirror)) throw err;
     const tries: [string, string | null][] = ref ? candidates : ["main", "master", "develop", "trunk"].map((b) => [b, null]);
     for (const [branch, scope] of tries) {
+      stopIfCancelled();
       let r: Response;
       try {
-        r = await fetch(`https://data.jsdelivr.com/v1/packages/gh/${owner}/${name}@${encodePath(branch)}?structure=flat`);
+        r = await fetch(`https://data.jsdelivr.com/v1/packages/gh/${owner}/${name}@${encodePath(branch)}?structure=flat`, { signal: signal ?? undefined });
       } catch {
+        stopIfCancelled();
         continue;
       }
       if (!r.ok) continue;
@@ -513,7 +519,7 @@ export async function loadRepo(
   const refKey = `${ref.owner}/${ref.name}@${ref.ref ?? ""}`.toLowerCase();
   let listing = await cache?.getListing?.(refKey);
   if (!listing) {
-    listing = await listFiles(ref);
+    listing = await listFiles(ref, signal);
     void cache?.putListing?.(refKey, listing);
   }
   const notes: string[] = [];

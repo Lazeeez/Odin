@@ -199,6 +199,20 @@ test("pressing Enter on another repository mid-load switches to it", async ({ pa
   await expect(page.locator(".repo-summary")).toHaveCount(0);
 });
 
+test("a repository asked for while another is failing slowly still loads", async ({ page }) => {
+  await page.route("https://api.github.com/repos/odin-e2e/limited/**", (route) =>
+    route.fulfill({ status: 403, headers: { "x-ratelimit-remaining": "0", "x-ratelimit-reset": String(Math.floor(Date.now() / 1000) + 600) }, json: {} }));
+  await page.route(/jsdelivr\.(com|net)\/.*odin-e2e\/limited/, async (route) => {
+    await new Promise((r) => setTimeout(r, 1200));
+    await route.fulfill({ status: 404, json: {} });
+  });
+  await page.goto("./#/search?repo=odin-e2e/limited");
+  await expect(page.locator(".progress-text")).toBeVisible();
+  await page.fill("#repo-input", REPO);
+  await page.press("#repo-input", "Enter");
+  await expect(page.locator(".repo-summary")).toContainText(REPO);
+});
+
 test("the landing page shows a real example bug, with the fix marked", async ({ page }) => {
   await page.goto("./");
   await expect(page.locator(".preview-issue p")).not.toBeEmpty();
