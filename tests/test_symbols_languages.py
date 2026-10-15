@@ -153,3 +153,15 @@ def test_python_is_unchanged():
 
     src = b"class A:\n    def f(self):\n        def g():\n            pass\n"
     assert extract_symbols(src, "a.py") == python_symbols.extract_symbols(src, "a.py")
+
+
+def test_test_files_in_every_language():
+    from odin.parsing.symbols import is_test_path
+
+    tests = [
+        "src/button.test.tsx", "src/__tests__/theme.ts", "lib/parse.spec.js", "tests/unit/color.tests.ts",
+        "pkg/server_test.go", "src/test/java/x/OuterTest.java", "tests/cli.rs", "e2e/login.ts", "test_app.py",
+    ]
+    sources = ["src/button.tsx", "lib/testing-library.js", "pkg/server.go", "src/main/java/x/Outer.java", "src/latest.rs", "src/contest.ts"]
+    assert all(is_test_path(p) for p in tests), [p for p in tests if not is_test_path(p)]
+    assert not any(is_test_path(p) for p in sources), [p for p in sources if is_test_path(p)]

@@ -33,6 +33,42 @@ EXTENSIONS = {
 }
 
 
+SAMPLE_PATH = {
+    PYTHON: "",
+    JAVASCRIPT: "_.js",
+    TYPESCRIPT: "_.ts",
+    TSX: "_.tsx",
+    GO: "_.go",
+    JAVA: "_.java",
+    RUST: "_.rs",
+}
+
+_TEST_DIRS = frozenset({"__tests__", "__mocks__", "e2e", "cypress", "testdata", "test-utils"})
+
+
+def is_test_path(path: str) -> bool:
+    parts = path.split("/")
+    name = parts[-1].lower()
+    dirs = parts[:-1]
+    if (
+        name.startswith("test_")
+        or name.endswith("_test.py")
+        or name == "conftest.py"
+        or any(p in ("tests", "test", "testing") for p in dirs)
+    ):
+        return True
+    stem = name.rsplit(".", 1)[0]
+    return (
+        any(stem.endswith(s) for s in (".test", ".spec", ".tests", ".specs", "_test"))
+        or any(p in _TEST_DIRS for p in dirs)
+        or (
+            name.endswith(".java")
+            and (stem.endswith("test") or stem.endswith("tests") or stem.endswith("it"))
+            and "src" in dirs
+        )
+    )
+
+
 def language_of(path: str) -> str | None:
     dot = path.rfind(".")
     if dot < 0 or path.endswith(".d.ts") or path.endswith(".min.js"):

@@ -15,6 +15,7 @@ import scipy.sparse as sp
 
 from odin.index.chunker import MODULE, chunk_file
 from odin.index.store import AnalysisCache
+from odin.parsing import symbols as multi
 from odin.repos import BlobReader, RepoCache, TreeEntry
 from odin.search.bm25 import BM25Index, BM25Params, TermVec, Vocab, tf_matrix
 from odin.search.tokenize import Tokenizer
@@ -101,9 +102,11 @@ class BlobAnalysis:
     unit_texts: list[str] | None
 
 
-def analyze_blob(source: bytes, tokenizer: Tokenizer, keep_text: bool = False) -> BlobAnalysis:
+def analyze_blob(
+    source: bytes, tokenizer: Tokenizer, keep_text: bool = False, lang: str | None = None
+) -> BlobAnalysis:
     """Parse, chunk and count one file. Pure, so it can run in a worker process."""
-    chunks = chunk_file(source, "")
+    chunks = chunk_file(source, multi.SAMPLE_PATH[lang] if lang else "")
     units = [c for c in chunks if c.kind != MODULE]
     texts = [unit_text(c.qualname, c.text) for c in units]
     counts: list[Counter[str]] = [tokenizer(t) for t in texts]
@@ -143,6 +146,7 @@ class SnapshotIndexer:
     # Returns True when any of these unit keys still needs its text (e.g. to be embedded).
     needs_text: Callable[[Sequence[bytes]], bool] | None = None
     disk: AnalysisCache | None = None
+    languages: frozenset[str] = frozenset({multi.PYTHON})
     vocab: Vocab = field(default_factory=Vocab)
     stats: IndexStats = field(default_factory=IndexStats)
     _names: dict[str, int] = field(default_factory=dict)
@@ -161,7 +165,9 @@ class SnapshotIndexer:
     def build(self, repo: str, commit: str, level: str) -> SnapshotIndex:
         self._switch_repo(repo)
         entries = self._entries(repo, commit)
-        blobs = self._blob_docs([e.oid for e in entries])
+        keys = [self._blob_key(e) for e in entries]
+        blobs = self._blob_docs(keys)
+        blobs = {e.oid: blobs[k] for e, k in zip(entries, keys, strict=True)}
         path_vecs = [self._path_vec(e.path) for e in entries]
 
         doc_ids: list[str] = []
@@ -250,10 +256,28 @@ class SnapshotIndexer:
         g.sum_duplicates()
         return g
 
+    def _python_only(self) -> bool:
+        return self.languages == frozenset({multi.PYTHON})
+
+    def _blob_key(self, e: TreeEntry) -> str:
+        if self._python_only():
+            return e.oid
+        lang = multi.language_of(e.path) or multi.PYTHON
+        return e.oid if lang == multi.PYTHON else f"{e.oid}:{lang}"
+
     def _entries(self, repo: str, commit: str) -> list[TreeEntry]:
-        entries = self.cache.list_tree(repo, commit, suffix=".py")
+        if self._python_only():
+            entries = self.cache.list_tree(repo, commit, suffix=".py")
+            if self.exclude_tests:
+                entries = [e for e in entries if not _is_test_path(e.path)]
+            return entries
+        entries = [
+            e
+            for e in self.cache.list_tree(repo, commit)
+            if multi.language_of(e.path) in self.languages
+        ]
         if self.exclude_tests:
-            entries = [e for e in entries if not _is_test_path(e.path)]
+            entries = [e for e in entries if not multi.is_test_path(e.path)]
         return entries
 
     def _switch_repo(self, repo: str) -> None:
@@ -289,6 +313,9 @@ class SnapshotIndexer:
 
     def _analyze(self, oids: list[str]) -> list[BlobAnalysis]:
         assert self._reader is not None and self._repo is not None
+        keys = oids
+        langs = [k.split(":", 1)[1] if ":" in k else None for k in keys]
+        oids = [k.split(":", 1)[0] for k in keys]
         self.cache.fetch_blobs(self._repo, oids)
         sources = [self._reader.read(o) for o in oids]
         keep = self.on_new_units is not None
@@ -298,10 +325,13 @@ class SnapshotIndexer:
                 self._pool = ProcessPoolExecutor(self.workers, mp_context=get_context("spawn"))
             return list(
                 self._pool.map(
-                    analyze_blob, sources, repeat(self.tokenizer), repeat(keep), chunksize=32
+                    analyze_blob, sources, repeat(self.tokenizer), repeat(keep), langs, chunksize=32
                 )
             )
-        return [analyze_blob(s, self.tokenizer, keep) for s in sources]
+        return [
+            analyze_blob(s, self.tokenizer, keep, lang)
+            for s, lang in zip(sources, langs, strict=True)
+        ]
 
     def _intern(self, a: BlobAnalysis) -> BlobDocs:
         """Map a blob's local term and call names onto the process-wide id spaces."""
@@ -326,8 +356,13 @@ class SnapshotIndexer:
     def _path_vec(self, path: str) -> TermVec:
         vec = self._paths.get(path)
         if vec is None:
+            stem = (
+                path.removesuffix(".py")
+                if path.endswith(".py") or "." not in path
+                else path.rsplit(".", 1)[0]
+            )
             vec = self._paths[path] = self.vocab.vectorize(
-                self.tokenizer(" ".join(_PATH_SPLIT.split(path.removesuffix(".py"))))
+                self.tokenizer(" ".join(_PATH_SPLIT.split(stem)))
             )
         return vec
 
@@ -336,14 +371,16 @@ class SnapshotIndexer:
         assert index.oids is not None and index.file_of_doc is not None and self._reader
         out = []
         for r in rows:
-            oid = index.oids[index.file_of_doc[r]]
-            chunks = self._text_cache.get(oid)
+            f = index.file_of_doc[r]
+            oid = index.oids[f]
+            path = index.files[f] if index.files is not None and not self._python_only() else ""
+            chunks = self._text_cache.get(f"{oid}:{path}")
             if chunks is None:
                 if len(self._text_cache) > 2048:
                     self._text_cache.clear()
-                chunks = self._text_cache[oid] = {
+                chunks = self._text_cache[f"{oid}:{path}"] = {
                     c.qualname: unit_text(c.qualname, c.text)
-                    for c in chunk_file(self._reader.read(oid), "")
+                    for c in chunk_file(self._reader.read(oid), path)
                     if c.kind != MODULE
                 }
             out.append(chunks[index.ids[r].split("::", 1)[1]])
