@@ -33,6 +33,7 @@ export interface WireHit {
   reasons: string[];
   /** For the top results: evidence groups and what each added to the score, largest first. */
   why?: [string, number][];
+  before?: number;
 }
 
 export type Backend = "webgpu" | "wasm";

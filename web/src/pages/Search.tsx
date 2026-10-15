@@ -153,6 +153,11 @@ function HitRow({ hit, rank, info, terms, open, onToggle, rating }: {
         <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" /></svg>
       </div>
       <div class="why">
+        {hit.before != null && (
+          <span class="moved" title="Where the browser ranked it before the GPU reranker re-read the top 50">
+            {hit.before > rank ? `↑ from #${hit.before}` : `↓ from #${hit.before}`}
+          </span>
+        )}
         {hit.reasons.map((r) => <span class="reason" key={r}>{r}</span>)}
         {matched.slice(0, 5).map(([t, c]) => <span class="term" key={t}>{t}{c > 1 ? ` ×${c}` : ""}</span>)}
         <span class="hit-actions">

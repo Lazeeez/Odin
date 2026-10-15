@@ -237,6 +237,7 @@ test("the GPU reranker reorders the top results without downloading the browser'
   await page.locator("#demo-query").fill("load_config crashes with KeyError when the settings file is missing");
   await expect(page.locator("p.tokens", { hasText: "Re-read the top 50" })).toBeVisible();
   await expect(page.locator("#search-app ol.hits .qual").first()).toHaveText(boosted);
+  await expect(page.locator("#search-app ol.hits > li").first().locator(".moved")).toHaveText("↑ from #2");
   expect(languageModel).toEqual([]);
 });
 

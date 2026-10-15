@@ -406,7 +406,14 @@ async function serverStage(id: number, job: ServerJob, stage: Stage, order: Cand
     if (!head.length || !head.every((c) => byRow.has(c.row))) return false;
     const members = byRow.get(head[0].row)!.length;
     const scores = Array.from({ length: members }, (_, m) => head.map((c) => byRow.get(c.row)![m]));
-    post({ type: "results", id, stage: "server", hits: explained(stage, blend(order, scores), k), files, terms, ms: performance.now() - job.sent });
+    const prior = new Map(order.map((c, i) => [c.row, i + 1]));
+    const blended = blend(order, scores);
+    const hits = explained(stage, blended, k);
+    hits.forEach((h, i) => {
+      const was = prior.get(blended[i].row);
+      if (was != null && was !== i + 1) h.before = was;
+    });
+    post({ type: "results", id, stage: "server", hits, files, terms, ms: performance.now() - job.sent });
     return true;
   } catch (err) {
     if (err instanceof Superseded || id !== state.latest || job.controller.signal.aborted) return false;
