@@ -49,11 +49,11 @@ export function Benchmarks({ summary, lite, failed }: { summary: Summary | null;
         </p>
       </PageHero>
       {failed && <p class="error-text">Couldn't load the benchmark data. Try reloading the page.</p>}
-      {fn && fl && (
+      {!failed && (
         <div class="tiles reveal">
-          <Tile label="Function to fix in the top 10" value={fn["hit@10"]} note={`${fn.n} issues, 10k–45k functions per project`} />
-          <Tile label="Function to fix ranked first" value={fn["hit@1"]} note={`${fn.n} issues: 300 minus ${300 - fn.n} with no function to find`} />
-          <Tile label="File to fix in the top 5" value={fl["hit@5"]} note={`file level, all ${fl.n} issues`} />
+          <Tile label="Function to fix in the top 10" value={fn ? fn["hit@10"] : null} note={fn ? `${fn.n} issues, 10k–45k functions per project` : "SWE-bench Lite"} />
+          <Tile label="Function to fix ranked first" value={fn ? fn["hit@1"] : null} note={fn ? `${fn.n} issues: 300 minus ${300 - fn.n} with no function to find` : "SWE-bench Lite"} />
+          <Tile label="File to fix in the top 5" value={fl ? fl["hit@5"] : null} note={fl ? `file level, all ${fl.n} issues` : "SWE-bench Lite"} />
         </div>
       )}
 
