@@ -42,9 +42,17 @@ for member, (folder, _) in MEMBERS.items():
 app = modal.App("odin-reranker")
 
 
-@app.cls(image=image, gpu="L4", scaledown_window=180, max_containers=1, timeout=120)
+@app.cls(
+    image=image,
+    gpu="L4",
+    scaledown_window=180,
+    max_containers=1,
+    timeout=120,
+    enable_memory_snapshot=True,
+    experimental_options={"enable_gpu_snapshot": True},
+)
 class Reranker:
-    @modal.enter()
+    @modal.enter(snap=True)
     def load(self) -> None:
         from cross_encoder import CrossEncoder
         from huggingface_hub import snapshot_download
@@ -54,7 +62,16 @@ class Reranker:
             weights = Path(f"/adapters/{member}/adapter_model.safetensors").read_bytes()
             if hashlib.sha256(weights).hexdigest() != digest:
                 raise RuntimeError(f"adapter {member} does not match models/adapters.json")
-        self.members = [CrossEncoder(adapter=Path(f"/adapters/{m}"), base=base) for m in MEMBERS]
+        self.members = [
+            CrossEncoder(adapter=Path(f"/adapters/{m}"), base=base, batch=MAX_TEXTS)
+            for m in MEMBERS
+        ]
+        for m in self.members:
+            m.score("warm the kernels", ["def a():\n    pass", "def b():\n    return 1"])
+
+    @modal.fastapi_endpoint(method="POST", requires_proxy_auth=True)
+    def warm(self) -> dict:
+        return {"ready": True}
 
     @modal.fastapi_endpoint(method="POST", requires_proxy_auth=True)
     def score(self, body: dict) -> dict:
