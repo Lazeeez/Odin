@@ -69,7 +69,7 @@ export default function CommandPalette({ onClose }: { onClose: () => void }) {
       <div class="palette frame" role="dialog" aria-modal="true" aria-label="Command palette" onClick={(e) => e.stopPropagation()} onKeyDown={onKey}>
         <input ref={input} type="text" value={q} onInput={(e) => setQ(e.currentTarget.value)} placeholder="Type a command, a page or owner/repository…"
           aria-label="Command" aria-controls="palette-list" aria-activedescendant={commands[at] ? `cmd-${at}` : undefined} />
-        <ul id="palette-list" role="listbox">
+        <ul id="palette-list" role="listbox" aria-label="Commands">
           {commands.slice(0, 9).map((c, i) => (
             <li key={c.title} id={`cmd-${i}`} role="option" aria-selected={i === at} class={i === at ? "on" : ""}
               onPointerEnter={() => setAt(i)} onClick={() => run(c)}>

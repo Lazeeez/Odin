@@ -46,7 +46,7 @@ export function SignificanceTable({ summary }: { summary: Summary }) {
   return (
     <>
       <div class="controls"><Seg small label="Level" value={level} onChange={setLevel} options={[["function", "Functions"], ["file", "Files"]] as const} /></div>
-      <div class="table-wrap">
+      <div class="table-wrap" tabIndex={0} role="region" aria-label="Significance of each step">
         <table>
           <thead><tr><th>Step</th><th>Metric</th><th>Change</th><th>95% interval</th><th>p</th><th>Wins / losses</th></tr></thead>
           <tbody>
@@ -82,7 +82,7 @@ export function RepoTable({ summary }: { summary: Summary }) {
   const last = rows.at(-1)!;
   const repos = Object.keys(last.by_repo).sort((a, b) => last.by_repo[b].n - last.by_repo[a].n);
   return (
-    <div class="table-wrap">
+    <div class="table-wrap" tabIndex={0} role="region" aria-label="Results by project">
       <table class="heat">
         <thead><tr><th>Project</th><th>Issues</th>{rows.map((r) => <th key={r.id} title={r.label}>{plainName(r.id, r.label)}</th>)}</tr></thead>
         <tbody>

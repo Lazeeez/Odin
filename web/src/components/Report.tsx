@@ -22,7 +22,7 @@ export function Report({ text }: { text: string }) {
       <div ref={box} class={`bug-body${full ? " full" : clipped ? "" : " fits"}`}>
         {blocks.map((b, i) =>
           b.kind === "code" ? (
-            <pre key={i} class="bug-code">{b.text}</pre>
+            <pre key={i} class="bug-code" tabIndex={0}>{b.text}</pre>
           ) : (
             <p key={i} class="bug-prose">{inlineSpans(b.text).map((s, j) => (s.code ? <code key={j}>{s.text}</code> : s.text))}</p>
           ),
