@@ -359,6 +359,8 @@ export function Search({ active, request }: { active: boolean; request: URLSearc
     return () => clearTimeout(t);
   }, [w.results, session]);
 
+  useEffect(() => w.preferGpu(serverOn && semanticOn), [serverOn, semanticOn]);
+
   useEffect(() => {
     if (w.loading && serverOn && semanticOn && w.serverReady) w.warm();
   }, [w.loading, serverOn, semanticOn, w.serverReady]);

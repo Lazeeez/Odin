@@ -3,6 +3,7 @@ import { RESULTS, SEMANTIC } from "../engine/semantic.ts";
 import { SERVER } from "../engine/server.ts";
 import { overallProgress } from "../lib/progress.ts";
 import { duration } from "../lib/format.ts";
+import { load as stored } from "../lib/storage.ts";
 import type { Backend, FromWorker, RankStage, RepoInfo, ToWorker, WireFile, WireHit } from "../worker/protocol.ts";
 
 export interface LoadStatus {
@@ -26,6 +27,7 @@ export interface Results {
 export function useSearchWorker() {
   const worker = useRef<Worker | null>(null);
   const seq = useRef(0);
+  const gpu = useRef<boolean>(stored("gpuRerank", true));
   const loadingRef = useRef(false);
   /** The furthest overall progress of the current load: never shown going backwards. */
   const furthest = useRef(0);
@@ -161,7 +163,7 @@ export function useSearchWorker() {
     setSemanticIndex(null);
     setMap(null);
     setStatus({ text: "Starting…", fraction: 0, error: false });
-    send({ type: "load", input, includeTests });
+    send({ type: "load", input, includeTests, gpu: gpu.current });
   }, [send]);
 
   start.current = load;
@@ -171,6 +173,9 @@ export function useSearchWorker() {
   }, [send]);
   const requestMap = useCallback(() => send({ type: "map" }), [send]);
   const warm = useCallback(() => send({ type: "warm" }), [send]);
+  const preferGpu = useCallback((on: boolean) => {
+    gpu.current = on;
+  }, []);
 
   const search = useCallback((query: string, useSemantic: boolean, useServer: boolean) => {
     const id = ++seq.current;
@@ -183,5 +188,5 @@ export function useSearchWorker() {
     send({ type: "search", id, query, semantic: useSemantic, server: useServer, k: RESULTS });
   }, [send]);
 
-  return { loading, status, info, results, semantic, server, serverReady, backend, semanticIndex, stages, map, load, cancel, search, requestMap, warm };
+  return { loading, status, info, results, semantic, server, serverReady, backend, semanticIndex, stages, map, load, cancel, search, requestMap, warm, preferGpu };
 }

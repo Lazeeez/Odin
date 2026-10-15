@@ -246,7 +246,7 @@ const wire = (c: Pick<Candidate, "unit" | "score" | "bm25"> & Partial<Candidate>
 });
 const wireFile = (f: FileCandidate): WireFile => ({ path: f.path, score: f.score, functions: f.units.slice(0, 4).map(wire), count: f.units.length });
 
-async function load(input: string, includeTests: boolean): Promise<void> {
+async function load(input: string, includeTests: boolean, gpu: boolean): Promise<void> {
   state.controller = new AbortController();
   ranker().catch(() => {}); // fetched while the repository downloads
   staticModel().catch(() => {});
@@ -280,10 +280,10 @@ async function load(input: string, includeTests: boolean): Promise<void> {
     void buildSemantic(repo.index);
     void ranker().then((m) => {
       post({ type: "stages", rerank: !!m.rerank, file: !!m.file });
-      // Warm the rerank model while the visitor reads the first results, if it is used at all,
-      // but not on a Data Saver connection: there it loads on the first rerank instead.
+      // Warm the rerank model while the visitor reads the first results, if it is used at all:
+      // not on a Data Saver connection, and not when the GPU reranker will answer instead.
       const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData;
-      if (m.rerank && !saveData) embedder().catch(() => {});
+      if (m.rerank && !saveData && !(gpu && rerankServer && SERVER.skipLanguageModel)) embedder().catch(() => {});
     }, () => {});
     void trimVectors(); // keep stored embeddings within budget
   } catch (err) {
@@ -428,7 +428,7 @@ function warmServer(): void {
 }
 
 self.onmessage = ({ data }: MessageEvent<ToWorker>) => {
-  if (data.type === "load") void load(data.input, data.includeTests);
+  if (data.type === "load") void load(data.input, data.includeTests, data.gpu);
   else if (data.type === "warm") warmServer();
   else if (data.type === "cancel") state.controller?.abort();
   else if (data.type === "map") postMap();
