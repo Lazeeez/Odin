@@ -111,6 +111,7 @@ test("explorer deep links and old-style links", async ({ page }) => {
   await expect(page).toHaveURL(/#\/explore\/django__django-/);
   await page.goto("./#issue=django__django-11019");
   await expect(page).toHaveURL(/#\/explore\/django__django-11019$/);
+  await expect(page.locator("#explorer .bug-id")).toHaveText("django__django-11019");
   await page.goto(`./?repo=${encodeURIComponent(REPO)}&q=config`);
   await expect(page).toHaveURL(/#\/search\?repo=odin-e2e%2Ffixture&q=config$/);
 });
