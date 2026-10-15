@@ -2,6 +2,7 @@ import argparse
 import dataclasses
 import json
 import sys
+from datetime import date
 from pathlib import Path
 
 import numpy as np
@@ -258,9 +259,121 @@ def skip_language_model(name: str) -> int:
     return 0
 
 
+HELD_OUT = WORK / "tasks_heldout.jsonl"
+HELD_OUT_SETS = ("lite", "unseen")
+
+
+def held_out_tasks(ranker_path: Path) -> int:
+    from odin.rank.browser import predict_many
+
+    if HELD_OUT.exists():
+        sys.exit(f"{HELD_OUT} exists")
+    sys.modules["__main__"].Item = bl.Item
+    ranker = json.loads(ranker_path.read_text(encoding="utf-8"))
+    bl.MULTILANG = bool(ranker["meta"].get("multilang"))
+    if bl.MULTILANG:
+        bl.CACHE = Path(".cache/browser_ltr_multilang")
+    snaps = bl.Snapshots()
+    WORK.mkdir(parents=True, exist_ok=True)
+    written = 0
+    with HELD_OUT.open("w", encoding="utf-8", newline="\n") as handle:
+        for name in HELD_OUT_SETS:
+            for it in bl.build(name, bl.TEST[name], snaps):
+                ids, order = [], []
+                if it.xb is not None and len(it.xb):
+                    ids = bl.unit_ids(it, it.rows_b)
+                    order = [ids[i] for i in bl.order(predict_many(ranker["semantic"], it.xb))]
+                texts = []
+                if order:
+                    fn, _, _ = snaps.get(it.repo, it.commit)
+                    row_of = dict(zip(ids, it.rows_b.tolist(), strict=True))
+                    texts = snaps.r.indexer.unit_texts(
+                        fn, [row_of[u] for u in order[: max(DEPTHS)]]
+                    )
+                record = {
+                    "qid": it.qid,
+                    "set": name,
+                    "repo": it.repo,
+                    "query": it.text,
+                    "ids": order[:KEEP],
+                    "ranker_scores": (-np.log1p(np.arange(1, len(order[:KEEP]) + 1))).tolist(),
+                    "texts": texts,
+                    "gold": sorted(it.targets),
+                }
+                handle.write(json.dumps(record) + "\n")
+                written += 1
+    snaps.close()
+    print(f"wrote {HELD_OUT}: {written} issues; ranker {ranker_path}")
+    return 0
+
+
+def held_out_evaluate(name: str) -> int:
+    tasks = [json.loads(line) for line in HELD_OUT.open(encoding="utf-8")]
+    raw = {
+        r["qid"]: r["scores"]
+        for r in map(json.loads, (WORK / f"scores_{name}.jsonl").open(encoding="utf-8"))
+    }
+    report: dict = {"setting": [50, 1.0], "adr": "docs/decisions/0021-website-server-reranker.md"}
+    for which in HELD_OUT_SETS:
+        rows = [t for t in tasks if t["set"] == which and t["gold"]]
+        base, cand = [], []
+        for t in rows:
+            base.append(score(t["ids"][:10], t["gold"], KS))
+            if t["ids"] and t["qid"] in raw and raw[t["qid"]] and raw[t["qid"]][0]:
+                cand.append(score(blended(t, raw[t["qid"]], 50, 1.0)[:10], t["gold"], KS))
+            else:
+                cand.append(score(t["ids"][:10], t["gold"], KS))
+        report[which] = {
+            "issues": len(rows),
+            "website": aggregate(base, KS),
+            "with_gpu_reranker": aggregate(cand, KS),
+            "paired": {
+                m: dataclasses.asdict(
+                    paired_bootstrap(metric_values(base, m), metric_values(cand, m))
+                )
+                for m in ("hit@10", "hit@1", "hit@5", "mrr", "recall@10")
+            },
+        }
+    report["provenance"] = provenance()
+    target = OUT / f"heldout_{name}.json"
+    if target.exists():
+        sys.exit(f"{target} exists")
+    target.write_text(json.dumps(report, indent=1) + "\n", encoding="utf-8", newline="\n")
+    with (ROOT / "results" / "test-evals.log").open("a", encoding="utf-8", newline="\n") as log:
+        for which in HELD_OUT_SETS:
+            log.write(
+                f"{date.today().isoformat()} | {which} | website + GPU reranker | function | results/website-rerank/heldout_{name}.json | "
+                "ADR 0021's single held-out run of the configuration the site ships; nothing decided\n"
+            )
+    for which in HELD_OUT_SETS:
+        r = report[which]
+        print(
+            which,
+            r["issues"],
+            "website hit@10",
+            round(r["website"]["hit@10"], 4),
+            "with GPU",
+            round(r["with_gpu_reranker"]["hit@10"], 4),
+            "paired",
+            r["paired"]["hit@10"],
+        )
+    return 0
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("step", choices=["tasks", "evaluate", "semantic-orders", "skip-language-model"])
+    ap.add_argument(
+        "step",
+        choices=[
+            "tasks",
+            "evaluate",
+            "semantic-orders",
+            "skip-language-model",
+            "held-out-tasks",
+            "held-out-evaluate",
+        ],
+    )
+    ap.add_argument("--ranker", type=Path, default=ROOT / "web" / "src" / "assets" / "ranker.json")
     ap.add_argument("--name", default="current")
     args = ap.parse_args()
     steps = {
@@ -268,6 +381,8 @@ def main() -> int:
         "evaluate": lambda: evaluate(args.name),
         "semantic-orders": semantic_orders,
         "skip-language-model": lambda: skip_language_model(args.name),
+        "held-out-tasks": lambda: held_out_tasks(args.ranker),
+        "held-out-evaluate": lambda: held_out_evaluate(args.name),
     }
     return steps[args.step]()
 
