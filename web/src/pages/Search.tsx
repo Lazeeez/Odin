@@ -437,7 +437,7 @@ export function Search({ active, request }: { active: boolean; request: URLSearc
   };
 
   const chips = [...recent, ...EXAMPLES.filter((e) => !recent.some((r) => r.toLowerCase() === e.toLowerCase()))].slice(0, 7);
-  const semanticStatus = w.semantic ? `${w.semantic}${w.backend && w.semantic.startsWith("semantic") ? ` · ${w.backend === "webgpu" ? "GPU" : "CPU"}` : ""}` : "";
+  const semanticStatus = w.semantic ? `${w.semantic}${w.backend && w.semantic.startsWith("Reranked") ? ` · ${w.backend === "webgpu" ? "GPU" : "CPU"}` : ""}` : "";
 
   return (
     <div class="container app" id="search-app">

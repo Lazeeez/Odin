@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "preact/hooks";
 import { RESULTS, SEMANTIC } from "../engine/semantic.ts";
 import { overallProgress } from "../lib/progress.ts";
+import { duration } from "../lib/format.ts";
 import type { Backend, FromWorker, RankStage, RepoInfo, ToWorker, WireFile, WireHit } from "../worker/protocol.ts";
 
 export interface LoadStatus {
@@ -97,7 +98,7 @@ export function useSearchWorker() {
           const parts = [];
           if (msg.computed) parts.push(`embedded ${msg.computed} new functions`);
           if (msg.stored) parts.push(`${msg.stored} from your browser's cache`);
-          setSemantic(`language-model rerank of the top ${SEMANTIC.depth}: ${msg.ms.toFixed(0)} ms${parts.length ? ` (${parts.join(", ")})` : " (already embedded this session)"}`);
+          setSemantic(`Reranked the top ${SEMANTIC.depth} with a language model in ${duration(msg.ms)}${parts.length ? ` (${parts.join(", ")})` : " (already embedded this session)"}`);
         }
         return;
       case "semantic-start":
