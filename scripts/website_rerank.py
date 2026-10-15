@@ -184,12 +184,92 @@ def evaluate(name: str) -> int:
     return 0
 
 
+SEMANTIC_ORDERS = WORK / "semantic_orders.jsonl"
+
+
+def semantic_orders() -> int:
+    if SEMANTIC_ORDERS.exists():
+        sys.exit(f"{SEMANTIC_ORDERS} exists")
+    sys.modules["__main__"].Item = bl.Item
+    snaps = bl.Snapshots()
+    parts = {name: bl.build(name, spec, snaps) for name, spec in bl.TRAIN.items()}
+    train = parts["swe-bench"] + parts["rebench"]
+    rebench = {it.qid for it in parts["rebench"]}
+    splits = bl.repo_folds(train)
+    n_gold = [len(it.targets) for it in train]
+    X, Y, _ = bl.stage_rows(train, "b")
+    _, oof_b, _ = bl.cv_items(train, X, Y, n_gold, splits)
+    with SEMANTIC_ORDERS.open("w", encoding="utf-8", newline="\n") as handle:
+        for it, sb in zip(train, oof_b, strict=True):
+            if it.qid in rebench:
+                ids = bl.unit_ids(it, it.rows_b)
+                order = [ids[i] for i in bl.order(sb)] if len(sb) else []
+                handle.write(json.dumps({"qid": it.qid, "ids": order[:KEEP]}) + "\n")
+    snaps.close()
+    print(f"wrote {SEMANTIC_ORDERS}")
+    return 0
+
+
+def skip_language_model(name: str) -> int:
+    depth, weight = 50, 1.0
+    tasks = [json.loads(line) for line in TASKS.open(encoding="utf-8")]
+    tasks = [t for t in tasks if t["gold"] and t["ids"]]
+    raw = {
+        r["qid"]: r["scores"]
+        for r in map(json.loads, (WORK / f"scores_{name}.jsonl").open(encoding="utf-8"))
+    }
+    semantic = {r["qid"]: r["ids"] for r in map(json.loads, SEMANTIC_ORDERS.open(encoding="utf-8"))}
+    differ = [t["qid"] for t in tasks if set(semantic[t["qid"]][:depth]) != set(t["ids"][:depth])]
+    if differ:
+        sys.exit(f"{len(differ)} issues have different top {depth}s, e.g. {differ[:3]}")
+    base, cand = [], []
+    for t in tasks:
+        base.append(score(blended(t, raw[t["qid"]], depth, weight)[:10], t["gold"], KS))
+        n = min(depth, len(t["ids"]), len(raw[t["qid"]][0]))
+        by_id = {u: [s[i] for s in raw[t["qid"]]] for i, u in enumerate(t["ids"][:n])}
+        order = semantic[t["qid"]]
+        members = [[by_id[u][m] for u in order[:n]] for m in range(len(raw[t["qid"]]))]
+        swapped = {**t, "ids": order}
+        cand.append(score(blended(swapped, members, depth, weight)[:10], t["gold"], KS))
+    paired = {
+        m: dataclasses.asdict(paired_bootstrap(metric_values(base, m), metric_values(cand, m)))
+        for m in ("hit@10", "hit@1", "hit@5", "mrr", "recall@10")
+    }
+    gain = paired["hit@10"]
+    report = {
+        "issues": len(tasks),
+        "projects": len({t["repo"] for t in tasks}),
+        "setting": [depth, weight],
+        "same_top_50": True,
+        "gpu_over_language_model_order": aggregate(base, KS),
+        "gpu_over_semantic_order": aggregate(cand, KS),
+        "paired": paired,
+        "decision": {
+            "rule": "skip the language model if hit@10 loss <= 0.005 and the 95% interval's loss end < 0.010",
+            "met": bool(gain["delta"] >= -0.005 and gain["ci95"][0] > -0.010),
+        },
+        "provenance": provenance(),
+    }
+    target = OUT / f"skip_language_model_{name}.json"
+    if target.exists():
+        sys.exit(f"{target} exists")
+    target.write_text(json.dumps(report, indent=1) + "\n", encoding="utf-8", newline="\n")
+    print(json.dumps({k: v for k, v in report.items() if k != "provenance"}, indent=1))
+    return 0
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("step", choices=["tasks", "evaluate"])
+    ap.add_argument("step", choices=["tasks", "evaluate", "semantic-orders", "skip-language-model"])
     ap.add_argument("--name", default="current")
     args = ap.parse_args()
-    return build_tasks() if args.step == "tasks" else evaluate(args.name)
+    steps = {
+        "tasks": build_tasks,
+        "evaluate": lambda: evaluate(args.name),
+        "semantic-orders": semantic_orders,
+        "skip-language-model": lambda: skip_language_model(args.name),
+    }
+    return steps[args.step]()
 
 
 if __name__ == "__main__":
