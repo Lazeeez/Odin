@@ -16,7 +16,14 @@ const HOW: ["ansuz" | "eye" | "shield", string, string][] = [
 export function Explore({ summary, linked, failed, mode: asked, set }: {
   summary: Summary | null; linked: string | null; failed: boolean; mode?: string | null; set?: string | null;
 }) {
-  const dataset: Dataset = set === "languages" ? "languages" : "lite";
+  const [hasLanguages, setHasLanguages] = useState(false);
+  useEffect(() => {
+    void fetch(`${import.meta.env.BASE_URL}data/issues-multi/index.json`, { method: "HEAD" }).then(
+      (r) => setHasLanguages(r.ok && (r.headers.get("content-type") ?? "").includes("json")),
+      () => {},
+    );
+  }, []);
+  const dataset: Dataset = set === "languages" && hasLanguages ? "languages" : "lite";
   const chooseSet = (d: Dataset) => {
     location.hash = href("explore", null, d === "languages" ? { set: "languages" } : undefined);
   };
@@ -46,7 +53,7 @@ export function Explore({ summary, linked, failed, mode: asked, set }: {
         <span class="muted small">{mode === "game" ? "Guess the file the fix changed, then see what Odin picked." : "Step through one bug and every stage's answer."}</span>
       </div>
       {failed && <p class="error-text">Couldn't load the benchmark data. Try reloading the page.</p>}
-      {mode === "explore" && (
+      {mode === "explore" && hasLanguages && (
         <div class="mode-row">
           <Seg label="Bugs" value={dataset} onChange={chooseSet} options={[["lite", "SWE-bench Lite · Python"], ["languages", "Five more languages"]] as const} />
           <span class="muted small">{dataset === "languages" ? "SWE-bench Multilingual and SWE-PolyBench, ranked by the website's pipeline." : "Ranked by the full GPU pipeline."}</span>

@@ -9,6 +9,7 @@ import { githubApi, githubUrl, issueNumber, parseRepo } from "../engine/github.t
 import { feedbackEnabled, newSession, type QuerySource, recordSearch, recordVote } from "../lib/feedback.ts";
 import { type Results, useSearchWorker } from "../hooks/useSearchWorker.ts";
 import { highlightCode, matchedTerms } from "../lib/highlight.ts";
+import { shareCard } from "../lib/shareCard.ts";
 import { href, replaceHash } from "../lib/router.ts";
 import { useLazy } from "../lib/lazy.ts";
 import { load, save } from "../lib/storage.ts";
@@ -458,6 +459,28 @@ export function Search({ active, request }: { active: boolean; request: URLSearc
     }
   };
 
+  const [carding, setCarding] = useState<"" | "busy" | "shared" | "downloaded" | "failed">("");
+  const STAGE_TEXT: Record<string, string> = {
+    server: "Ranked in the browser, re-read by Odin's fine-tuned reranker on a GPU",
+    rerank: "Ranked in the browser, reranked by a small language model",
+    semantic: "Ranked in the browser by keywords and meaning",
+    instant: "Ranked in the browser by keywords and the learned ranker",
+  };
+  const card = async () => {
+    if (!w.results || !info) return;
+    setCarding("busy");
+    try {
+      const done = await shareCard(
+        { repo: info.repo, query, hits: w.results.hits.slice(0, 3), stage: STAGE_TEXT[w.results.stage] ?? "", site: location.host || "allfather.dev" },
+        `${location.origin}${location.pathname}${link}`,
+      );
+      setCarding(done);
+    } catch {
+      setCarding("failed");
+    }
+    setTimeout(() => setCarding(""), 2200);
+  };
+
   const share = async () => {
     try {
       await navigator.clipboard.writeText(`${location.origin}${location.pathname}${link}`);
@@ -588,6 +611,11 @@ export function Search({ active, request }: { active: boolean; request: URLSearc
                 <button class={`link-btn${showMap ? " on" : ""}`} type="button" aria-pressed={showMap} onClick={() => setShowMap(!showMap)}
                   title="The repository as a tree, with the results lit up">{showMap ? "Hide the map" : "Show the map"}</button>
                 <button class="link-btn" type="button" onClick={share}>{copied ? "Link copied ✓" : "Copy link"}</button>
+                {w.results && w.results.hits.length > 0 && (
+                  <button class="link-btn" type="button" onClick={card} disabled={carding === "busy"} title="An image of these results to post or send">
+                    {carding === "busy" ? "Drawing…" : carding === "downloaded" ? "Card saved ✓" : carding === "shared" ? "Shared ✓" : carding === "failed" ? "Couldn't draw it" : "Share card"}
+                  </button>
+                )}
               </span>
             </div>
           </div>

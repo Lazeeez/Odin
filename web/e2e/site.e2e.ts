@@ -266,3 +266,17 @@ test("Explore shows bugs in other languages, ranked by the website's own stages"
   await page.locator(".picker button", { hasText: "Browse all" }).click();
   await expect(page.locator(".bug-filters select[aria-label='Language']")).toBeVisible();
 });
+
+test("Share card draws the top results as an image", async ({ page }) => {
+  await page.goto(`./#/search?repo=${encodeURIComponent(REPO)}`);
+  await expect(page.locator(".repo-pill")).toContainText(REPO);
+  await page.locator(".toolbar .switch", { hasText: "Language-model" }).click();
+  await page.locator("#demo-query").fill("load_config crashes with KeyError when the settings file is missing");
+  await expect(page.locator("#search-app ol.hits .qual").first()).toHaveText("load_config");
+  const [download] = await Promise.all([page.waitForEvent("download"), page.getByRole("button", { name: "Share card" }).click()]);
+  expect(download.suggestedFilename()).toBe("odin-odin-e2e-fixture.png");
+  const path = await download.path();
+  const { statSync, copyFileSync } = await import("node:fs");
+  expect(statSync(path).size).toBeGreaterThan(10_000);
+  if (process.env.CARD_OUT) copyFileSync(path, process.env.CARD_OUT);
+});
