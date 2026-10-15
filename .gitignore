@@ -21,6 +21,8 @@ results/*
 !results/odin-max/
 !results/live/
 !results/website-rerank/
+!results/browser_ltr_multilang/
+results/browser_ltr_multilang/static-model.bin
 results/odin-max/work/
 results/browser-reranker/work/
 results/website-rerank/work/

@@ -1,0 +1,21 @@
+{
+ "produced_by": "scripts/browser_ltr.py --multilang, on PACE (coc-gpu, one L40S node, 16 CPUs), 2026-10-15",
+ "git_commit": "d29845ba80e97b66084aa8591be4ea213a4a0ea4",
+ "runs": [
+  "first run at the commit before d29845b: the same models and totals; its report labelled every training issue Python (report_run1.json)",
+  "second run at d29845b with --note, same seed and data: totals identical, per-language labels correct (report.json)"
+ ],
+ "inputs": {
+  "data/gold/multilang_train.jsonl": "690933b399a9b1d7ac70b73340e5118fea13b75b203bc99be337c025c143293b",
+  "data/gold/multilang_test_multilingual.jsonl": "b328a4b35b4a20de53a24f46a180d0d13fec47c05ea0694cdd0d7cb274078422",
+  "data/gold/multilang_test_polybench.jsonl": "c6720ed852d5bf2859e1729ec3474a5b383f019d1e7db699d9567ceb0abe61c1",
+  "data/multilang/manifest.json": "fadaabd8554691dae7b20a7a511f079a89aa358212f09374ec5138f5412a66a4"
+ },
+ "outputs": {
+  "results/browser_ltr_multilang/ranker.json": "17fcaeb3fedd475968c13e5cd4bcdb13689fa6af9707357ea0d0f0de79b0e879",
+  "results/browser_ltr_multilang/report.json": "670e5e1569c77005fbc179edff91d36297452f30574ed9e5428a0fd05dc1c3f1",
+  "results/browser_ltr_multilang/report_run1.json": "87f5c3049b0b4ea2c3e3b16cf11f3d338d7b9e20241ca187e86918df4c7d7b20",
+  "results/browser_ltr_multilang/static-model.bin": "4ae4f6c918918ffadfd6df2d0b3d4d501a2be43bbc3460b5c54d889e17786e27"
+ },
+ "note": "browser_ltr.py did not yet write a provenance block; it does from the next run on"
+}

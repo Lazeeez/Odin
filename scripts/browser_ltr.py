@@ -29,6 +29,7 @@ import numpy as np
 
 from odin.cli import _load_eval_set
 from odin.eval.metrics import aggregate, score
+from odin.eval.provenance import provenance
 from odin.index.chunker import MODULE, chunk_file
 from odin.index.snapshot import unit_key, unit_text
 from odin.rank.browser import (
@@ -757,7 +758,14 @@ def main() -> None:
     print(f"wrote {STATIC_OUT} ({size / 1e6:.1f} MB)")
     LITE.write_text(
         json.dumps(
-            {"embedder": EMBEDDER, "static": STATIC_MODEL, "depth": DEPTH, **report}, indent=1
+            {
+                "embedder": EMBEDDER,
+                "static": STATIC_MODEL,
+                "depth": DEPTH,
+                **report,
+                "provenance": provenance([OUT, STATIC_OUT]),
+            },
+            indent=1,
         ),
         encoding="utf-8",
     )
