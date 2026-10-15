@@ -34,6 +34,8 @@ export interface Summary {
 export interface Issue {
   id: string;
   repo: string;
+  language?: string;
+  set?: string;
   text: string;
   gold_files: string[];
   gold_functions: string[];
@@ -45,6 +47,7 @@ export interface Issue {
 export interface IssueSummary {
   id: string;
   repo: string;
+  language?: string;
   title: string;
   rescued: boolean;
   first: boolean;

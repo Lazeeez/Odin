@@ -1,5 +1,5 @@
 import { useEffect, useState } from "preact/hooks";
-import { Explorer } from "../components/Explorer.tsx";
+import { type Dataset, Explorer } from "../components/Explorer.tsx";
 import { Icon } from "../components/Myth.tsx";
 import { PageHero } from "../components/PageHero.tsx";
 import { Seg } from "../components/Seg.tsx";
@@ -13,7 +13,13 @@ const HOW: ["ansuz" | "eye" | "shield", string, string][] = [
   ["shield", "Checked against the real fix", "Gold labels are the functions and files whose lines the merged patch modifies, mapped onto the base commit's parse tree."],
 ];
 
-export function Explore({ summary, linked, failed, mode: asked }: { summary: Summary | null; linked: string | null; failed: boolean; mode?: string | null }) {
+export function Explore({ summary, linked, failed, mode: asked, set }: {
+  summary: Summary | null; linked: string | null; failed: boolean; mode?: string | null; set?: string | null;
+}) {
+  const dataset: Dataset = set === "languages" ? "languages" : "lite";
+  const chooseSet = (d: Dataset) => {
+    location.hash = href("explore", null, d === "languages" ? { set: "languages" } : undefined);
+  };
   const [mode, setMode] = useState<"explore" | "game">(asked === "game" ? "game" : "explore");
   // The mode lives in the address (#/explore?mode=game), so links, the palette and the nav agree.
   useEffect(() => setMode(asked === "game" ? "game" : "explore"), [asked]);
@@ -25,7 +31,7 @@ export function Explore({ summary, linked, failed, mode: asked }: { summary: Sum
   return (
     <div class="container">
       <PageHero kicker="Explore" title="Watch Odin hunt real bugs">
-        <p>Per-issue rankings from the evaluation run: every stage's top 10 for 300 SWE-bench Lite issues, scored against the maintainers' patch. The same data behind the benchmark numbers, one issue at a time.</p>
+        <p>Per-issue rankings from the evaluation runs, scored against the maintainers' patch: every stage's top 10 for 300 SWE-bench Lite issues (Python, the full GPU pipeline), and for 501 bugs in JavaScript, TypeScript, Go, Java and Rust (the website's own pipeline). The same data behind the benchmark numbers, one issue at a time.</p>
       </PageHero>
       <ol class="how-strip">
         {HOW.map(([icon, title, text], i) => (
@@ -40,8 +46,14 @@ export function Explore({ summary, linked, failed, mode: asked }: { summary: Sum
         <span class="muted small">{mode === "game" ? "Guess the file the fix changed, then see what Odin picked." : "Step through one bug and every stage's answer."}</span>
       </div>
       {failed && <p class="error-text">Couldn't load the benchmark data. Try reloading the page.</p>}
+      {mode === "explore" && (
+        <div class="mode-row">
+          <Seg label="Bugs" value={dataset} onChange={chooseSet} options={[["lite", "SWE-bench Lite · Python"], ["languages", "Five more languages"]] as const} />
+          <span class="muted small">{dataset === "languages" ? "SWE-bench Multilingual and SWE-PolyBench, ranked by the website's pipeline." : "Ranked by the full GPU pipeline."}</span>
+        </div>
+      )}
       {mode === "game" ? (Game ? <Game /> : <p class="muted">Loading the game…</p>)
-        : summary ? <Explorer summary={summary} linked={linked} /> : !failed && <p class="muted">Loading…</p>}
+        : summary || dataset === "languages" ? <Explorer key={dataset} summary={summary} linked={linked} dataset={dataset} /> : !failed && <p class="muted">Loading…</p>}
     </div>
   );
 }

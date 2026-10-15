@@ -239,3 +239,29 @@ test("the GPU reranker reorders the top results without downloading the browser'
   await expect(page.locator("#search-app ol.hits .qual").first()).toHaveText(boosted);
   expect(languageModel).toEqual([]);
 });
+
+test("Explore shows bugs in other languages, ranked by the website's own stages", async ({ page }) => {
+  const issue = {
+    id: "gin-gonic__gin-1234", repo: "gin-gonic/gin", language: "go", set: "multilingual",
+    text: "ShouldBindJSON accepts unknown fields\n\nBinding should reject a body with fields the struct does not have.",
+    gold_files: ["binding/json.go"], gold_functions: ["binding/json.go::jsonBinding.Bind"],
+    functions: {
+      keyword: ["context.go::Context.ShouldBindJSON", "binding/json.go::jsonBinding.Bind"],
+      instant: ["binding/json.go::jsonBinding.Bind"], semantic: ["binding/json.go::jsonBinding.Bind"], rerank: ["binding/json.go::jsonBinding.Bind"],
+    },
+    files: { files: ["binding/json.go"] },
+  };
+  await page.route("**/data/issues-multi/index.json", (route) => route.fulfill({
+    json: [{ id: issue.id, repo: issue.repo, language: "go", title: "ShouldBindJSON accepts unknown fields", first: true, missed: false, rescued: false }],
+  }));
+  await page.route(`**/data/issues-multi/${issue.id}.json`, (route) => route.fulfill({ json: issue }));
+  await page.goto("./#/explore");
+  await page.getByRole("button", { name: "Five more languages" }).click();
+  await expect(page).toHaveURL(/#\/explore\?set=languages$/);
+  await expect(page.locator("#explorer .bug-title")).toHaveText("ShouldBindJSON accepts unknown fields");
+  await expect(page.locator("#explorer .bug-meta")).toContainText("Go");
+  await expect(page.locator(".climb-name b").first()).toHaveText("Plain keyword search");
+  await expect(page.locator(".verdict")).toContainText("website pipeline lifted it to #1");
+  await page.locator(".picker button", { hasText: "Browse all" }).click();
+  await expect(page.locator(".bug-filters select[aria-label='Language']")).toBeVisible();
+});

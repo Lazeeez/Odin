@@ -71,7 +71,7 @@ export function App() {
           </div>
         )}
         {page === "benchmarks" && <Benchmarks summary={summary} lite={lite} failed={failed} />}
-        {page === "explore" && <Explore summary={summary} linked={route.param} failed={failed} mode={route.query.get("mode")} />}
+        {page === "explore" && <Explore summary={summary} linked={route.param} failed={failed} mode={route.query.get("mode")} set={route.query.get("set")} />}
         {page === "how" && <HowItWorks summary={summary} />}
       </main>
       <Footer />
