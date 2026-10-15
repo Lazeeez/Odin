@@ -458,6 +458,7 @@ section.block:not(.card) { margin: 40px 0; }
 .subhead { font-size: 15px; margin: 24px 0 10px; color: var(--ink-2); }
 .note, .fineprint { color: var(--muted); font-size: 13.5px; margin: 14px 0 0; }
 .note.no-match { margin: 0 0 10px; }
+.bug-grid-empty { margin: 14px 0 4px; }
 .controls { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
 .plain-list { margin: 0; padding-left: 20px; color: var(--ink-2); }
 .plain-list li { margin-bottom: 10px; max-width: 90ch; }

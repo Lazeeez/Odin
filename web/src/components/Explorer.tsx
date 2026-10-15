@@ -208,7 +208,7 @@ export function Explorer({ summary, linked }: { summary: Summary; linked: string
 
   const shown = useMemo(() => {
     if (!index) return [];
-    const f = filter.toLowerCase();
+    const f = filter.trim().toLowerCase();
     return index.filter((it) => (!repo || it.repo === repo) && (!f || it.id.includes(f) || it.title.toLowerCase().includes(f)) && (!outcome || it[outcome]));
   }, [index, filter, repo, outcome]);
 
@@ -219,7 +219,8 @@ export function Explorer({ summary, linked }: { summary: Summary; linked: string
     document.getElementById("explorer")?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
   const random = () => {
-    const pool = shown.length ? shown : index ?? [];
+    const all = shown.length ? shown : index ?? [];
+    const pool = all.length > 1 ? all.filter((it) => it.id !== selected) : all;
     if (pool.length) select(pool[Math.floor(Math.random() * pool.length)].id);
   };
 
@@ -273,9 +274,13 @@ export function Explorer({ summary, linked }: { summary: Summary; linked: string
             ))}
             <span class="issue-count">{shown.length} shown</span>
           </div>
-          <ul class="bug-grid">
-            {shown.map((it) => <BugCard key={it.id} it={it} on={it.id === selected} onPick={() => select(it.id)} />)}
-          </ul>
+          {shown.length ? (
+            <ul class="bug-grid">
+              {shown.map((it) => <BugCard key={it.id} it={it} on={it.id === selected} onPick={() => select(it.id)} />)}
+            </ul>
+          ) : (
+            <p class="muted bug-grid-empty">No bug matches these filters. Clear the search or pick another project.</p>
+          )}
         </div>
       )}
 
