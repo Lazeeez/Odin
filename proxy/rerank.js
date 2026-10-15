@@ -11,6 +11,22 @@ const valid = (body) =>
   && Array.isArray(body.texts) && body.texts.length >= 2 && body.texts.length <= MAX_TEXTS
   && body.texts.every((t) => typeof t === "string" && t.length <= MAX_CHARS);
 
+export async function warm(request, env, ctx) {
+  if (request.method !== "POST") return reply({ error: "POST only" }, 405);
+  if (!env.RERANK_URL || !env.MODAL_KEY || !env.MODAL_SECRET) return reply({ error: "no reranker configured" }, 501);
+  if (env.LIMITER) {
+    const { success } = await env.LIMITER.limit({ key: `rw:${request.headers.get("CF-Connecting-IP") ?? "unknown"}` });
+    if (!success) return reply({ error: "slow down" }, 429);
+  }
+  const started = fetch(env.RERANK_URL.replace(/-score\.modal\.run/, "-warm.modal.run"), {
+    method: "POST",
+    headers: { "Modal-Key": env.MODAL_KEY, "Modal-Secret": env.MODAL_SECRET },
+    signal: AbortSignal.timeout(TIMEOUT_MS),
+  }).catch(() => null);
+  if (ctx?.waitUntil) ctx.waitUntil(started);
+  return reply({ warming: true }, 202);
+}
+
 const hex = (buffer) => [...new Uint8Array(buffer)].map((b) => b.toString(16).padStart(2, "0")).join("");
 
 export async function rerank(request, env) {

@@ -55,6 +55,20 @@ describe("GPU reranker proxy", () => {
     expect((await worker.fetch(post(ok), ENV)).status).toBe(502);
   });
 
+  it("wakes the GPU in the background and answers at once", async () => {
+    const calls = upstream();
+    const waiting: Promise<unknown>[] = [];
+    const ctx = { waitUntil: (p: Promise<unknown>) => waiting.push(p) };
+    const warmUp = (env: Record<string, unknown>) =>
+      (worker as unknown as { fetch(r: Request, e: Record<string, unknown>, c: unknown): Promise<Response> })
+        .fetch(new Request(`${SITE}/rerank/warm`, { method: "POST", headers: { "Sec-Fetch-Site": "same-origin" } }), env, ctx);
+    expect((await warmUp({ ...ENV, RERANK_URL: "https://me--odin-reranker-reranker-score.modal.run" })).status).toBe(202);
+    await Promise.all(waiting);
+    expect(calls.map((c) => c.url)).toEqual(["https://me--odin-reranker-reranker-warm.modal.run"]);
+    expect(calls[0].headers.get("Modal-Key")).toBe("k");
+    expect((await warmUp({ ...ENV, RERANK_URL: undefined })).status).toBe(501);
+  });
+
   it("rate-limits each address", async () => {
     const calls = upstream();
     const LIMITER = { limit: async () => ({ success: false }) };

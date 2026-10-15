@@ -10,7 +10,7 @@
 
 import { api, publishLive } from "./api.js";
 import { github } from "./github.js";
-import { rerank } from "./rerank.js";
+import { rerank, warm } from "./rerank.js";
 
 const PATH = /^\/([A-Za-z0-9_.-]+)\/([A-Za-z0-9_.-]+)\/([A-Za-z0-9_./-]+)$/;
 
@@ -26,7 +26,7 @@ const allowed = (env, request, origin) => {
 const PAGES = /^\/(search|benchmarks|explore|how-it-works)(\/[^]*)?$/;
 
 const sitePath = (url, prefix) => {
-  if (!prefix || url.pathname.startsWith(`${prefix}/`) || url.pathname.startsWith("/api/") || url.pathname.startsWith("/gh/") || url.pathname === "/rerank") return null;
+  if (!prefix || url.pathname.startsWith(`${prefix}/`) || url.pathname.startsWith("/api/") || url.pathname.startsWith("/gh/") || url.pathname.startsWith("/rerank")) return null;
   if (url.pathname === "/") return new Response("not found", { status: 404 });
   if (url.pathname === "/favicon.ico") return Response.redirect(`${url.origin}/favicon.svg`, 301);
   const page = url.pathname.match(PAGES);
@@ -34,7 +34,7 @@ const sitePath = (url, prefix) => {
 };
 
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const url = new URL(request.url);
     const prefix = (env.ROUTE_PREFIX ?? "").replace(/\/+$/, "");
     const page = sitePath(url, prefix);
@@ -46,6 +46,7 @@ export default {
     if (url.pathname.startsWith("/api/")) return api(request, env, url.pathname.slice(4));
     if (url.pathname.startsWith("/gh/")) return github(request, env, url);
     if (url.pathname === "/rerank") return rerank(request, env);
+    if (url.pathname === "/rerank/warm") return warm(request, env, ctx);
     if (request.method === "OPTIONS") return new Response(null, { headers: { ...cors, "Access-Control-Allow-Methods": "GET" } });
     if (request.method !== "GET") return new Response("GET only", { status: 405, headers: cors });
     const pathname = url.pathname;
