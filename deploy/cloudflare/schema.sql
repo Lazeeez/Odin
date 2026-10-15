@@ -20,3 +20,9 @@ CREATE TABLE IF NOT EXISTS votes (
 );
 
 CREATE UNIQUE INDEX IF NOT EXISTS one_vote_per_result ON votes (session, repo, unit);
+
+CREATE TABLE IF NOT EXISTS live (
+  id INTEGER PRIMARY KEY CHECK (id = 1),
+  body TEXT NOT NULL,
+  updated TEXT NOT NULL
+);

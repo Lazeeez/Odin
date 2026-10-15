@@ -1,5 +1,6 @@
 import { useRef } from "preact/hooks";
 import { Bars } from "../components/Bars.tsx";
+import { LiveSection, useLive } from "../components/Live.tsx";
 import { PageHero } from "../components/PageHero.tsx";
 import { Tile } from "../components/Tile.tsx";
 import { RepoTable, SignificanceTable, StageChart } from "../components/Results.tsx";
@@ -39,6 +40,7 @@ export function Benchmarks({ summary, lite, failed }: { summary: Summary | null;
   useReveal(root);
   const fn = summary ? stagesAt(summary, "function").at(-1)! : null;
   const fl = summary ? stagesAt(summary, "file").at(-1)! : null;
+  const live = useLive();
   return (
     <div class="container" ref={root}>
       <PageHero kicker="Benchmarks" title="How often Odin finds the fix">
@@ -112,6 +114,8 @@ export function Benchmarks({ summary, lite, failed }: { summary: Summary | null;
           <p class="note">Share of issues with a function the real fix changed in the top 10.</p>
         </section>
       )}
+
+      {live && <LiveSection live={live} />}
 
       <section class="card frame block reveal">
         <p class="kicker">Method</p>

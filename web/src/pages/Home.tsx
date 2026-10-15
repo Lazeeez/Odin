@@ -10,6 +10,7 @@ import { load, save } from "../lib/storage.ts";
 import { href } from "../lib/router.ts";
 import { issueNumber } from "../engine/github.ts";
 import { fetchUsage, type Usage } from "../lib/feedback.ts";
+import { LiveLine, useLive } from "../components/Live.tsx";
 
 const EXAMPLES = ["pallets/flask", "psf/requests", "AtsushiSakai/PythonRobotics"];
 const SHOW_USAGE_FROM = 100;
@@ -33,6 +34,7 @@ function UsageLine() {
 
 function QuickStart() {
   const [repo, setRepo] = useState("");
+  const live = useLive();
   const go = (name: string) => {
     location.hash = href("search", null, { repo: name.trim(), issue: issueNumber(name) ?? undefined });
   };
@@ -49,6 +51,7 @@ function QuickStart() {
           <span key={name}>{i > 0 && (i === EXAMPLES.length - 1 ? " or " : ", ")}<a href={href("search", null, { repo: name })}>{name}</a></span>
         ))}
       </p>
+      <LiveLine live={live} />
       <UsageLine />
     </form>
   );

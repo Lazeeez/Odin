@@ -100,6 +100,30 @@ describe("feedback API", () => {
     expect((await worker.fetch(post("/vote", vote), limited)).status).toBe(429);
   });
 
+  it("accepts the nightly live summary only with the shared token, and serves it to the site", async () => {
+    const { env } = setup();
+    const withToken = { ...env, LIVE_TOKEN: "s3cret-token-value" };
+    const summary = { generated: "2026-10-16T03:00:00+00:00", last_30_days: { bugs: 41 }, all_time: { bugs: 41 } };
+    const publish = (token: string | null, body: unknown = summary) =>
+      new Request(`${SITE}/api/live`, {
+        method: "POST",
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        body: typeof body === "string" ? body : JSON.stringify(body),
+      });
+    const read = () => worker.fetch(new Request(`${SITE}/api/live`, { headers: { "Sec-Fetch-Site": "same-origin" } }), withToken);
+    expect((await read()).status).toBe(404);
+    expect((await worker.fetch(publish(null), withToken)).status).toBe(401);
+    expect((await worker.fetch(publish("s3cret-token-valuX"), withToken)).status).toBe(401);
+    expect((await worker.fetch(publish("s3cret-token-value"), env)).status).toBe(401);
+    expect((await worker.fetch(publish("s3cret-token-value", "not json"), withToken)).status).toBe(400);
+    expect((await worker.fetch(publish("s3cret-token-value", { generated: "x" }), withToken)).status).toBe(400);
+    expect((await worker.fetch(publish("s3cret-token-value", { ...summary, pad: "x".repeat(70000) }), withToken)).status).toBe(413);
+    expect((await worker.fetch(publish("s3cret-token-value"), withToken)).status).toBe(200);
+    expect(await (await read()).json()).toEqual(summary);
+    expect((await worker.fetch(publish("s3cret-token-value", { ...summary, last_30_days: { bugs: 50 } }), withToken)).status).toBe(200);
+    expect(((await (await read()).json()) as { last_30_days: { bugs: number } }).last_30_days.bugs).toBe(50);
+  });
+
   it("reports totals", async () => {
     const { env } = setup();
     await worker.fetch(post("/search", { repo: "psf/requests", source: "typed", stage: "rerank", session: "abcdef12" }), env);

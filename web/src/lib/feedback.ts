@@ -57,3 +57,31 @@ export async function fetchUsage(): Promise<Usage | null> {
     return null;
   }
 }
+
+export interface LiveWindow {
+  bugs: number;
+  projects: number;
+  function?: { "hit@10": number; "hit@1": number; "recall@10": number; mrr: number; "hit@10_ci95": [number, number] };
+  file?: { "hit@10": number; "hit@10_ci95": [number, number] };
+  merged?: [string, string];
+}
+
+export interface LiveSummary {
+  generated: string;
+  last_30_days: LiveWindow;
+  all_time: LiveWindow;
+  all_time_trained_projects?: LiveWindow;
+  all_time_new_projects?: LiveWindow;
+}
+
+export const LIVE_MIN_BUGS = 30;
+
+export async function fetchLive(): Promise<LiveSummary | null> {
+  if (!feedbackEnabled) return null;
+  try {
+    const response = await fetch(`${API}/live`);
+    return response.ok ? ((await response.json()) as LiveSummary) : null;
+  } catch {
+    return null;
+  }
+}

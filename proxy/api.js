@@ -63,10 +63,50 @@ async function stats(env) {
   return response;
 }
 
+const MAX_LIVE = 65536;
+const LIVE_TTL = 600;
+
+const sameToken = (given, expected) => {
+  if (typeof given !== "string" || typeof expected !== "string" || !expected || given.length !== expected.length) return false;
+  let diff = 0;
+  for (let i = 0; i < given.length; i++) diff |= given.charCodeAt(i) ^ expected.charCodeAt(i);
+  return diff === 0;
+};
+
+export async function publishLive(request, env) {
+  if (!env.DB) return json({ error: "storage not configured" }, 503);
+  const token = (request.headers.get("Authorization") ?? "").replace(/^Bearer /, "");
+  if (!sameToken(token, env.LIVE_TOKEN)) return json({ error: "unauthorized" }, 401);
+  const text = await request.text();
+  if (text.length > MAX_LIVE) return json({ error: "too large" }, 413);
+  let body;
+  try {
+    body = JSON.parse(text);
+  } catch {
+    return json({ error: "bad request" }, 400);
+  }
+  if (!body || typeof body !== "object" || !body.last_30_days || !body.all_time || typeof body.generated !== "string") {
+    return json({ error: "bad request" }, 400);
+  }
+  await env.DB.prepare(
+    "INSERT INTO live (id, body, updated) VALUES (1, ?1, ?2) ON CONFLICT (id) DO UPDATE SET body = excluded.body, updated = excluded.updated",
+  ).bind(JSON.stringify(body), new Date().toISOString()).run();
+  return json({ ok: true });
+}
+
+async function live(env) {
+  const row = await env.DB.prepare("SELECT body FROM live WHERE id = 1").first();
+  if (!row) return json({ error: "no live results yet" }, 404, { "cache-control": "public, max-age=60" });
+  return new Response(row.body, { headers: { "content-type": "application/json", "cache-control": `public, max-age=${LIVE_TTL}` } });
+}
+
 export async function api(request, env, path) {
   if (!env.DB) return json({ error: "storage not configured" }, 503);
   if (path === "/stats") {
     return request.method === "GET" ? stats(env) : json({ error: "GET only" }, 405);
+  }
+  if (path === "/live") {
+    return request.method === "GET" ? live(env) : json({ error: "GET only" }, 405);
   }
   if (path !== "/search" && path !== "/vote") return json({ error: "not found" }, 404);
   if (request.method !== "POST") return json({ error: "POST only" }, 405);

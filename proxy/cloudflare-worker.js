@@ -8,7 +8,7 @@
 // variable ARCHIVE_PROXY to the worker's URL (Settings -> Secrets and variables -> Actions ->
 // Variables). The next Pages build picks it up; without it the site downloads file by file.
 
-import { api } from "./api.js";
+import { api, publishLive } from "./api.js";
 import { github } from "./github.js";
 
 const PATH = /^\/([A-Za-z0-9_.-]+)\/([A-Za-z0-9_.-]+)\/([A-Za-z0-9_./-]+)$/;
@@ -38,6 +38,7 @@ export default {
     const prefix = (env.ROUTE_PREFIX ?? "").replace(/\/+$/, "");
     const page = sitePath(url, prefix);
     if (page) return page;
+    if (url.pathname === "/api/live" && request.method === "POST") return publishLive(request, env);
     const origin = request.headers.get("Origin") ?? "";
     const cors = { "Access-Control-Allow-Origin": origin || "*", "Cross-Origin-Resource-Policy": "cross-origin", Vary: "Origin" };
     if (!allowed(env, request, origin)) return new Response("origin not allowed", { status: 403, headers: cors });
