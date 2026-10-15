@@ -7,7 +7,6 @@ export const CONNECT = [
   "https://huggingface.co",
   "https://*.huggingface.co",
   "https://*.hf.co",
-  "https://*.workers.dev",
   "https://cloudflareinsights.com",
 ];
 

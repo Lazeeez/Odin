@@ -12,7 +12,7 @@ Odin's website and its archive relay run as one Cloudflare Worker: static files 
 | GitHub API proxy at `/gh/` ([ADR 0024](decisions/0024-github-api-proxy.md)) | deployed 2026-10-15; answers 501 until the `GITHUB_TOKEN` secret is stored, and the site then calls GitHub directly |
 | Live accuracy ([ADR 0023](decisions/0023-live-accuracy.md)) | `/api/live` and the D1 table `live` deployed 2026-10-15; the nightly workflow `.github/workflows/live.yml` publishes once the `LIVE_TOKEN` secret is set in both the Worker and the repository; the site shows nothing until then |
 | GitHub Pages site | being removed by the owner; see "GitHub Pages" |
-| A first copy of the Worker in the other Cloudflare account (`odin.lajat69.workers.dev`) | still there from the first attempt; delete it from that account's dashboard |
+| The `lajat69@gmail.com` Cloudflare account | holds only leftovers of the first attempt (`odin`, `odin-archive-relay`); nothing on `allfather.dev` uses it, and the site's policy no longer allows `*.workers.dev`; the owner deletes it from that account's dashboard |
 
 ## Deploying
 
@@ -49,7 +49,7 @@ The build writes `dist/_headers` (content security policy, cross-origin isolatio
 
 ## The account
 
-The domain's zone is in the `lajatm9@gmail.com` Cloudflare account, so wrangler must be logged in to that one (`npx wrangler login`). If wrangler has deployed from another account before, it remembers that account's id; set `CLOUDFLARE_ACCOUNT_ID` to the right one for the deploy. `wrangler.jsonc` asks for `allfather.dev` as a custom domain and Cloudflare creates the DNS record itself.
+The domain's zone is in the `lajatm9@gmail.com` Cloudflare account, so wrangler must be logged in to that one (`npx wrangler login`). `wrangler.jsonc` pins that account (`account_id`), so wrangler uses it even when it remembers another account from an earlier login. `wrangler.jsonc` asks for `allfather.dev` as a custom domain and Cloudflare creates the DNS record itself.
 
 ## Checks after a deploy
 
@@ -67,7 +67,6 @@ Left to clean up in the accounts, not in the repository:
 
 - the repository variable `ARCHIVE_PROXY` (no longer read by anything);
 - the `odin-archive-relay` Worker and the first copy of `odin`, both in the `lajat69@gmail.com` Cloudflare account;
-- `https://*.workers.dev` in `CONNECT` in `web/vite.config.ts`, once the old relay is gone.
 
 ## What has been tested
 
