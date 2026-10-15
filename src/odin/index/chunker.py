@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from odin.parsing import symbols as multi
 from odin.parsing.python_symbols import call_sites, extract_symbols, parse
 
 MODULE = "module"
@@ -31,9 +32,16 @@ def chunk_file(source: bytes, path: str) -> list[Chunk]:
     outside every unit (imports, constants) form a module chunk, used for file-level search.
     Each unit also records the names it calls, for call-graph expansion.
     """
-    tree = parse(source)
+    lang = multi.language_of(path) or multi.PYTHON
+    if lang == multi.PYTHON:
+        tree = parse(source)
+        found = extract_symbols(source, path, tree)
+        sites = call_sites(tree)
+    else:
+        found = multi.extract_symbols(source, path)
+        sites = []
     lines = source.decode("utf-8", "replace").splitlines()
-    units = [s for s in extract_symbols(source, path, tree) if not s.nested]
+    units = [s for s in found if not s.nested]
     owner = [-1] * (len(lines) + 2)
     # Symbols are sorted outer-first by start line, so inner units overwrite their parents.
     for i, s in enumerate(units):
@@ -44,7 +52,7 @@ def chunk_file(source: bytes, path: str) -> list[Chunk]:
     for ln, text in enumerate(lines, start=1):
         (module if owner[ln] < 0 else owned[owner[ln]]).append(text)
     calls: list[dict[str, None]] = [{} for _ in units]
-    for name, ln in call_sites(tree):
+    for name, ln in sites:
         if 0 < ln < len(owner) and owner[ln] >= 0:
             calls[owner[ln]][name] = None
     chunks = [
