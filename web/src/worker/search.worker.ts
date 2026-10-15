@@ -336,6 +336,9 @@ async function search(id: number, query: string, semantic: boolean, server: bool
   });
   // The rerank stage was trained on the semantic stage's candidates.
   if (!semantic || !model.rerank || !semanticStage || ranked.candidates.length < 2) return;
+  const gpu = server && rerankServer ? askServer(id, query, ranked.candidates) : null;
+  let final = ranked.candidates;
+  let finalStage: Stage = stage;
   try {
     const bind = await embedder();
     if (id !== state.latest) return;
@@ -361,32 +364,69 @@ async function search(id: number, query: string, semantic: boolean, server: bool
       type: "results", id, stage: "rerank", hits: explained(model.rerank, hits, k), files, terms: ranked.terms,
       ms: performance.now() - t1, computed: units.computed, stored: units.stored,
     });
-    if (server && rerankServer && hits.length >= 2) await serverStage(id, query, model.rerank, hits, files, ranked.terms, k);
+    final = hits;
+    finalStage = model.rerank;
   } catch (err) {
-    if (!(err instanceof Superseded)) post({ type: "semantic-error", id, message: err instanceof Error ? err.message : String(err) });
+    if (err instanceof Superseded) return;
+    post({ type: "semantic-error", id, message: err instanceof Error ? err.message : String(err) });
   }
+  if (gpu && id === state.latest) await serverStage(id, gpu, finalStage, final, files, ranked.terms, k);
 }
 
-async function serverStage(id: number, query: string, stage: Stage, hits: Candidate[], files: WireFile[] | undefined, terms: string[], k: number): Promise<void> {
+interface ServerJob {
+  controller: AbortController;
+  sent: number;
+  scores: Promise<Map<number, number[]>>;
+}
+
+// The language-model stage only reorders the top 20, so the top 50 are the same functions before
+// and after it: the server scores them while it runs, and its scores are blended into its order.
+function askServer(id: number, query: string, candidates: Candidate[]): ServerJob {
   const controller = (state.server = new AbortController());
-  await new Promise((r) => setTimeout(r, SERVER.settleMs));
-  if (id !== state.latest || !rerankServer) return;
-  post({ type: "server-start", id });
-  const t0 = performance.now();
+  const top = candidates.slice(0, SERVER.depth);
+  const job: ServerJob = { controller, sent: 0, scores: Promise.resolve(new Map()) };
+  job.scores = (async () => {
+    await new Promise((r) => setTimeout(r, SERVER.settleMs));
+    if (id !== state.latest || !rerankServer) throw new Superseded();
+    post({ type: "server-start", id });
+    job.sent = performance.now();
+    const scores = await serverScores(rerankServer, query, top.map((c) => unitText(c.unit)), controller.signal);
+    return new Map(top.map((c, i) => [c.row, scores.map((s) => s[i])]));
+  })();
+  job.scores.catch(() => {});
+  return job;
+}
+
+async function serverStage(id: number, job: ServerJob, stage: Stage, order: Candidate[], files: WireFile[] | undefined, terms: string[], k: number): Promise<void> {
   try {
-    const scores = await serverScores(rerankServer, query, hits.slice(0, SERVER.depth).map((c) => unitText(c.unit)), controller.signal);
+    const byRow = await job.scores;
     if (id !== state.latest) return;
-    post({ type: "results", id, stage: "server", hits: explained(stage, blend(hits, scores), k), files, terms, ms: performance.now() - t0 });
+    const head = order.slice(0, SERVER.depth);
+    if (!head.length || !head.every((c) => byRow.has(c.row))) return;
+    const members = byRow.get(head[0].row)!.length;
+    const scores = Array.from({ length: members }, (_, m) => head.map((c) => byRow.get(c.row)![m]));
+    post({ type: "results", id, stage: "server", hits: explained(stage, blend(order, scores), k), files, terms, ms: performance.now() - job.sent });
   } catch (err) {
-    if (id !== state.latest || controller.signal.aborted) return;
+    if (err instanceof Superseded || id !== state.latest || job.controller.signal.aborted) return;
     const permanent = err instanceof ServerUnavailable && err.permanent;
     if (permanent) rerankServer = null;
     post({ type: "server-error", id, message: err instanceof Error ? err.message : String(err), permanent });
   }
 }
 
+let lastWarm = 0;
+
+function warmServer(): void {
+  if (!rerankServer || Date.now() - lastWarm < 60_000) return;
+  lastWarm = Date.now();
+  void fetch(`${rerankServer}/warm`, { method: "POST" }).then((r) => {
+    if (r.status === 501 || r.status === 404) rerankServer = null;
+  }).catch(() => {});
+}
+
 self.onmessage = ({ data }: MessageEvent<ToWorker>) => {
   if (data.type === "load") void load(data.input, data.includeTests);
+  else if (data.type === "warm") warmServer();
   else if (data.type === "cancel") state.controller?.abort();
   else if (data.type === "map") postMap();
   else void search(data.id, data.query, data.semantic, data.server, data.k);

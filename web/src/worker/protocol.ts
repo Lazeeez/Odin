@@ -51,6 +51,7 @@ export type RankStage = "instant" | "semantic" | "rerank" | "server";
 export type ToWorker =
   | { type: "load"; input: string; includeTests: boolean }
   | { type: "cancel" }
+  | { type: "warm" }
   | { type: "search"; id: number; query: string; semantic: boolean; server: boolean; k: number }
   | { type: "map" };
 

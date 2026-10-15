@@ -170,6 +170,7 @@ export function useSearchWorker() {
     send({ type: "cancel" });
   }, [send]);
   const requestMap = useCallback(() => send({ type: "map" }), [send]);
+  const warm = useCallback(() => send({ type: "warm" }), [send]);
 
   const search = useCallback((query: string, useSemantic: boolean, useServer: boolean) => {
     const id = ++seq.current;
@@ -182,5 +183,5 @@ export function useSearchWorker() {
     send({ type: "search", id, query, semantic: useSemantic, server: useServer, k: RESULTS });
   }, [send]);
 
-  return { loading, status, info, results, semantic, server, serverReady, backend, semanticIndex, stages, map, load, cancel, search, requestMap };
+  return { loading, status, info, results, semantic, server, serverReady, backend, semanticIndex, stages, map, load, cancel, search, requestMap, warm };
 }

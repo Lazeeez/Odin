@@ -359,6 +359,10 @@ export function Search({ active, request }: { active: boolean; request: URLSearc
     return () => clearTimeout(t);
   }, [w.results, session]);
 
+  useEffect(() => {
+    if (w.loading && serverOn && semanticOn && w.serverReady) w.warm();
+  }, [w.loading, serverOn, semanticOn, w.serverReady]);
+
   // The one place searches start from: typing, chips, the semantic switch and new repositories.
   useEffect(() => {
     if (!info) return;
@@ -521,6 +525,7 @@ export function Search({ active, request }: { active: boolean; request: URLSearc
           <div class="card frame query-card">
             <label class="field-label" for="demo-query">Bug report</label>
             <textarea ref={queryBox} id="demo-query" value={query} onInput={(e) => setQuery(e.currentTarget.value)}
+              onFocus={() => serverOn && semanticOn && w.serverReady && w.warm()}
               rows={Math.min(10, Math.max(3, query.split("\n").length))}
               placeholder="Paste an issue or a traceback, or describe what goes wrong… (press / to focus)" aria-label="Bug report" />
             {issueNote && (
