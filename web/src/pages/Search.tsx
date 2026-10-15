@@ -362,7 +362,7 @@ export function Search({ active, request }: { active: boolean; request: URLSearc
   useEffect(() => w.preferGpu(serverOn && semanticOn), [serverOn, semanticOn]);
 
   useEffect(() => {
-    if (w.loading && serverOn && semanticOn && w.serverReady) w.warm();
+    if (serverOn && semanticOn && w.serverReady) w.warm();
   }, [w.loading, serverOn, semanticOn, w.serverReady]);
 
   // The one place searches start from: typing, chips, the semantic switch and new repositories.
