@@ -1,8 +1,8 @@
 // A CORS relay for GitHub repository archives, so the website can download a whole repository
 // in one request instead of one per file (seconds instead of a minute for large projects).
 // GitHub serves archives from codeload.github.com without CORS headers for other sites; this
-// passes them through, streaming, with those headers added. /api/ (api.js) and /gh/ (github.js)
-// are the only other routes.
+// passes them through, streaming, with those headers added. /api/ (api.js), /gh/ (github.js) and
+// /rerank (rerank.js) are the only other routes.
 //
 // Deploy (free plan is plenty): `npx wrangler deploy` in this folder, then set the repository
 // variable ARCHIVE_PROXY to the worker's URL (Settings -> Secrets and variables -> Actions ->
@@ -10,6 +10,7 @@
 
 import { api, publishLive } from "./api.js";
 import { github } from "./github.js";
+import { rerank } from "./rerank.js";
 
 const PATH = /^\/([A-Za-z0-9_.-]+)\/([A-Za-z0-9_.-]+)\/([A-Za-z0-9_./-]+)$/;
 
@@ -25,7 +26,7 @@ const allowed = (env, request, origin) => {
 const PAGES = /^\/(search|benchmarks|explore|how-it-works)(\/[^]*)?$/;
 
 const sitePath = (url, prefix) => {
-  if (!prefix || url.pathname.startsWith(`${prefix}/`) || url.pathname.startsWith("/api/") || url.pathname.startsWith("/gh/")) return null;
+  if (!prefix || url.pathname.startsWith(`${prefix}/`) || url.pathname.startsWith("/api/") || url.pathname.startsWith("/gh/") || url.pathname === "/rerank") return null;
   if (url.pathname === "/") return new Response("not found", { status: 404 });
   if (url.pathname === "/favicon.ico") return Response.redirect(`${url.origin}/favicon.svg`, 301);
   const page = url.pathname.match(PAGES);
@@ -44,6 +45,7 @@ export default {
     if (!allowed(env, request, origin)) return new Response("origin not allowed", { status: 403, headers: cors });
     if (url.pathname.startsWith("/api/")) return api(request, env, url.pathname.slice(4));
     if (url.pathname.startsWith("/gh/")) return github(request, env, url);
+    if (url.pathname === "/rerank") return rerank(request, env);
     if (request.method === "OPTIONS") return new Response(null, { headers: { ...cors, "Access-Control-Allow-Methods": "GET" } });
     if (request.method !== "GET") return new Response("GET only", { status: 405, headers: cors });
     const pathname = url.pathname;
