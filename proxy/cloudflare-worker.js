@@ -1,13 +1,15 @@
 // A CORS relay for GitHub repository archives, so the website can download a whole repository
 // in one request instead of one per file (seconds instead of a minute for large projects).
 // GitHub serves archives from codeload.github.com without CORS headers for other sites; this
-// passes them through, streaming, with those headers added. Nothing else is proxied.
+// passes them through, streaming, with those headers added. /api/ (api.js) and /gh/ (github.js)
+// are the only other routes.
 //
 // Deploy (free plan is plenty): `npx wrangler deploy` in this folder, then set the repository
 // variable ARCHIVE_PROXY to the worker's URL (Settings -> Secrets and variables -> Actions ->
 // Variables). The next Pages build picks it up; without it the site downloads file by file.
 
 import { api } from "./api.js";
+import { github } from "./github.js";
 
 const PATH = /^\/([A-Za-z0-9_.-]+)\/([A-Za-z0-9_.-]+)\/([A-Za-z0-9_./-]+)$/;
 
@@ -23,7 +25,7 @@ const allowed = (env, request, origin) => {
 const PAGES = /^\/(search|benchmarks|explore|how-it-works)(\/[^]*)?$/;
 
 const sitePath = (url, prefix) => {
-  if (!prefix || url.pathname.startsWith(`${prefix}/`) || url.pathname.startsWith("/api/")) return null;
+  if (!prefix || url.pathname.startsWith(`${prefix}/`) || url.pathname.startsWith("/api/") || url.pathname.startsWith("/gh/")) return null;
   if (url.pathname === "/") return new Response("not found", { status: 404 });
   if (url.pathname === "/favicon.ico") return Response.redirect(`${url.origin}/favicon.svg`, 301);
   const page = url.pathname.match(PAGES);
@@ -40,6 +42,7 @@ export default {
     const cors = { "Access-Control-Allow-Origin": origin || "*", "Cross-Origin-Resource-Policy": "cross-origin", Vary: "Origin" };
     if (!allowed(env, request, origin)) return new Response("origin not allowed", { status: 403, headers: cors });
     if (url.pathname.startsWith("/api/")) return api(request, env, url.pathname.slice(4));
+    if (url.pathname.startsWith("/gh/")) return github(request, env, url);
     if (request.method === "OPTIONS") return new Response(null, { headers: { ...cors, "Access-Control-Allow-Methods": "GET" } });
     if (request.method !== "GET") return new Response("GET only", { status: 405, headers: cors });
     const pathname = url.pathname;

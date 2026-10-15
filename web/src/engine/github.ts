@@ -42,6 +42,18 @@ export function parseRepo(input: string): RepoRef {
   return { owner: m[1], name: m[2], ref: ref ? decodeURIComponent(ref) : null };
 }
 
+const GITHUB_PROXY = ((import.meta.env.VITE_GITHUB_PROXY as string | undefined) ?? "").replace(/\/+$/, "");
+let proxyConfigured = GITHUB_PROXY !== "";
+
+export async function githubApi(path: string): Promise<Response> {
+  if (proxyConfigured) {
+    const r = await fetch(`${GITHUB_PROXY}${path}`).catch(() => null);
+    if (r?.status === 501) proxyConfigured = false;
+    else if (r && r.status !== 502 && r.status !== 503 && r.status !== 429) return r;
+  }
+  return fetch(`https://api.github.com${path}`);
+}
+
 export function issueNumber(input: string): string | null {
   return input.match(/(?:^|github\.com\/)[\w.-]+\/[\w.-]+\/(?:issues|pull)\/(\d+)/i)?.[1] ?? null;
 }

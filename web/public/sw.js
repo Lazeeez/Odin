@@ -44,7 +44,7 @@ self.addEventListener("fetch", (event) => {
   const request = event.request;
   const url = new URL(request.url);
   if (request.method !== "GET" || url.origin !== self.location.origin) return; // leave cross-origin alone
-  if (url.pathname.startsWith("/relay/") || url.pathname.startsWith("/api/")) return;
+  if (url.pathname.startsWith("/relay/") || url.pathname.startsWith("/api/") || url.pathname.startsWith("/gh/")) return;
   event.respondWith((async () => {
     const cache = await caches.open(CACHE);
     if (url.pathname.includes("/assets/")) {

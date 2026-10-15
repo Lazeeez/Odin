@@ -17,7 +17,7 @@ Odin's website and its archive relay run as one Cloudflare Worker: static files 
 ```sh
 cd web
 npm ci --ignore-scripts
-VITE_ARCHIVE_PROXY=/relay VITE_API=/api npm run build
+VITE_ARCHIVE_PROXY=/relay VITE_API=/api VITE_GITHUB_PROXY=/gh npm run build
 cd ../deploy/cloudflare
 npx wrangler deploy
 ```
@@ -28,6 +28,13 @@ npx wrangler deploy
 cd deploy/cloudflare
 npx wrangler d1 create odin          # copy the printed database_id into wrangler.jsonc
 npx wrangler d1 execute odin --remote --file schema.sql
+```
+
+`VITE_GITHUB_PROXY=/gh` sends the site's GitHub API calls (issue import, open issues, "file last changed") through the Worker ([ADR 0024](decisions/0024-github-api-proxy.md)). It uses a token once one is stored; until then the Worker answers 501 and the page calls GitHub directly. To store it, create a fine-grained token at github.com/settings/personal-access-tokens with "Public repositories (read-only)" and no permissions, then:
+
+```sh
+cd deploy/cloudflare
+npx wrangler secret put GITHUB_TOKEN
 ```
 
 To try the Worker and the database locally, put `ALLOWED_ORIGINS="http://localhost:8787,http://allfather.dev"` in `deploy/cloudflare/.dev.vars` (ignored by git; in local mode wrangler rewrites the Origin header to the route's host), apply the schema with `--local` instead of `--remote`, and run `npx wrangler dev --local --port 8787`.

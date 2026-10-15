@@ -3,7 +3,7 @@ import type { Parser } from "web-tree-sitter";
 import { BM25, type TermCounts, unitCounts } from "./bm25.ts";
 import { chunkFile } from "./chunk.ts";
 import { untar } from "./tarball.ts";
-import { LoadError, type RepoRef, encodePath, isTestPath, parseRepo } from "./github.ts";
+import { LoadError, type RepoRef, encodePath, githubApi, isTestPath, parseRepo } from "./github.ts";
 import type { Unit } from "./types.ts";
 
 export { LoadError, githubUrl, isTestPath, parseRepo } from "./github.ts";
@@ -87,10 +87,12 @@ const SECONDARY =
 
 const BLOCKED_HINT = "If you use an ad or privacy blocker, allow api.github.com, raw.githubusercontent.com and cdn.jsdelivr.net.";
 
+const GITHUB_API = "https://api.github.com";
+
 async function getJSON<T>(url: string): Promise<T> {
   let r: Response;
   try {
-    r = await fetch(url);
+    r = url.startsWith(GITHUB_API) ? await githubApi(url.slice(GITHUB_API.length)) : await fetch(url);
   } catch {
     // No response at all: offline, a proxy, or an extension blocking the request.
     throw new LoadError(`Couldn't reach ${new URL(url).host}.`, { useMirror: true });

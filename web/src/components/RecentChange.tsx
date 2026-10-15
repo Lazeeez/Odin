@@ -1,4 +1,5 @@
 import { useEffect, useState } from "preact/hooks";
+import { githubApi } from "../engine/github.ts";
 
 interface Commit { sha: string; html_url: string; commit: { message: string; author: { name: string; date: string } } }
 
@@ -10,7 +11,7 @@ function lastCommit(repo: string, ref: string, path: string): Promise<Commit | n
   let p = cache.get(key);
   if (!p) {
     const sha = ref && ref !== "HEAD" ? `&sha=${encodeURIComponent(ref)}` : "";
-    p = fetch(`https://api.github.com/repos/${repo}/commits?path=${encodeURIComponent(path)}&per_page=1${sha}`)
+    p = githubApi(`/repos/${repo}/commits?path=${encodeURIComponent(path)}&per_page=1${sha}`)
       .then((r) => (r.ok ? (r.json() as Promise<Commit[]>) : []))
       .then((list) => list[0] ?? null, () => null);
     cache.set(key, p);

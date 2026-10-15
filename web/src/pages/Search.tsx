@@ -5,7 +5,7 @@ import { PageHero } from "../components/PageHero.tsx";
 import { RecentChange } from "../components/RecentChange.tsx";
 import { RuneProgress } from "../components/RuneProgress.tsx";
 import { Seg } from "../components/Seg.tsx";
-import { githubUrl, issueNumber, parseRepo } from "../engine/github.ts";
+import { githubApi, githubUrl, issueNumber, parseRepo } from "../engine/github.ts";
 import { feedbackEnabled, newSession, type QuerySource, recordSearch, recordVote } from "../lib/feedback.ts";
 import { type Results, useSearchWorker } from "../hooks/useSearchWorker.ts";
 import { highlightPython, matchedTerms } from "../lib/highlight.ts";
@@ -305,7 +305,7 @@ export function Search({ active, request }: { active: boolean; request: URLSearc
     const url = `https://github.com/${repo}/issues/${issue}`;
     issuePending.current = true;
     setIssueNote({ text: `Fetching issue #${issue} from GitHub…`, url: null });
-    fetch(`https://api.github.com/repos/${repo}/issues/${issue}`)
+    githubApi(`/repos/${repo}/issues/${issue}`)
       .then((r) => (r.ok ? (r.json() as Promise<GitIssue>) : Promise.reject(new Error(String(r.status)))))
       .then((i) => {
         issuePending.current = false;
@@ -415,7 +415,7 @@ export function Search({ active, request }: { active: boolean; request: URLSearc
     try {
       // Bug reports first; many projects label them "bug". Otherwise any open issue.
       const get = async (labels: string) => {
-        const r = await fetch(`https://api.github.com/repos/${info.repo}/issues?state=open&per_page=30&sort=comments${labels}`);
+        const r = await githubApi(`/repos/${info.repo}/issues?state=open&per_page=30&sort=comments${labels}`);
         if (!r.ok) throw new Error(r.status === 403 || r.status === 429 ? "GitHub's hourly limit for your network is used up; try again later." : `GitHub answered HTTP ${r.status}.`);
         return ((await r.json()) as GitIssue[]).filter((i) => !i.pull_request);
       };
