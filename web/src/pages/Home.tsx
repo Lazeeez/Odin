@@ -12,7 +12,7 @@ import { issueNumber } from "../engine/github.ts";
 import { fetchUsage, type Usage } from "../lib/feedback.ts";
 import { LiveLine, useLive } from "../components/Live.tsx";
 
-const EXAMPLES = ["pallets/flask", "psf/requests", "expressjs/express"];
+const EXAMPLES = ["pallets/flask", "axios/axios", "gin-gonic/gin", "BurntSushi/ripgrep"];
 const SHOW_USAGE_FROM = 100;
 const SHOW_RATING_FROM = 30;
 
@@ -107,14 +107,14 @@ function Preview() {
 
 const FEATURES: [keyof typeof ICONS, string, string][] = [
   ["raven", "Any public repository, six languages", "Python, JavaScript, TypeScript, Go, Java and Rust. The whole repository arrives as one archive, streamed and unpacked in the browser, and Tree-sitter (WebAssembly) splits it into functions on up to four worker threads. Without the relay, files come straight from GitHub, 16 at a time."],
-  ["ansuz", "Reads bug reports like a developer", "Traceback frames, backticked identifiers, dotted module paths and error strings are extracted as separate signals, scored with BM25 over the issue, its title and its quoted code, then weighed by a LambdaMART ranker."],
+  ["ansuz", "Reads bug reports like a developer", "Stack-trace frames (Python, JavaScript, Go, Java and Rust formats), backticked identifiers, module and file paths and error strings are extracted as separate signals, scored with BM25 over the issue, its title and its quoted code, then weighed by a LambdaMART ranker."],
   ["eye", "Sees meaning, not just words", "In the background a 16.8 MB int8 static code-embedding model (Model2Vec potion-code-16M) embeds every function at thousands per second; cosine similarity to the issue feeds a second ranker."],
   ["shield", "Private by design", `Parsing, indexing, embedding and ranking run in Web Workers. Repositories are cached in IndexedDB by git tree hash, ${import.meta.env.VITE_RERANK_SERVER ? "and your bug report leaves the tab only for the optional GPU reranker, which scores it against the top 50 functions" : "and your bug report never leaves the tab"}; only search counts and your 👍/👎 votes are recorded.`],
 ];
 
 const STEPS: [string, string, string][] = [
   ["I", "Point it at a repository.", "owner/name or any GitHub URL, including a branch or a subdirectory. The tree resolves to a commit and the parsed index is cached by its hash."],
-  ["II", "Describe the bug.", "The text is tokenized code-aware: snake_case and camelCase names are split into words and also kept whole; tracebacks and quoted names become their own features."],
+  ["II", "Describe the bug.", "The text is tokenized code-aware: snake_case and camelCase names are split into words and also kept whole; stack traces and quoted names become their own features."],
   ["III", "Open the right function.", "Functions are ranked by gradient-boosted trees over lexical, mention and embedding features, each with the matched terms highlighted and a link to the exact line."],
 ];
 
@@ -126,6 +126,7 @@ export function Home({ summary, lite }: { summary: Summary | null; lite: Lite | 
   const fn = summary ? stagesAt(summary, "function").at(-1)! : null;
   const fl = summary ? stagesAt(summary, "file").at(-1)! : null;
   const browser = lite ? bestBrowserStage(lite.held_out.unseen)["hit@10"] : null;
+  const multi = lite?.held_out.multilingual;
   return (
     <div ref={root}>
       <section class="hero">
@@ -137,7 +138,7 @@ export function Home({ summary, lite }: { summary: Summary | null; lite: Lite | 
             {TITLE.map((w, i) => <span key={i} class="word" aria-hidden="true" style={{ "--i": i }}>{w} </span>)}
           </h1>
           <p class="lede intro soft" style={{ "--d": ".3s" }}>
-            Paste an issue, a traceback or a one-line description. Odin parses the repository into functions and ranks every one with BM25,
+            Paste an issue, a stack trace or a one-line description. Odin parses the repository into functions and ranks every one with BM25,
             learned rankers and code embeddings, showing the evidence behind each result.
           </p>
           <div class="intro" style={{ "--d": ".6s" }}><QuickStart /></div>
@@ -206,13 +207,16 @@ export function Home({ summary, lite }: { summary: Summary | null; lite: Lite | 
             <h2>Tested on real bugs it never trained on.</h2>
             <p class="section-lede">
               SWE-bench Lite: 300 real GitHub issues from 12 Python projects including Django, scikit-learn, SymPy and pytest, each searched
-              at the commit where the bug was reported. The browser ranker is also tested on 30 projects kept out of its training entirely.
+              at the commit where the bug was reported. The browser ranker is also tested on 30 projects kept out of its training entirely,
+              and on 501 bugs in JavaScript, TypeScript, Go, Java and Rust from two more public test sets.
             </p>
           </div>
-          <div class="tiles reveal">
+          <div class="tiles four reveal">
             <Tile label="Function to fix in the top 10" value={fn ? fn["hit@10"] : null} note={fn ? `full pipeline, ${fn.n} issues` : "full pipeline"} />
             <Tile label="File to fix in the top 5" value={fl ? fl["hit@5"] : null} note={fl ? `full pipeline, ${fl.n} issues` : "full pipeline"} />
             <Tile label="Function to fix in the top 10" value={browser} note={lite ? `in your browser, ${lite.held_out.unseen.keyword.n} bugs from 30 projects it never trained on` : "in your browser"} />
+            <Tile label="Function to fix in the top 10" value={multi ? bestBrowserStage(multi)["hit@10"] : null}
+              note={multi ? `in your browser, ${multi.keyword.n} bugs in Go, Java, JavaScript, Rust and TypeScript` : "in your browser, five more languages"} />
           </div>
           <a class="text-link" href={href("benchmarks")}>See the full benchmarks →</a>
         </div>

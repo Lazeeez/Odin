@@ -31,8 +31,26 @@ const PRESETS: Record<string, string[]> = {
     "OpenAPI schema is wrong for a response_model with a list of models",
   ],
   "psf/black": ["crash formatting a nested f-string", "magic trailing comma is ignored in a function signature"],
+  "axios/axios": [
+    "timeoutErrorMessage is ignored and the default timeout message is shown",
+    "array params are serialized without brackets in the query string",
+    "maxRedirects is ignored and every redirect is followed",
+  ],
+  "sindresorhus/ky": ["retry ignores the Retry-After header on 429 responses", "beforeRetry hooks are not called when a request times out"],
+  "gin-gonic/gin": ["ShouldBindJSON accepts a request body with unknown fields", "the router answers 404 instead of 405 when only the method is wrong"],
+  "google/gson": ["a TypeAdapter for a generic List loses the element type", "serializeNulls is ignored for null values inside a Map"],
+  "BurntSushi/ripgrep": ["--max-count keeps reading a file after the limit is reached", "--replace drops the line terminator at the end of a match"],
 };
-const EXAMPLES = ["pallets/flask", "psf/requests", "fastapi/fastapi", "psf/black", "django/django"];
+export const EXAMPLE_LANGUAGES: Record<string, string> = {
+  "pallets/flask": "Python",
+  "axios/axios": "JavaScript",
+  "sindresorhus/ky": "TypeScript",
+  "gin-gonic/gin": "Go",
+  "google/gson": "Java",
+  "BurntSushi/ripgrep": "Rust",
+  "django/django": "Python",
+};
+const EXAMPLES = Object.keys(EXAMPLE_LANGUAGES);
 
 interface GitIssue {
   number: number;
@@ -445,7 +463,7 @@ export function Search({ active, request }: { active: boolean; request: URLSearc
     }
   };
 
-  const chips = [...recent, ...EXAMPLES.filter((e) => !recent.some((r) => r.toLowerCase() === e.toLowerCase()))].slice(0, 7);
+  const chips = [...recent.slice(0, 3), ...EXAMPLES.filter((e) => !recent.some((r) => r.toLowerCase() === e.toLowerCase()))].slice(0, 10);
   const semanticStatus = w.semantic ? `${w.semantic}${w.backend && w.semantic.startsWith("Reranked") ? ` · ${w.backend === "webgpu" ? "GPU" : "CPU"}` : ""}` : "";
 
   return (
@@ -467,7 +485,9 @@ export function Search({ active, request }: { active: boolean; request: URLSearc
           <div class="chips">
             {chips.map((name) => (
               <button key={name} class={`chip${recent.includes(name) ? " recent" : ""}`} type="button" onClick={() => pick(name)}
-                title={recent.includes(name) ? "Recently searched" : undefined}>{name}</button>
+                title={recent.includes(name) ? "Recently searched" : undefined}>
+                {name}{EXAMPLE_LANGUAGES[name] && <span class="chip-lang">{EXAMPLE_LANGUAGES[name]}</span>}
+              </button>
             ))}
           </div>
           <label class="switch">
@@ -494,7 +514,7 @@ export function Search({ active, request }: { active: boolean; request: URLSearc
         <div class="empty-state">
           <Emblem class="empty-emblem" />
           <h2>Start with a repository</h2>
-          <p>Type <code>owner/name</code>, paste a GitHub link, or pick one above. Big projects like Django take a few seconds the first time; after that they load from your browser's cache.</p>
+          <p>Type <code>owner/name</code>, paste a GitHub link, or pick one above. Big projects take a few seconds the first time; after that they load from your browser's cache.</p>
           <Bookmarklet />
         </div>
       )}
@@ -531,7 +551,7 @@ export function Search({ active, request }: { active: boolean; request: URLSearc
             <textarea ref={queryBox} id="demo-query" value={query} onInput={(e) => setQuery(e.currentTarget.value)}
               onFocus={() => serverOn && semanticOn && w.serverReady && w.warm()}
               rows={Math.min(10, Math.max(3, query.split("\n").length))}
-              placeholder="Paste an issue or a traceback, or describe what goes wrong… (press / to focus)" aria-label="Bug report" />
+              placeholder="Paste an issue or a stack trace, or describe what goes wrong… (press / to focus)" aria-label="Bug report" />
             {issueNote && (
               <p class="note issue-note" role="status">
                 {issueNote.text}

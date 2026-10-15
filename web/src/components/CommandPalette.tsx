@@ -5,7 +5,7 @@ import { load } from "../lib/storage.ts";
 interface Command { title: string; hint: string; run: () => void }
 
 const go = (hash: string) => { location.hash = hash; };
-const EXAMPLES = ["pallets/flask", "psf/requests", "fastapi/fastapi", "django/django", "psf/black"];
+const EXAMPLES = ["pallets/flask", "axios/axios", "sindresorhus/ky", "gin-gonic/gin", "google/gson", "BurntSushi/ripgrep", "django/django"];
 const PAGES: [Page, string][] = [["home", "Home"], ["search", "Search a repository"], ["how", "How it works"], ["benchmarks", "Benchmarks"], ["explore", "Explore real bugs"]];
 
 /** Loose subsequence match, scored so earlier and contiguous hits rank first. */

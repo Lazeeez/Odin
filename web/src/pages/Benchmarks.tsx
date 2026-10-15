@@ -105,9 +105,9 @@ export function Benchmarks({ summary, lite, failed }: { summary: Summary | null;
         </section>
       )}
 
-      {lite?.gpu_reranker && <Gpu g={lite.gpu_reranker} />}
-
       {lite?.held_out_per_language && <Languages sets={lite.held_out_per_language} />}
+
+      {lite?.gpu_reranker && <Gpu g={lite.gpu_reranker} />}
 
       {lite && fn && (
         <section class="card frame block reveal">
@@ -145,7 +145,7 @@ function Languages({ sets }: { sets: Record<string, Record<string, LanguageEval>
   return (
     <section class="card frame block reveal">
       <p class="kicker">In your browser</p>
-      <h2>Beyond Python</h2>
+      <h2>In five more languages</h2>
       <p class="card-lede">
         Bugs from two public test sets, in projects the rankers never trained on, scored once. Odin's learned ranker against ranking by
         keywords and meaning alone, the simpler signal the site would fall back to.

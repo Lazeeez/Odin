@@ -69,7 +69,7 @@ export interface Lite {
   embedder: string;
   static: string;
   depth: number;
-  held_out: { lite: BrowserEval; unseen: BrowserEval };
+  held_out: { lite: BrowserEval; unseen: BrowserEval; multilingual?: BrowserEval; polybench?: BrowserEval };
   held_out_per_language?: Record<string, Record<string, LanguageEval>>;
   gpu_reranker?: GpuReranker;
 }
