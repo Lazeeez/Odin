@@ -513,24 +513,22 @@ def main() -> None:
     args = ap.parse_args()
     if args.multilang:
         MULTILANG = True
-        CACHE = Path("results/browser_ltr_multilang")
-        OUT, STATIC_OUT, LITE = (
-            CACHE / "ranker.json",
-            CACHE / "static-model.bin",
-            CACHE / "lite.json",
-        )
+        CACHE = Path(".cache/browser_ltr_multilang")
+        out = Path("results/browser_ltr_multilang")
+        OUT, STATIC_OUT, LITE = out / "ranker.json", out / "static-model.bin", out / "report.json"
         TRAIN["multilang"] = ("multilang", "train", [])
         TEST["multilingual"] = ("multilang", "multilingual", [])
         TEST["polybench"] = ("multilang", "polybench", [])
     if args.limit:
         LIMIT = args.limit
-        CACHE = Path(f"results/browser_ltr_smoke_{LIMIT}")
+        CACHE = Path(f".cache/browser_ltr_smoke_{LIMIT}")
         OUT, STATIC_OUT, LITE = (
             CACHE / "ranker.json",
             CACHE / "static-model.bin",
-            CACHE / "lite.json",
+            CACHE / "report.json",
         )
     CACHE.mkdir(parents=True, exist_ok=True)
+    OUT.parent.mkdir(parents=True, exist_ok=True)
     t_start = time.time()
     snaps = Snapshots()
     train = [it for name, spec in TRAIN.items() for it in build(name, spec, snaps)]
