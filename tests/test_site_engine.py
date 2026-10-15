@@ -361,3 +361,17 @@ def test_js_static_embeddings_match_python(tmp_path):
         np.float32,
     )  # fmt: skip
     np.testing.assert_allclose(got, enc.encode(texts), atol=1e-5)
+
+
+def test_vectorized_tree_scores_match_the_reference():
+    import numpy as np
+
+    from odin.rank.browser import predict, predict_many
+
+    model = json.loads((ROOT / "web/src/assets/ranker.json").read_text())
+    rng = np.random.default_rng(0)
+    for stage in ("instant", "semantic", "file"):
+        width = len(model[stage]["features"])
+        X = rng.normal(0, 2, (300, width)).astype(np.float32)
+        X[::7, ::3] = 0
+        np.testing.assert_allclose(predict_many(model[stage], X), [predict(model[stage], x) for x in X], rtol=1e-9, atol=1e-9)

@@ -174,6 +174,27 @@ def predict(stage: dict, x: np.ndarray) -> float:
     return s
 
 
+def predict_many(stage: dict, X: np.ndarray) -> np.ndarray:
+    X = np.asarray(X, np.float32)
+    out = np.zeros(len(X), np.float64)
+    rows = np.arange(len(X))
+    for tree in stage["trees"]:
+        if "f" not in tree:
+            out += tree["v"][0]
+            continue
+        f, t = np.asarray(tree["f"]), np.asarray(tree["t"], np.float32)
+        left, right, leaves = np.asarray(tree["l"]), np.asarray(tree["r"]), np.asarray(tree["v"])
+        node = np.zeros(len(X), np.int64)
+        active = node >= 0
+        while active.any():
+            n = node[active]
+            go_left = X[rows[active], f[n]] <= t[n]
+            node[active] = np.where(go_left, left[n], right[n])
+            active = node >= 0
+        out += leaves[~node]
+    return out
+
+
 FILE_FEATURES = [
     # the file's best function, as the semantic stage scored it
     "best_score_gap", "best_score_logrank", "pool_units",
