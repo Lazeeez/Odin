@@ -8,7 +8,7 @@ import { TruncatedArchive, untar } from "../src/engine/tarball.ts";
 import { predict, type RankerModel, rankFiles, rankUnits, rerankStage, signals, type Tree } from "../src/engine/rank.ts";
 import { expand, tokenize } from "../src/engine/tokenize.ts";
 import type { Unit } from "../src/engine/types.ts";
-import { highlightPython, matchedTerms } from "../src/lib/highlight.ts";
+import { highlightCode, highlightPython, matchedTerms } from "../src/lib/highlight.ts";
 
 const unit = (path: string, qualname: string, text: string): Unit =>
   ({ path, qualname, kind: "function", line: 1, text, id: `${path}::${qualname}` });
@@ -127,6 +127,16 @@ describe("highlighting", () => {
     const html = highlightPython("def rebuild_auth(self):\n    return 1", new Set(["auth"]));
     expect(html).toContain('<span class="tk-kw">def</span>');
     expect(html).toContain('<span class="tk-def"><mark>rebuild_auth</mark></span>');
+  });
+  it("uses each language's comment syntax, so a # in TypeScript or Rust is not a comment", () => {
+    const ts = highlightCode("class Theme {\n  #mode = 'dark'; // remembered\n  toggle() { return `x`; }\n}", new Set(), "src/theme.ts");
+    expect(ts).toContain('<span class="tk-com">// remembered</span>');
+    expect(ts).not.toContain('<span class="tk-com">#mode');
+    expect(ts).toContain('<span class="tk-kw">class</span> <span class="tk-def">Theme</span>');
+    const rust = highlightCode("#[derive(Debug)]\nfn parse(s: &str) {} /* note */", new Set(), "src/lib.rs");
+    expect(rust).toContain('<span class="tk-kw">fn</span> <span class="tk-def">parse</span>');
+    expect(rust).toContain('<span class="tk-com">/* note */</span>');
+    expect(rust).not.toContain('<span class="tk-com">#[derive');
   });
   it("counts matched query terms", () => {
     expect(matchedTerms("proxy proxy_auth header", ["proxy", "header", "missing"])).toEqual([["proxy", 2], ["header", 1]]);

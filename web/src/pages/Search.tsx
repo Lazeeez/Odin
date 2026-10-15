@@ -8,7 +8,7 @@ import { Seg } from "../components/Seg.tsx";
 import { githubApi, githubUrl, issueNumber, parseRepo } from "../engine/github.ts";
 import { feedbackEnabled, newSession, type QuerySource, recordSearch, recordVote } from "../lib/feedback.ts";
 import { type Results, useSearchWorker } from "../hooks/useSearchWorker.ts";
-import { highlightPython, matchedTerms } from "../lib/highlight.ts";
+import { highlightCode, matchedTerms } from "../lib/highlight.ts";
 import { href, replaceHash } from "../lib/router.ts";
 import { useLazy } from "../lib/lazy.ts";
 import { load, save } from "../lib/storage.ts";
@@ -43,7 +43,7 @@ interface GitIssue {
 }
 
 function CodeBlock({ hit, terms }: { hit: WireHit; terms: ReadonlySet<string> }) {
-  const html = useMemo(() => highlightPython(hit.text, terms), [hit.text, terms]);
+  const html = useMemo(() => highlightCode(hit.text, terms, hit.path), [hit.text, terms, hit.path]);
   const n = hit.text.split("\n").length;
   // A class unit omits its methods' lines, so its lines are not contiguous: no line numbers.
   const gutter = hit.kind === "class" ? "" : Array.from({ length: n }, (_, i) => hit.line + i).join("\n");
