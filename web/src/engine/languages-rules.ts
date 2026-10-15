@@ -140,13 +140,21 @@ function rustTypeName(node: Node | null): string {
   return node.text || "<anonymous>";
 }
 
+function rustTestModule(node: Node): boolean {
+  if (["tests", "test"].includes(text(field(node, "name")) ?? "")) return true;
+  for (let prev = node.previousNamedSibling; prev && prev.type === "attribute_item"; prev = prev.previousNamedSibling) {
+    if (prev.text.replace(/\s+/g, "").includes("cfg(test)")) return true;
+  }
+  return false;
+}
+
 function rust(node: Node): Found | null {
   const t = node.type;
   if (t === "function_item") return found(text(field(node, "name")) ?? "<anonymous>", "function", field(node, "body"), node, node);
   if (t === "struct_item" || t === "enum_item" || t === "union_item") return found(text(field(node, "name")) ?? "<anonymous>", "class", null, node, node);
   if (t === "trait_item") return found(text(field(node, "name")) ?? "<anonymous>", "class", field(node, "body"), node, node);
   if (t === "impl_item") return found(rustTypeName(field(node, "type")), "class", field(node, "body"), node, node, false);
-  if (t === "mod_item" && field(node, "body")) return found(text(field(node, "name")) ?? "<anonymous>", null, field(node, "body"), node, node, false);
+  if (t === "mod_item" && field(node, "body")) return found(text(field(node, "name")) ?? "<anonymous>", null, rustTestModule(node) ? null : field(node, "body"), node, node, false);
   return null;
 }
 

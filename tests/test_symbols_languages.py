@@ -185,3 +185,13 @@ def test_deeply_nested_code_does_not_exhaust_the_stack():
     body = " + ".join(['"a"'] * 3000)
     src = f"class Big {{\n  String s() {{ return {body}; }}\n  void t() {{}}\n}}\n".encode()
     assert [s.qualname for s in extract_symbols(src, "Big.java")] == ["Big", "Big.s", "Big.t"]
+
+
+def test_rust_test_modules_are_not_units():
+    src = b"""fn real() {}
+#[cfg(test)]
+mod checks { fn check() {} }
+mod tests { fn it_works() {} }
+mod inner { fn helper() {} }
+"""
+    assert [s.qualname for s in extract_symbols(src, "src/lib.rs")] == ["real", "inner.helper"]

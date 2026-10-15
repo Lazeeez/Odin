@@ -295,6 +295,17 @@ def _rust_type_name(node: Node | None) -> str:
     return _text(node) or "<anonymous>"
 
 
+def _rust_test_module(node: Node) -> bool:
+    if _text(_field(node, "name")) in ("tests", "test"):
+        return True
+    prev = node.prev_named_sibling
+    while prev is not None and prev.type == "attribute_item":
+        if "cfg(test)" in "".join((_text(prev) or "").split()):
+            return True
+        prev = prev.prev_named_sibling
+    return False
+
+
 def _rust(node: Node, parent_kind: str | None) -> Found | None:
     t = node.type
     if t == "function_item":
@@ -320,7 +331,7 @@ def _rust(node: Node, parent_kind: str | None) -> Found | None:
         return Found(
             _text(_field(node, "name")) or "<anonymous>",
             None,
-            _field(node, "body"),
+            None if _rust_test_module(node) else _field(node, "body"),
             node,
             node,
             unit=False,

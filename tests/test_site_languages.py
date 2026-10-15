@@ -100,6 +100,12 @@ impl fmt::Display for &Theme {
 }
 mod inner { pub fn helper() {} }
 fn main() { let c = |x: i32| x + 1; }
+#[cfg(test)]
+#[allow(unused)]
+mod checks { fn checks_toggle() {} }
+mod tests { fn it_toggles() {} mod deeper { fn nested() {} } }
+#[derive(Debug)]
+mod kept { pub fn visible() {} }
 """,
 }
 

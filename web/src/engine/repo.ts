@@ -63,7 +63,7 @@ const indexable = (path: string, languages: ReadonlySet<Lang>): boolean => {
   return lang !== null && languages.has(lang) && !BUILD_DIR.test(path);
 };
 const isTest = (path: string, languages: ReadonlySet<Lang>) => (onlyPython(languages) ? isTestPath(path) : isTestPathAny(path));
-const languageKey = (languages: ReadonlySet<Lang>) => (onlyPython(languages) ? "" : `|${[...languages].sort().join(",")}`);
+const languageKey = (languages: ReadonlySet<Lang>) => (onlyPython(languages) ? "" : `|r2|${[...languages].sort().join(",")}`);
 
 export function inlineParsing(parser: Parser | ((lang: Lang) => Promise<Parser>)): Parsing {
   return {
