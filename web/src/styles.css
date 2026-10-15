@@ -742,6 +742,9 @@ main.page-explore:has(.game) { min-height: 0; }
 .bug-id { font-family: var(--mono); }
 .bug-body { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 14px; line-height: 1.6; color: var(--ink-2); max-height: 10em; overflow: hidden;
   -webkit-mask-image: linear-gradient(#000 55%, transparent); mask-image: linear-gradient(#000 55%, transparent); }
+.bug-prose { margin: 0 0 .6em; white-space: pre-wrap; }
+.bug-prose code { font: .92em var(--mono); background: var(--bg-2); border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; }
+.bug-code { margin: 0 0 .8em; padding: 10px 12px; font: 12.5px/1.55 var(--mono); color: var(--ink); background: var(--bg-2); border: 1px solid var(--line); border-radius: 8px; white-space: pre; overflow-x: auto; }
 .bug-body.full { max-height: none; -webkit-mask-image: none; mask-image: none; }
 .bug-body.fits { -webkit-mask-image: none; mask-image: none; }
 .bug-body + .link-btn { display: block; margin-bottom: 12px; }
