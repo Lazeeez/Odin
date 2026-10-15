@@ -5,4 +5,5 @@ interface ImportMetaEnv {
   readonly VITE_ARCHIVE_PROXY?: string;
   readonly VITE_API?: string;
   readonly VITE_GITHUB_PROXY?: string;
+  readonly VITE_RERANK_SERVER?: string;
 }

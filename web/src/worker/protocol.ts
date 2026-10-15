@@ -46,12 +46,12 @@ export interface WireFile {
 }
 
 /** Which ranker produced a result list: see web/src/engine/rank.ts. */
-export type RankStage = "instant" | "semantic" | "rerank";
+export type RankStage = "instant" | "semantic" | "rerank" | "server";
 
 export type ToWorker =
   | { type: "load"; input: string; includeTests: boolean }
   | { type: "cancel" }
-  | { type: "search"; id: number; query: string; semantic: boolean; k: number }
+  | { type: "search"; id: number; query: string; semantic: boolean; server: boolean; k: number }
   | { type: "map" };
 
 export type FromWorker =
@@ -67,5 +67,7 @@ export type FromWorker =
   | { type: "model"; pct: number; backend: Backend }
   | { type: "model-ready"; backend: Backend }
   | { type: "semantic-error"; id: number; message: string }
+  | { type: "server-start"; id: number }
+  | { type: "server-error"; id: number; message: string; permanent: boolean }
   /** Every indexed file with its number of functions and classes, for the repository map. */
   | { type: "map"; files: [path: string, units: number][] };

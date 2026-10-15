@@ -8,6 +8,7 @@ import { type Listing, type LoadedRepo, LoadError, type Parsing, type RepoCache,
 import { type Candidate, explain, type FileCandidate, type RankerModel, rankFiles, rankUnits, rerankStage, type Similarity, type Stage, signals } from "../engine/rank.ts";
 import { issueFields } from "../engine/mentions.ts";
 import { type Embed, SEMANTIC, unitText } from "../engine/semantic.ts";
+import { blend, SERVER, ServerUnavailable, serverScores } from "../engine/server.ts";
 import { embedText, parseStaticModel, type StaticModel } from "../engine/static.ts";
 import type { Unit } from "../engine/types.ts";
 import rankerUrl from "../assets/ranker.json?url";
@@ -22,6 +23,7 @@ const TRANSFORMERS_CDN = "https://cdn.jsdelivr.net/npm/@huggingface/transformers
 const post = (msg: FromWorker) => self.postMessage(msg);
 // Set at build time when the archive relay is deployed (see proxy/cloudflare-worker.js).
 const ARCHIVE_PROXY = import.meta.env.VITE_ARCHIVE_PROXY?.replace(/\/+$/, "");
+let rerankServer = import.meta.env.VITE_RERANK_SERVER?.replace(/\/+$/, "") || null;
 const BATCH = 16; // texts per embedding call
 
 interface Job {
@@ -40,6 +42,7 @@ const state = {
   /** Static embeddings of every unit of `index`, once the background build finishes. */
   sem: null as { index: BM25; vectors: Float32Array; dim: number } | null,
   controller: null as AbortController | null,
+  server: null as AbortController | null,
   latest: 0,
 };
 
@@ -302,8 +305,9 @@ function explained(stage: Stage, all: Candidate[], k: number) {
   return hits;
 }
 
-async function search(id: number, query: string, semantic: boolean, k: number): Promise<void> {
+async function search(id: number, query: string, semantic: boolean, server: boolean, k: number): Promise<void> {
   state.latest = id;
+  state.server?.abort();
   const index = state.index;
   if (!index) return;
   const t0 = performance.now();
@@ -353,8 +357,27 @@ async function search(id: number, query: string, semantic: boolean, k: number): 
       type: "results", id, stage: "rerank", hits: explained(model.rerank, hits, k), files, terms: ranked.terms,
       ms: performance.now() - t1, computed: units.computed, stored: units.stored,
     });
+    if (server && rerankServer && hits.length >= 2) await serverStage(id, query, model.rerank, hits, files, ranked.terms, k);
   } catch (err) {
     if (!(err instanceof Superseded)) post({ type: "semantic-error", id, message: err instanceof Error ? err.message : String(err) });
+  }
+}
+
+async function serverStage(id: number, query: string, stage: Stage, hits: Candidate[], files: WireFile[] | undefined, terms: string[], k: number): Promise<void> {
+  const controller = (state.server = new AbortController());
+  await new Promise((r) => setTimeout(r, SERVER.settleMs));
+  if (id !== state.latest || !rerankServer) return;
+  post({ type: "server-start", id });
+  const t0 = performance.now();
+  try {
+    const scores = await serverScores(rerankServer, query, hits.slice(0, SERVER.depth).map((c) => unitText(c.unit)), controller.signal);
+    if (id !== state.latest) return;
+    post({ type: "results", id, stage: "server", hits: explained(stage, blend(hits, scores), k), files, terms, ms: performance.now() - t0 });
+  } catch (err) {
+    if (id !== state.latest || controller.signal.aborted) return;
+    const permanent = err instanceof ServerUnavailable && err.permanent;
+    if (permanent) rerankServer = null;
+    post({ type: "server-error", id, message: err instanceof Error ? err.message : String(err), permanent });
   }
 }
 
@@ -362,5 +385,5 @@ self.onmessage = ({ data }: MessageEvent<ToWorker>) => {
   if (data.type === "load") void load(data.input, data.includeTests);
   else if (data.type === "cancel") state.controller?.abort();
   else if (data.type === "map") postMap();
-  else void search(data.id, data.query, data.semantic, data.k);
+  else void search(data.id, data.query, data.semantic, data.server, data.k);
 };

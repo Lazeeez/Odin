@@ -271,6 +271,7 @@ export function Search({ active, request }: { active: boolean; request: URLSearc
   };
   const recorded = useRef<Set<string>>(new Set());
   const [semanticOn, setSemanticOn] = useState(true);
+  const [serverOn, setServerOn] = useState<boolean>(() => load("gpuRerank", true));
   const [view, setView] = useState<"functions" | "files">("functions");
   const [recent, setRecent] = useState<string[]>(() => load("recentRepos", []));
   const [issues, setIssues] = useState<GitIssue[] | "loading" | string | null>(null);
@@ -361,9 +362,9 @@ export function Search({ active, request }: { active: boolean; request: URLSearc
   // The one place searches start from: typing, chips, the semantic switch and new repositories.
   useEffect(() => {
     if (!info) return;
-    const t = setTimeout(() => w.search(query, semanticOn), 250);
+    const t = setTimeout(() => w.search(query, semanticOn, serverOn && semanticOn), 250);
     return () => clearTimeout(t);
-  }, [query, semanticOn, info, w.semanticIndex?.state]); // re-ranks when the semantic index is ready
+  }, [query, semanticOn, serverOn, info, w.semanticIndex?.state]); // re-ranks when the semantic index is ready
 
   // The address bar always holds a shareable link to what is on screen.
   const link = info ? href("search", null, { repo: info.repo, q: query.trim().slice(0, 500) || undefined }) : href("search");
@@ -544,6 +545,11 @@ export function Search({ active, request }: { active: boolean; request: URLSearc
                 <input type="checkbox" checked={semanticOn} onChange={(e) => setSemanticOn(e.currentTarget.checked)} />
                 <span class="track" aria-hidden="true" />Language-model rerank
               </label>
+              <label class="switch" hidden={!w.stages?.rerank || !w.serverReady || !semanticOn}
+                title="Send the bug report and the top 50 functions to Odin's GPU server, where its fine-tuned reranker re-reads them">
+                <input type="checkbox" checked={serverOn} onChange={(e) => { const on = e.currentTarget.checked; setServerOn(on); save("gpuRerank", on); }} />
+                <span class="track" aria-hidden="true" />GPU reranker
+              </label>
               <span class="toolbar-links push">
                 <button class={`link-btn${showMap ? " on" : ""}`} type="button" aria-pressed={showMap} onClick={() => setShowMap(!showMap)}
                   title="The repository as a tree, with the results lit up">{showMap ? "Hide the map" : "Show the map"}</button>
@@ -554,9 +560,10 @@ export function Search({ active, request }: { active: boolean; request: URLSearc
 
           <div class="result-meta">
             <p class="tokens" role="status" aria-live="polite">{semanticStatus.includes("…") && <Seer size="sm" />} {semanticStatus}</p>
+            {w.server && <p class="tokens" role="status" aria-live="polite">{w.server.endsWith("…") && <Seer size="sm" />} {w.server}</p>}
             {w.results && (
               <p class="tokens">
-                {w.results.stage !== "rerank" && `${w.results.stage === "semantic" ? "Semantic" : "Instant"} ranking of ${info.units.toLocaleString()} functions in ${w.results.ms.toFixed(0)} ms · `}
+                {(w.results.stage === "instant" || w.results.stage === "semantic") && `${w.results.stage === "semantic" ? "Semantic" : "Instant"} ranking of ${info.units.toLocaleString()} functions in ${w.results.ms.toFixed(0)} ms · `}
                 terms: {w.results.terms.slice(0, 24).map((t) => <span key={t}>{t}</span>)}
               </p>
             )}
@@ -568,7 +575,10 @@ export function Search({ active, request }: { active: boolean; request: URLSearc
           {w.results ? <ResultList results={w.results} info={info} view={view} rating={rating} /> : query.trim() ? <Skeleton /> : null}
           <p class="fineprint">
             How accurate is this? <a href={href("benchmarks")}>See the benchmarks</a>.
-            {feedbackEnabled && " Searches are counted by repository, and 👍/👎 records the function you rated and its rank. Your bug report never leaves this tab; if it came from a public GitHub issue, that issue's link is kept with your vote."}
+            {feedbackEnabled && " Searches are counted by repository, and 👍/👎 records the function you rated and its rank. If it came from a public GitHub issue, that issue's link is kept with your vote."}
+            {w.serverReady && semanticOn && serverOn
+              ? " With the GPU reranker on, your bug report and the top 50 functions are sent to Odin's server to be scored; only the scores are kept, for a day, under a hash of the request."
+              : " Your bug report never leaves this tab."}
           </p>
         </>
       )}

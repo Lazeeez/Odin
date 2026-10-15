@@ -109,7 +109,7 @@ const FEATURES: [keyof typeof ICONS, string, string][] = [
   ["raven", "Any public Python repository", "The whole repository arrives as one archive, streamed and unpacked in the browser, and Tree-sitter (WebAssembly) splits it into functions on up to four worker threads. Without the relay, files come straight from GitHub, 16 at a time."],
   ["ansuz", "Reads bug reports like a developer", "Traceback frames, backticked identifiers, dotted module paths and error strings are extracted as separate signals, scored with BM25 over the issue, its title and its quoted code, then weighed by a LambdaMART ranker."],
   ["eye", "Sees meaning, not just words", "In the background a 16.8 MB int8 static code-embedding model (Model2Vec potion-code-16M) embeds every function at thousands per second; cosine similarity to the issue feeds a second ranker."],
-  ["shield", "Private by design", "Parsing, indexing, embedding and ranking run in Web Workers. Repositories are cached in IndexedDB by git tree hash, and your bug report never leaves the tab; only search counts and your 👍/👎 votes are recorded."],
+  ["shield", "Private by design", `Parsing, indexing, embedding and ranking run in Web Workers. Repositories are cached in IndexedDB by git tree hash, ${import.meta.env.VITE_RERANK_SERVER ? "and your bug report leaves the tab only for the optional GPU reranker, which scores it against the top 50 functions" : "and your bug report never leaves the tab"}; only search counts and your 👍/👎 votes are recorded.`],
 ];
 
 const STEPS: [string, string, string][] = [

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "preact/hooks";
 import { RESULTS, SEMANTIC } from "../engine/semantic.ts";
+import { SERVER } from "../engine/server.ts";
 import { overallProgress } from "../lib/progress.ts";
 import { duration } from "../lib/format.ts";
 import type { Backend, FromWorker, RankStage, RepoInfo, ToWorker, WireFile, WireHit } from "../worker/protocol.ts";
@@ -44,6 +45,8 @@ export function useSearchWorker() {
   const [info, setInfo] = useState<RepoInfo | null>(null);
   const [results, setResults] = useState<Results | null>(null);
   const [semantic, setSemantic] = useState("");
+  const [server, setServer] = useState("");
+  const [serverReady, setServerReady] = useState(!!import.meta.env.VITE_RERANK_SERVER);
   const [backend, setBackend] = useState<Backend | null>(null);
   /** The background semantic index of the loaded repository. */
   const [semanticIndex, setSemanticIndex] = useState<{ state: "building" | "ready" | "failed"; units: number; ms: number } | null>(null);
@@ -100,6 +103,7 @@ export function useSearchWorker() {
           if (msg.stored) parts.push(`${msg.stored} from your browser's cache`);
           setSemantic(`Reranked the top ${SEMANTIC.depth} with a language model in ${duration(msg.ms)}${parts.length ? ` (${parts.join(", ")})` : " (already embedded this session)"}`);
         }
+        if (msg.stage === "server") setServer(`Re-read the top ${SERVER.depth} with Odin's fine-tuned reranker on a GPU server in ${duration(msg.ms)}`);
         return;
       case "semantic-start":
         if (msg.id === seq.current) setSemantic("Reranking the top candidates with a language model…");
@@ -118,6 +122,13 @@ export function useSearchWorker() {
         return;
       case "semantic-error":
         if (msg.id === seq.current) setSemantic(`Language-model rerank unavailable (${msg.message}); showing the ranking without it.`);
+        return;
+      case "server-start":
+        if (msg.id === seq.current) setServer("Re-reading the top candidates with the fine-tuned reranker on a GPU server (the first search can take half a minute while it starts)…");
+        return;
+      case "server-error":
+        if (msg.permanent) setServerReady(false);
+        if (msg.id === seq.current) setServer(msg.permanent ? "" : `GPU reranker unavailable (${msg.message}); showing the browser's ranking.`);
     }
   }, []);
 
@@ -160,15 +171,16 @@ export function useSearchWorker() {
   }, [send]);
   const requestMap = useCallback(() => send({ type: "map" }), [send]);
 
-  const search = useCallback((query: string, useSemantic: boolean) => {
+  const search = useCallback((query: string, useSemantic: boolean, useServer: boolean) => {
     const id = ++seq.current;
     setSemantic("");
+    setServer("");
     if (!query.trim()) {
       setResults(null);
       return;
     }
-    send({ type: "search", id, query, semantic: useSemantic, k: RESULTS });
+    send({ type: "search", id, query, semantic: useSemantic, server: useServer, k: RESULTS });
   }, [send]);
 
-  return { loading, status, info, results, semantic, backend, semanticIndex, stages, map, load, cancel, search, requestMap };
+  return { loading, status, info, results, semantic, server, serverReady, backend, semanticIndex, stages, map, load, cancel, search, requestMap };
 }

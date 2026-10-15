@@ -19,7 +19,7 @@ Odin's website and its archive relay run as one Cloudflare Worker: static files 
 ```sh
 cd web
 npm ci --ignore-scripts
-VITE_ARCHIVE_PROXY=/relay VITE_API=/api VITE_GITHUB_PROXY=/gh npm run build
+VITE_ARCHIVE_PROXY=/relay VITE_API=/api VITE_GITHUB_PROXY=/gh VITE_RERANK_SERVER=/rerank npm run build
 cd ../deploy/cloudflare
 npx wrangler deploy
 ```
@@ -38,6 +38,25 @@ npx wrangler d1 execute odin --remote --file schema.sql
 cd deploy/cloudflare
 npx wrangler secret put GITHUB_TOKEN
 ```
+
+`VITE_RERANK_SERVER=/rerank` adds the GPU reranker ([ADR 0021](decisions/0021-website-server-reranker.md)): the page sends the bug report and its top 50 functions to `/rerank`, the Worker checks and rate-limits the request and passes it to a Modal endpoint, and the page blends the scores into its order. Until the Worker has the endpoint, it answers 501 and the page stops asking and hides the switch. To set it up, once:
+
+```sh
+pip install modal
+modal token new                              # logs this machine in to the Modal account
+modal deploy deploy/modal/reranker.py        # prints the endpoint's URL, ending in -score.modal.run
+```
+
+Then, in the Modal dashboard under Settings → Proxy Auth Tokens, create a token, and store the URL and the token's two halves in the Worker:
+
+```sh
+cd deploy/cloudflare
+npx wrangler secret put RERANK_URL
+npx wrangler secret put MODAL_KEY
+npx wrangler secret put MODAL_SECRET
+```
+
+The endpoint only answers requests carrying that token, runs on one L4 GPU at most (`max_containers=1`), and shuts down three minutes after the last request, so an idle month costs nothing and a busy one stays within Modal's free monthly credits. A spending limit in the Modal dashboard (Settings → Usage and billing) makes that a guarantee.
 
 To try the Worker and the database locally, put `ALLOWED_ORIGINS="http://localhost:8787,http://allfather.dev"` in `deploy/cloudflare/.dev.vars` (ignored by git; in local mode wrangler rewrites the Origin header to the route's host), apply the schema with `--local` instead of `--remote`, and run `npx wrangler dev --local --port 8787`.
 
