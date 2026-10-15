@@ -720,7 +720,7 @@ main.page-explore:has(.game) { min-height: 0; }
 .picker-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 .bug-browser { background: var(--bg-2); border: 1px solid var(--gold-faint); border-radius: 4px; padding: 18px; margin-bottom: 20px; animation: rise .35s cubic-bezier(.2, .7, .2, 1) both; }
 .bug-filters { display: flex; gap: 10px; margin-bottom: 12px; }
-.bug-filters select { width: auto; max-width: 40%; }
+.bug-filters select { width: auto; max-width: 40%; flex: 0 0 auto; padding-right: 32px; }
 .bug-browser .chips { align-items: center; }
 .bug-browser .issue-count { font-size: 12.5px; color: var(--muted); margin-left: auto; }
 .bug-grid { list-style: none; margin: 14px 0 0; padding: 0 4px 0 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; max-height: 460px; overflow-y: auto; }
