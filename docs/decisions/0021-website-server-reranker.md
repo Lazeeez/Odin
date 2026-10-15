@@ -78,3 +78,12 @@ Measured 2026-10-15. Result: [server_reranker_current.json](../../results/websit
 - **The reranker alone is worse than the blend** (K = 50, reranker alone: hit@10 0.752 and 0.770 on the two choosing halves, against 0.814 and 0.824 blended): the website's order carries signal the reranker does not.
 - **The largest gain is at the top of the list:** first place improves by almost six points, as it did for odin-max ([ADR 0020](0020-odin-max-larger-reranker.md)).
 - **Next:** the server runs the two 0.6B adapters on Modal's free credits, scoring at most 50 candidates per search; the browser shows its own order first and keeps it if the server does not answer. Once built, the website's final configuration is scored once on Lite and the 30 unseen projects, and both runs are logged in `results/test-evals.log`.
+
+## The held-out run, defined 2026-10-16
+
+Written before the candidate lists were built. Since ADR 0021's outcome the site changed in three ways: it ranks six languages with a retrained ranker ([ADR 0025](0025-more-languages.md), [ADR 0027](0027-rust-test-modules.md)), and the GPU reranker is blended into the semantic stage's order, without the browser's language model ([ADR 0026](0026-skip-browser-language-model.md)). The one held-out run scores what the site runs after those changes:
+
+- **Sets:** SWE-bench Lite (291 issues with a function to find) and the 30 unseen projects (747), each once.
+- **Ranker:** the multi-language ranker that ships after ADR 0027's retrain, applied to the same cached candidates the training run scored.
+- **Compared:** the website without the GPU (the semantic stage's order) and with it (the reranker's two adapters blended into that order's top 50, K = 50, w = 1, as chosen in this ADR's test).
+- **Reported:** function hit@1, hit@5, hit@10, MRR and recall@10 for both, and the paired bootstrap of the difference per set. Nothing is decided from it: the server is already built and its setting fixed. Both runs are logged in `results/test-evals.log`.
