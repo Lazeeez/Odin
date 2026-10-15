@@ -2,17 +2,15 @@
 // One of a small pool of parser threads (see pool.ts). Tree-sitter parsing, tokenizing and
 // static embedding are the CPU-heavy parts of loading a repository; spread over cores they no
 // longer serialize.
-import treeSitterWasm from "web-tree-sitter/tree-sitter.wasm?url";
-import type { Parser } from "web-tree-sitter";
-import grammarWasm from "../assets/tree-sitter-python.wasm?url";
 import { unitCounts } from "../engine/bm25.ts";
-import { chunkFile, createParser } from "../engine/chunk.ts";
+import { chunkFile } from "../engine/chunk.ts";
+import { languageOf } from "../engine/languages-rules.ts";
 import { embedText, parseStaticModel, type StaticModel } from "../engine/static.ts";
 import type { Unit } from "../engine/types.ts";
+import { parserFor } from "./grammars.ts";
 import type { PoolReply, PoolRequest } from "./pool.ts";
 
 declare const self: DedicatedWorkerGlobalScope;
-let parser: Promise<Parser> | null = null;
 let staticModel: StaticModel | null = null;
 
 self.onmessage = async ({ data }: MessageEvent<PoolRequest>) => {
@@ -20,9 +18,10 @@ self.onmessage = async ({ data }: MessageEvent<PoolRequest>) => {
   const transfer: Transferable[] = [];
   try {
     if (data.type === "parse") {
-      const p = await (parser ??= createParser(treeSitterWasm, grammarWasm));
+      const lang = languageOf(data.path) ?? "python";
+      const p = await parserFor(lang);
       const units: Unit[] = [];
-      for (const c of chunkFile(p, data.text)) if (c.text.trim()) units.push({ ...c, path: data.path, id: `${data.path}::${c.qualname}` });
+      for (const c of chunkFile(p, data.text, lang)) if (c.text.trim()) units.push({ ...c, path: data.path, id: `${data.path}::${c.qualname}` });
       reply = { id: data.id, units, counts: units.map(unitCounts) };
     } else if (data.type === "count") {
       reply = { id: data.id, units: [], counts: data.units.map(unitCounts) };

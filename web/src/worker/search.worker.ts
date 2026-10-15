@@ -1,12 +1,9 @@
 /// <reference lib="webworker" />
 // All heavy work runs here, off the main thread: downloading, Tree-sitter parsing, indexing
 // and the embedding model. The page stays responsive even while indexing django.
-import treeSitterWasm from "web-tree-sitter/tree-sitter.wasm?url";
-import type { Parser } from "web-tree-sitter";
-import grammarWasm from "../assets/tree-sitter-python.wasm?url";
 import { BM25 } from "../engine/bm25.ts";
 import { encodePath } from "../engine/github.ts";
-import { createParser } from "../engine/chunk.ts";
+import type { Lang } from "../engine/languages-rules.ts";
 import { type Listing, type LoadedRepo, LoadError, type Parsing, type RepoCache, inlineParsing, loadRepo } from "../engine/repo.ts";
 import { type Candidate, explain, type FileCandidate, type RankerModel, rankFiles, rankUnits, rerankStage, type Similarity, type Stage, signals } from "../engine/rank.ts";
 import { issueFields } from "../engine/mentions.ts";
@@ -16,6 +13,7 @@ import type { Unit } from "../engine/types.ts";
 import rankerUrl from "../assets/ranker.json?url";
 import staticUrl from "../assets/static-model.bin?url";
 import type { Backend, FromWorker, ToWorker, WireFile, WireHit } from "./protocol.ts";
+import { parserFor } from "./grammars.ts";
 import { createPool, type Pool } from "./pool.ts";
 import { idbGet, idbGetMany, idbPut, idbPutMany, touchRepo, trimVectors } from "./store.ts";
 
@@ -33,7 +31,6 @@ interface Job {
 }
 
 const state = {
-  parser: null as Promise<Parser> | null,
   repo: null as LoadedRepo | null,
   /** What searches run against: the loaded repository, or the part of it parsed so far. */
   index: null as BM25 | null,
@@ -48,13 +45,11 @@ const state = {
 
 class Superseded extends Error {}
 
-const parser = () => (state.parser ??= createParser(treeSitterWasm, grammarWasm));
-
 // Parser threads when the browser allows workers to start workers, else this thread.
 let pool: Pool | null | undefined;
 let parsing: Promise<Parsing> | null = null;
 const getPool = () => (pool === undefined ? (pool = createPool()) : pool);
-const getParsing = () => (parsing ??= Promise.resolve(getPool()).then((p) => p ?? parser().then(inlineParsing)));
+const getParsing = () => (parsing ??= Promise.resolve(getPool()).then((p) => p ?? inlineParsing(parserFor)));
 
 // The static embedding model (scripts/browser_ltr.py writes it): a content-hashed asset,
 // downloaded once and cached, also handed to the parser threads.
@@ -249,8 +244,11 @@ async function load(input: string, includeTests: boolean): Promise<void> {
   ranker().catch(() => {}); // fetched while the repository downloads
   staticModel().catch(() => {});
   try {
+    const model = await ranker().catch(() => null);
+    const languages = new Set<Lang>((model?.meta.languages as Lang[] | undefined) ?? ["python"]);
     const repo = await loadRepo(await getParsing(), input, {
       includeTests,
+      languages,
       cache: repoCache,
       signal: state.controller.signal,
       progress: (phase, done, total) => post({ type: "progress", phase, done, total }),

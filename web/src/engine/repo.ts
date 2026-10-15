@@ -5,6 +5,7 @@ import { chunkFile } from "./chunk.ts";
 import { untar } from "./tarball.ts";
 import { LoadError, type RepoRef, encodePath, githubApi, isTestPath, parseRepo } from "./github.ts";
 import { LanguageCensus } from "./languages.ts";
+import { isTestPathAny, type Lang, languageOf } from "./languages-rules.ts";
 import type { Unit } from "./types.ts";
 
 export { LoadError, githubUrl, isTestPath, parseRepo } from "./github.ts";
@@ -52,12 +53,25 @@ export interface Parsing {
   count(units: Unit[]): Promise<TermCounts[]>;
 }
 
-export function inlineParsing(parser: Parser): Parsing {
+const BUILD_DIR = /(^|\/)(dist|build|out|\.next|\.nuxt|\.svelte-kit|coverage|target|bower_components|vendor|generated)(\/|$)/i;
+export const PYTHON_ONLY: ReadonlySet<Lang> = new Set<Lang>(["python"]);
+const onlyPython = (languages: ReadonlySet<Lang>) => languages.size === 1 && languages.has("python");
+const indexable = (path: string, languages: ReadonlySet<Lang>): boolean => {
+  if (onlyPython(languages)) return /\.py$/i.test(path);
+  const lang = languageOf(path);
+  return lang !== null && languages.has(lang) && !BUILD_DIR.test(path);
+};
+const isTest = (path: string, languages: ReadonlySet<Lang>) => (onlyPython(languages) ? isTestPath(path) : isTestPathAny(path));
+const languageKey = (languages: ReadonlySet<Lang>) => (onlyPython(languages) ? "" : `|${[...languages].sort().join(",")}`);
+
+export function inlineParsing(parser: Parser | ((lang: Lang) => Promise<Parser>)): Parsing {
   return {
     threads: 1,
     async parse(path, text) {
       const units: Unit[] = [];
-      for (const c of chunkFile(parser, text)) if (c.text.trim()) units.push({ ...c, path, id: `${path}::${c.qualname}` });
+      const lang = languageOf(path) ?? "python";
+      const p = typeof parser === "function" ? await parser(lang) : parser;
+      for (const c of chunkFile(p, text, lang)) if (c.text.trim()) units.push({ ...c, path, id: `${path}::${c.qualname}` });
       return { units, counts: units.map(unitCounts) };
     },
     count: async (units) => units.map(unitCounts),
@@ -204,23 +218,24 @@ async function fetchText(owner: string, name: string, branch: string, path: stri
  * The Python files to index. Tests are left out unless asked for (or unless tests are all
  * there is); over the browser budget, the project's own code is kept first, in path order.
  */
-export function selectFiles(listing: Pick<Listing, "files" | "scope">, includeTests: boolean, notes: string[]): Entry[] {
+export function selectFiles(listing: Pick<Listing, "files" | "scope">, includeTests: boolean, notes: string[], languages: ReadonlySet<Lang> = PYTHON_ONLY): Entry[] {
   const scope = listing.scope?.replace(/\/+$/, "");
   const census = new LanguageCensus();
   for (const f of listing.files) if (!scope || f.path.startsWith(`${scope}/`)) census.add(f.path);
-  let py = listing.files.filter((f) => /\.py$/i.test(f.path) && !SKIP_DIR.test(f.path) && (!scope || f.path.startsWith(`${scope}/`)));
+  let py = listing.files.filter((f) => indexable(f.path, languages) && !SKIP_DIR.test(f.path) && (!scope || f.path.startsWith(`${scope}/`)));
   const big = py.filter((f) => f.size > LIMITS.maxFileBytes).length;
   py = py.filter((f) => f.size <= LIMITS.maxFileBytes).sort((a, b) => (a.path < b.path ? -1 : a.path > b.path ? 1 : 0));
-  let files = includeTests ? py : py.filter((f) => !isTestPath(f.path));
+  let files = includeTests ? py : py.filter((f) => !isTest(f.path, languages));
   if (!files.length && py.length) {
     files = py;
-    notes.push("This repository's Python code is all tests, so they're included.");
+    notes.push(onlyPython(languages) ? "This repository's Python code is all tests, so they're included." : "This repository's code is all tests, so they're included.");
   }
   if (!files.length) {
-    throw new LoadError(scope ? `No Python files under ${scope}/.` : census.noPython());
+    if (onlyPython(languages)) throw new LoadError(scope ? `No Python files under ${scope}/.` : census.noPython());
+    throw new LoadError(scope ? `No code Odin can read under ${scope}/.` : census.noneSupported(languages));
   }
-  const languages = census.note();
-  if (languages) notes.push(languages);
+  const languageNote = census.note(languages);
+  if (languageNote) notes.push(languageNote);
   if (big) notes.push(`Skipped ${big} Python file${big > 1 ? "s" : ""} over 1 MB (usually generated code).`);
   const ordered = [...files.filter((f) => !SECONDARY.test(f.path)), ...files.filter((f) => SECONDARY.test(f.path))];
   const kept: Entry[] = [];
@@ -359,6 +374,7 @@ interface LoadOptions {
   cache: RepoCache | null;
   signal: AbortSignal | null;
   partial?: Partial;
+  languages: ReadonlySet<Lang>;
 }
 
 const byPath = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0);
@@ -366,7 +382,7 @@ const byPath = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0);
 async function readArchive(
   parsing: Parsing, owner: string, name: string, branch: string, scope: string | null, url: string, options: LoadOptions,
 ): Promise<LoadedRepo | "missing" | null> {
-  const { includeTests, progress, cache, signal, partial } = options;
+  const { includeTests, progress, cache, signal, partial, languages } = options;
   let response: Response;
   try {
     response = await fetch(url, { signal: signal ?? undefined });
@@ -382,7 +398,7 @@ async function readArchive(
   const census = new LanguageCensus();
   const wanted = (path: string) => {
     if (path.startsWith(folder)) census.add(path);
-    return /\.py$/i.test(path) && !SKIP_DIR.test(path) && path.startsWith(folder);
+    return indexable(path, languages) && !SKIP_DIR.test(path) && path.startsWith(folder);
   };
   const decoder = new TextDecoder();
   const parsed = new Map<string, Parsed>();
@@ -437,13 +453,13 @@ async function readArchive(
   try {
     const files = untar(response.body, wanted, async (hash) => {
       commit = hash;
-      key = `v3|${repo}@commit:${hash}|${scope ?? ""}|${includeTests ? "tests" : "src"}`;
+      key = `v3|${repo}@commit:${hash}|${scope ?? ""}|${includeTests ? "tests" : "src"}${languageKey(languages)}`;
       cached = cache ? await cache.get(key) : undefined;
       return !cached;
     });
     for await (const file of files) {
       if (signal?.aborted) throw new LoadError("Loading cancelled.", { cancelled: true });
-      if (!includeTests && isTestPath(file.path)) continue;
+      if (!includeTests && isTest(file.path, languages)) continue;
       const size = file.data.length;
       if (size > LIMITS.maxFileBytes) {
         oversized++;
@@ -493,8 +509,8 @@ async function readArchive(
     notes.push(`Indexed ${kept.toLocaleString()} of ${eligible.toLocaleString()} Python files to stay within browser limits; docs, examples and vendored code went first.`);
   }
   if (unparsed) notes.push(`${unparsed} file${unparsed > 1 ? "s" : ""} could not be parsed.`);
-  const languages = census.note();
-  if (languages) notes.push(languages);
+  const languageNote = census.note(languages);
+  if (languageNote) notes.push(languageNote);
   if (key && cache) {
     await cache.put(key, units);
     await cache.putNotes?.(key, notes);
@@ -521,16 +537,17 @@ async function loadFromArchive(
 /** Download, parse and index a repository; a revisit of the same snapshot hits `cache`. */
 export async function loadRepo(
   parsing: Parsing, input: string,
-  { includeTests = false, progress = () => {}, cache = null, signal = null, partial, archive }:
+  { includeTests = false, progress = () => {}, cache = null, signal = null, partial, archive, languages = PYTHON_ONLY }:
     {
       includeTests?: boolean; progress?: Progress; cache?: RepoCache | null; signal?: AbortSignal | null; partial?: Partial;
+      languages?: ReadonlySet<Lang>;
       /** URL of the repository's .tar.gz through a CORS relay, if one is configured. */
       archive?: (owner: string, name: string, ref: string) => string;
     } = {},
 ): Promise<LoadedRepo> {
   const ref = parseRepo(input);
   if (archive) {
-    const loaded = await loadFromArchive(parsing, ref, archive, { includeTests, progress, cache, signal, partial });
+    const loaded = await loadFromArchive(parsing, ref, archive, { includeTests, progress, cache, signal, partial, languages });
     if (loaded) return loaded;
   }
   progress("Listing files", 0, 1);
@@ -542,10 +559,10 @@ export async function loadRepo(
   }
   const notes: string[] = [];
   if (listing.truncated) notes.push("GitHub truncated the file list for this very large repository; some files are missing.");
-  const kept = selectFiles(listing, includeTests, notes);
+  const kept = selectFiles(listing, includeTests, notes, languages);
 
   const repo = `${listing.owner}/${listing.name}`;
-  const key = listing.sha ? `v3|${repo}@${listing.sha}|${listing.scope ?? ""}|${includeTests ? "tests" : "src"}` : null;
+  const key = listing.sha ? `v3|${repo}@${listing.sha}|${listing.scope ?? ""}|${includeTests ? "tests" : "src"}${languageKey(languages)}` : null;
   const t0 = performance.now();
   let loaded = key && cache ? await cache.get(key) : undefined;
   const fromCache = !!loaded;

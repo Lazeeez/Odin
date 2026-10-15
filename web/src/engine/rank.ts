@@ -25,6 +25,8 @@ export interface RankerModel {
     pool: { bm25: number; title: number; code: number; files: number; sem?: number; title_sem?: number };
     depth: number;
     static?: { model: string; maxTokens: number };
+    languages?: string[];
+    multilang?: boolean;
   };
   instant: Stage;
   semantic?: Stage;
