@@ -4,7 +4,7 @@ import { LiveSection, useLive } from "../components/Live.tsx";
 import { PageHero } from "../components/PageHero.tsx";
 import { Tile } from "../components/Tile.tsx";
 import { RepoTable, SignificanceTable, StageChart } from "../components/Results.tsx";
-import { type BrowserEval, type Lite, type Summary, stagesAt } from "../lib/data.ts";
+import { type BrowserEval, type LanguageEval, type Lite, type Summary, stagesAt } from "../lib/data.ts";
 import { pct } from "../lib/format.ts";
 import { useReveal } from "../lib/reveal.ts";
 import { href } from "../lib/router.ts";
@@ -93,8 +93,8 @@ export function Benchmarks({ summary, lite, failed }: { summary: Summary | null;
           <p class="kicker">In your browser</p>
           <h2>On projects it has never seen</h2>
           <p class="card-lede">
-            The <a href={href("search")}>search page</a> runs a lighter pipeline on your device. Its rankers were trained on 131 other
-            projects; these {lite.held_out.unseen.keyword.n} bugs come from 30 projects that were kept out of training entirely, the
+            The <a href={href("search")}>search page</a> runs a lighter pipeline on your device. Its rankers were trained on 192 other
+            projects in six languages; these {lite.held_out.unseen.keyword.n} bugs come from 30 projects that were kept out of training entirely, the
             situation the search page is in every time you paste a new repository.
           </p>
           <BrowserComparison e={lite.held_out.unseen} depth={lite.depth} />
@@ -104,6 +104,8 @@ export function Benchmarks({ summary, lite, failed }: { summary: Summary | null;
           <p class="note">Share of bugs with a file the real fix changed in the top 5.</p>
         </section>
       )}
+
+      {lite?.held_out_per_language && <Languages sets={lite.held_out_per_language} />}
 
       {lite && fn && (
         <section class="card frame block reveal">
@@ -129,5 +131,45 @@ export function Benchmarks({ summary, lite, failed }: { summary: Summary | null;
         </ul>
       </section>
     </div>
+  );
+}
+
+const LANGUAGE_NAMES: Record<string, string> = { go: "Go", java: "Java", javascript: "JavaScript", rust: "Rust", typescript: "TypeScript" };
+const SET_NAMES: Record<string, string> = { multilingual: "SWE-bench Multilingual", polybench: "SWE-PolyBench" };
+
+function Languages({ sets }: { sets: Record<string, Record<string, LanguageEval>> }) {
+  const rows = Object.entries(sets).flatMap(([set, langs]) =>
+    Object.entries(langs).filter(([lang]) => lang in LANGUAGE_NAMES && langs[lang].issues >= 10).map(([lang, e]) => ({ set, lang, e })));
+  return (
+    <section class="card frame block reveal">
+      <p class="kicker">In your browser</p>
+      <h2>Beyond Python</h2>
+      <p class="card-lede">
+        Bugs from two public test sets, in projects the rankers never trained on, scored once. Odin's learned ranker against ranking by
+        keywords and meaning alone, the simpler signal the site would fall back to.
+      </p>
+      <div class="table-wrap" tabIndex={0} role="region" aria-label="Accuracy by language">
+        <table>
+          <thead><tr><th>Language</th><th>Test set</th><th>Bugs</th><th>Odin</th><th>Keywords and meaning</th><th>Change</th><th>p</th></tr></thead>
+          <tbody>
+            {rows.map(({ set, lang, e }) => {
+              const g = e["hit@10_gain"];
+              return (
+                <tr key={`${set}:${lang}`}>
+                  <td>{LANGUAGE_NAMES[lang]}</td>
+                  <td>{SET_NAMES[set] ?? set}</td>
+                  <td class="num">{e.issues}</td>
+                  <td class="num">{pct(e.learned["hit@10"])}</td>
+                  <td class="num">{pct(e.keyword_and_meaning["hit@10"])}</td>
+                  <td class={`num${g.p < 0.05 && g.delta > 0 ? " sig" : ""}`}>{g.delta >= 0 ? "+" : ""}{(g.delta * 100).toFixed(1)}</td>
+                  <td class="num">{g.p < 0.001 ? "<0.001" : g.p.toFixed(3)}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+      <p class="note">Share of bugs with a function the real fix changed in the top 10. Bold changes are significant (p &lt; 0.05, paired bootstrap); small sets can show a gain that is not yet significant.</p>
+    </section>
   );
 }

@@ -56,6 +56,7 @@ export interface Parsing {
 const BUILD_DIR = /(^|\/)(dist|build|out|\.next|\.nuxt|\.svelte-kit|coverage|target|bower_components|vendor|generated)(\/|$)/i;
 export const PYTHON_ONLY: ReadonlySet<Lang> = new Set<Lang>(["python"]);
 const onlyPython = (languages: ReadonlySet<Lang>) => languages.size === 1 && languages.has("python");
+const kindOf = (languages: ReadonlySet<Lang>) => (onlyPython(languages) ? "Python" : "source");
 const indexable = (path: string, languages: ReadonlySet<Lang>): boolean => {
   if (onlyPython(languages)) return /\.py$/i.test(path);
   const lang = languageOf(path);
@@ -236,7 +237,7 @@ export function selectFiles(listing: Pick<Listing, "files" | "scope">, includeTe
   }
   const languageNote = census.note(languages);
   if (languageNote) notes.push(languageNote);
-  if (big) notes.push(`Skipped ${big} Python file${big > 1 ? "s" : ""} over 1 MB (usually generated code).`);
+  if (big) notes.push(`Skipped ${big} ${kindOf(languages)} file${big > 1 ? "s" : ""} over 1 MB (usually generated code).`);
   const ordered = [...files.filter((f) => !SECONDARY.test(f.path)), ...files.filter((f) => SECONDARY.test(f.path))];
   const kept: Entry[] = [];
   let bytes = 0;
@@ -246,7 +247,7 @@ export function selectFiles(listing: Pick<Listing, "files" | "scope">, includeTe
     bytes += f.size;
   }
   if (kept.length < files.length) {
-    notes.push(`Indexed ${kept.length.toLocaleString()} of ${files.length.toLocaleString()} Python files to stay within browser limits; docs, examples and vendored code went first.`);
+    notes.push(`Indexed ${kept.length.toLocaleString()} of ${files.length.toLocaleString()} ${kindOf(languages)} files to stay within browser limits; docs, examples and vendored code went first.`);
   }
   return kept;
 }
@@ -502,11 +503,11 @@ async function readArchive(
   }
   if (!eligible) return null;
   const { units, counts } = gather();
-  if (!units.length) throw new LoadError("These Python files contain no functions or classes to search.");
+  if (!units.length) throw new LoadError(`These ${kindOf(languages)} files contain no functions or classes to search.`);
   const notes: string[] = [];
-  if (oversized) notes.push(`Skipped ${oversized} Python file${oversized > 1 ? "s" : ""} over 1 MB (usually generated code).`);
+  if (oversized) notes.push(`Skipped ${oversized} ${kindOf(languages)} file${oversized > 1 ? "s" : ""} over 1 MB (usually generated code).`);
   if (kept < eligible) {
-    notes.push(`Indexed ${kept.toLocaleString()} of ${eligible.toLocaleString()} Python files to stay within browser limits; docs, examples and vendored code went first.`);
+    notes.push(`Indexed ${kept.toLocaleString()} of ${eligible.toLocaleString()} ${kindOf(languages)} files to stay within browser limits; docs, examples and vendored code went first.`);
   }
   if (unparsed) notes.push(`${unparsed} file${unparsed > 1 ? "s" : ""} could not be parsed.`);
   const languageNote = census.note(languages);
@@ -576,7 +577,7 @@ export async function loadRepo(
     if (!rest || rest.length) await downloadFiles(c, parsing, listing, rest);
     c.notes(notes);
     ({ units: loaded, counts } = c.gather());
-    if (!loaded.length) throw new LoadError("These Python files contain no functions or classes to search.");
+    if (!loaded.length) throw new LoadError(`These ${kindOf(languages)} files contain no functions or classes to search.`);
     if (key && cache) await cache.put(key, loaded);
     progress("Building the index", 0, 1);
   }

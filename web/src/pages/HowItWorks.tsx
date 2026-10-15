@@ -11,7 +11,7 @@ const GPU_RERANK = !!import.meta.env.VITE_RERANK_SERVER;
 
 /** The browser's journey, each step in plain words first, then the detail for engineers. */
 const JOURNEY: [keyof typeof ICONS, string, string, string][] = [
-  ["raven", "Fetch", "Odin's ravens fly to GitHub and bring back the project's Python files.",
+  ["raven", "Fetch", "Odin's ravens fly to GitHub and bring back the project's code: Python, JavaScript, TypeScript, Go, Java and Rust.",
     "The whole repository arrives as one archive through Odin's relay, which only passes GitHub's own download through. If the relay is down, the file list comes from GitHub's API and the files sixteen at a time; jsDelivr stands in if GitHub's API is down."],
   ["tree", "Read", "Every file is split into its functions, methods and classes.",
     "Tree-sitter, compiled to WebAssembly, parses on up to four threads, exactly like the Python engine. Big repositories are searchable while they are still loading."],

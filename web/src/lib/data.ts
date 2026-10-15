@@ -70,6 +70,15 @@ export interface Lite {
   static: string;
   depth: number;
   held_out: { lite: BrowserEval; unseen: BrowserEval };
+  held_out_per_language?: Record<string, Record<string, LanguageEval>>;
+}
+
+export interface LanguageEval {
+  issues: number;
+  projects: number;
+  learned: Metrics;
+  keyword_and_meaning: Metrics;
+  "hit@10_gain": { delta: number; ci95: [number, number]; p: number };
 }
 
 /** The best function-level result the site runs by default: rerank if shipped, else semantic. */

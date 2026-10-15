@@ -451,7 +451,9 @@ export function Search({ active, request }: { active: boolean; request: URLSearc
   return (
     <div class="container app" id="search-app">
       <PageHero kicker="Search" title="Search a repository">
-        <p>Downloads a public Python repository into this tab, parses it with Tree-sitter (WebAssembly) and ranks every function against your bug report with learned rankers. The search runs entirely in this tab: your bug report is never sent anywhere.</p>
+        <p>Downloads a public repository in Python, JavaScript, TypeScript, Go, Java or Rust into this tab, parses it with Tree-sitter (WebAssembly) and ranks every function against your bug report with learned rankers.{import.meta.env.VITE_RERANK_SERVER
+          ? " The search runs in this tab; with the GPU reranker on, your bug report and the top 50 functions are also sent to Odin's server to be re-read."
+          : " The search runs entirely in this tab: your bug report is never sent anywhere."}</p>
       </PageHero>
 
       <form class="card frame repo-card" onSubmit={submit}>

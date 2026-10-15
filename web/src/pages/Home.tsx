@@ -12,7 +12,7 @@ import { issueNumber } from "../engine/github.ts";
 import { fetchUsage, type Usage } from "../lib/feedback.ts";
 import { LiveLine, useLive } from "../components/Live.tsx";
 
-const EXAMPLES = ["pallets/flask", "psf/requests", "AtsushiSakai/PythonRobotics"];
+const EXAMPLES = ["pallets/flask", "psf/requests", "expressjs/express"];
 const SHOW_USAGE_FROM = 100;
 const SHOW_RATING_FROM = 30;
 
@@ -106,7 +106,7 @@ function Preview() {
 }
 
 const FEATURES: [keyof typeof ICONS, string, string][] = [
-  ["raven", "Any public Python repository", "The whole repository arrives as one archive, streamed and unpacked in the browser, and Tree-sitter (WebAssembly) splits it into functions on up to four worker threads. Without the relay, files come straight from GitHub, 16 at a time."],
+  ["raven", "Any public repository, six languages", "Python, JavaScript, TypeScript, Go, Java and Rust. The whole repository arrives as one archive, streamed and unpacked in the browser, and Tree-sitter (WebAssembly) splits it into functions on up to four worker threads. Without the relay, files come straight from GitHub, 16 at a time."],
   ["ansuz", "Reads bug reports like a developer", "Traceback frames, backticked identifiers, dotted module paths and error strings are extracted as separate signals, scored with BM25 over the issue, its title and its quoted code, then weighed by a LambdaMART ranker."],
   ["eye", "Sees meaning, not just words", "In the background a 16.8 MB int8 static code-embedding model (Model2Vec potion-code-16M) embeds every function at thousands per second; cosine similarity to the issue feeds a second ranker."],
   ["shield", "Private by design", `Parsing, indexing, embedding and ranking run in Web Workers. Repositories are cached in IndexedDB by git tree hash, ${import.meta.env.VITE_RERANK_SERVER ? "and your bug report leaves the tab only for the optional GPU reranker, which scores it against the top 50 functions" : "and your bug report never leaves the tab"}; only search counts and your 👍/👎 votes are recorded.`],
@@ -132,7 +132,7 @@ export function Home({ summary, lite }: { summary: Summary | null; lite: Lite | 
         <HeroSky />
         <RuneRing />
         <div class="container hero-text">
-          <p class="badge intro" style={{ "--d": ".05s" }}>Open source · Runs in your browser · Python</p>
+          <p class="badge intro" style={{ "--d": ".05s" }}>Open source · Runs in your browser · Six languages</p>
           <h1 aria-label={TITLE.join(" ")}>
             {TITLE.map((w, i) => <span key={i} class="word" aria-hidden="true" style={{ "--i": i }}>{w} </span>)}
           </h1>
