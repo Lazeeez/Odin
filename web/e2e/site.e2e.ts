@@ -188,7 +188,7 @@ test("asking for another repository mid-load cancels the first and loads the new
 test("pressing Enter on another repository mid-load switches to it", async ({ page }) => {
   await page.route(/odin-e2e\/missing/, (route) => route.fulfill({ status: 404, contentType: "application/json", body: "{}" }));
   await page.route("https://raw.githubusercontent.com/odin-e2e/fixture/**", async (route) => {
-    await new Promise((r) => setTimeout(r, 1500));
+    await new Promise((r) => setTimeout(r, 4000));
     await route.fallback();
   });
   await page.goto(`./#/search?repo=${encodeURIComponent(REPO)}`);
