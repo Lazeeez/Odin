@@ -18,7 +18,9 @@ const JOURNEY: [keyof typeof ICONS, string, string, string][] = [
   ["shield", "Rank", "A model trained on thousands of real bugs weighs the clues and answers in milliseconds.",
     "LambdaMART, shipped as JSON trees, over 33 signals: keyword scores for the issue, its title and quoted code, whether a traceback or the issue names the function, file-level evidence and the shape of the code."],
   ["eye", "Understand", "In the background, Odin learns what every function means, to find code the report never names.",
-    "A static code-embedding model (15 MB, downloaded once) embeds every function in seconds; a second ranker adds how close each function is in meaning to the issue."],
+    "A static code-embedding model (16.8 MB, downloaded once) embeds every function in seconds; a second ranker adds how close each function is in meaning to the issue."],
+  ["ansuz", "Reread", "The top 20 get a closer read, the way a developer would skim them.",
+    "A small language model (MiniLM: 45 MB on a GPU through WebGPU, 23 MB on the CPU, downloaded once) embeds the issue and the top 20 functions; a third ranker reorders them with that evidence. A file ranker orders whole files for the Files view."],
   ["raven", "Remember", "The next visit to the same repository is instant.",
     "Parsed repositories are cached by git tree hash in IndexedDB. Everything runs in background threads, so the page never freezes."],
 ];
