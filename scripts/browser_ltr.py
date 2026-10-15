@@ -471,6 +471,26 @@ def per_language(items: list[Item], s_b: list[np.ndarray], s_c: list[np.ndarray]
     return out, rows
 
 
+def export_explore(name: str, items: list[Item], orders: dict, file_orders: list) -> None:
+    folder = OUT.parent / "explore"
+    folder.mkdir(parents=True, exist_ok=True)
+    for i, it in enumerate(items):
+        record = {
+            "id": it.qid,
+            "repo": it.repo,
+            "set": name,
+            "language": LANG_OF[it.qid],
+            "text": it.text,
+            "gold_files": sorted(it.files),
+            "gold_functions": sorted(it.targets),
+            "functions": {stage: lists[i][:10] for stage, lists in orders.items()},
+            "files": {"files": file_orders[i][:10]},
+        }
+        (folder / f"{it.qid}.json").write_text(
+            json.dumps(record, ensure_ascii=False), encoding="utf-8", newline="\n"
+        )
+
+
 def make_embedder():
     import torch
     from sentence_transformers import SentenceTransformer
@@ -669,46 +689,39 @@ def main() -> None:
         Xa, _, ida = stage_rows(items, "a")
         Xb, _, idb = stage_rows(items, "b")
         s_b = [model_b.predict(x) if len(x) else np.zeros(0) for x in Xb]
-        res = {
-            "keyword": metrics(
-                [
-                    [u[i] for i in order(x[:, FEATURES.index("bm25_rel")])]
-                    for u, x in zip(ida, Xa, strict=True)
-                ],
-                g,
-            ),
-            "instant": metrics(
-                [
-                    [u[i] for i in order(model_a.predict(x) if len(x) else np.zeros(0))]
-                    for u, x in zip(ida, Xa, strict=True)
-                ],
-                g,
-            ),
-            "semantic": metrics(
-                [[u[i] for i in order(s)] for u, s in zip(idb, s_b, strict=True)], g
-            ),
+        orders = {
+            "keyword": [
+                [u[i] for i in order(x[:, FEATURES.index("bm25_rel")])]
+                for u, x in zip(ida, Xa, strict=True)
+            ],
+            "instant": [
+                [u[i] for i in order(model_a.predict(x) if len(x) else np.zeros(0))]
+                for u, x in zip(ida, Xa, strict=True)
+            ],
+            "semantic": [[u[i] for i in order(s)] for u, s in zip(idb, s_b, strict=True)],
         }
         pass2(items, s_b, snaps, embed, name)
         if model_c is not None:
-            res["rerank"] = metrics(
-                [
-                    reranked(it, sb, model_c.predict(it.xc) if len(it.sel) else np.zeros(0))
-                    for it, sb in zip(items, s_b, strict=True)
-                ],
-                g,
-            )
+            orders["rerank"] = [
+                reranked(it, sb, model_c.predict(it.xc) if len(it.sel) else np.zeros(0))
+                for it, sb in zip(items, s_b, strict=True)
+            ]
+        res = {k: metrics(v, g) for k, v in orders.items()}
         fg = [it.files for it in items]
         res["files_best_function"] = metrics(
             [[it.fpaths[i] for i in order(it.xf[:, col])] for it in items], fg
         )
-        res["files"] = metrics(
-            [
-                [it.fpaths[i] for i in order(model_f.predict(it.xf) if len(it.xf) else np.zeros(0))]
-                for it in items
-            ],
-            fg,
-        )
+        file_orders = [
+            [it.fpaths[i] for i in order(model_f.predict(it.xf) if len(it.xf) else np.zeros(0))]
+            for it in items
+        ]
+        res["files"] = metrics(file_orders, fg)
         report["held_out"][name] = res
+        if MULTILANG and name in ("multilingual", "polybench"):
+            try:
+                export_explore(name, items, orders, file_orders)
+            except Exception as exc:  # noqa: BLE001 - the export must not cost the run its report
+                print(f"  explore export for {name} failed: {exc!r}", flush=True)
         if MULTILANG:
             s_c_held = [
                 model_c.predict(it.xc) if model_c is not None and len(it.sel) else None
