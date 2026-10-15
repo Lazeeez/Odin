@@ -48,7 +48,7 @@ function CodeBlock({ hit, terms }: { hit: WireHit; terms: ReadonlySet<string> })
   // A class unit omits its methods' lines, so its lines are not contiguous: no line numbers.
   const gutter = hit.kind === "class" ? "" : Array.from({ length: n }, (_, i) => hit.line + i).join("\n");
   return (
-    <div class="codewrap">
+    <div class="codewrap" tabIndex={0} role="region" aria-label={`Source of ${hit.qualname}`}>
       <pre class="gutter" aria-hidden="true">{gutter}</pre>
       <pre class="src" dangerouslySetInnerHTML={{ __html: html }} />
     </div>
