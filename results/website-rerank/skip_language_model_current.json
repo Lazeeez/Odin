@@ -1,0 +1,107 @@
+{
+ "issues": 3174,
+ "projects": 119,
+ "setting": [
+  50,
+  1.0
+ ],
+ "same_top_50": true,
+ "gpu_over_language_model_order": {
+  "n": 3174,
+  "mrr": 0.6066,
+  "recall@1": 0.2203,
+  "hit@1": 0.5,
+  "all@1": 0.1355,
+  "recall@5": 0.435,
+  "hit@5": 0.7486,
+  "all@5": 0.2785,
+  "recall@10": 0.5263,
+  "hit@10": 0.8192,
+  "all@10": 0.345
+ },
+ "gpu_over_semantic_order": {
+  "n": 3174,
+  "mrr": 0.6042,
+  "recall@1": 0.2203,
+  "hit@1": 0.4981,
+  "all@1": 0.1364,
+  "recall@5": 0.438,
+  "hit@5": 0.7498,
+  "all@5": 0.282,
+  "recall@10": 0.5254,
+  "hit@10": 0.8166,
+  "all@10": 0.3453
+ },
+ "paired": {
+  "hit@10": {
+   "delta": -0.0025,
+   "ci95": [
+    -0.0069,
+    0.0019
+   ],
+   "p_value": 0.2962,
+   "wins": 21,
+   "losses": 29
+  },
+  "hit@1": {
+   "delta": -0.0019,
+   "ci95": [
+    -0.0085,
+    0.0044
+   ],
+   "p_value": 0.599,
+   "wins": 54,
+   "losses": 60
+  },
+  "hit@5": {
+   "delta": 0.0013,
+   "ci95": [
+    -0.005,
+    0.0076
+   ],
+   "p_value": 0.7368,
+   "wins": 54,
+   "losses": 50
+  },
+  "mrr": {
+   "delta": -0.0024,
+   "ci95": [
+    -0.0064,
+    0.0015
+   ],
+   "p_value": 0.2286,
+   "wins": 251,
+   "losses": 283
+  },
+  "recall@10": {
+   "delta": -0.0008,
+   "ci95": [
+    -0.0044,
+    0.0026
+   ],
+   "p_value": 0.641,
+   "wins": 161,
+   "losses": 158
+  }
+ },
+ "decision": {
+  "rule": "skip the language model if hit@10 loss <= 0.005 and the 95% interval's loss end < 0.010",
+  "met": true
+ },
+ "provenance": {
+  "timestamp": "2026-10-15T19:12:10+00:00",
+  "git_commit": "2fe9439ccede04cc2f10428f1904181b8039d460",
+  "git_dirty": true,
+  "python": "3.11.16",
+  "platform": "Windows-10-10.0.26200-SP0",
+  "packages": {
+   "numpy": "2.4.6",
+   "scipy": "1.17.1",
+   "tree-sitter": "0.26.0",
+   "lightgbm": "4.7.0",
+   "torch": "2.14.0+cu130",
+   "sentence-transformers": "6.1.0"
+  },
+  "models": {}
+ }
+}

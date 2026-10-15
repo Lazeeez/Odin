@@ -2,7 +2,7 @@
 
 ## Status
 
-Proposed, 2026-10-16. The test and its decision rule were written before the semantic-stage orders were rebuilt. The outcome section is added after the test.
+Accepted, 2026-10-16. The test and its decision rule were written before the semantic-stage orders were rebuilt; the outcome is below.
 
 ## Context
 
@@ -34,3 +34,20 @@ Fixed before looking:
 ## Consequences
 
 If the rule is met, a visitor with the GPU reranker on never downloads the language model unless the GPU fails, which removes about 50 MB and most of the first-search wait; visitors with it off keep today's behaviour.
+
+## Outcome
+
+Measured 2026-10-16. Result: [skip_language_model_current.json](../../results/website-rerank/skip_language_model_current.json). No GPU work was rerun: the semantic stage's orders were rebuilt out of fold on the laptop, and ADR 0021's scores were blended into them.
+
+**The rule is met: the site skips the browser's language model whenever the GPU reranker answers.**
+
+3,174 issues from 119 projects. For every issue the two top 50s held the same functions, as expected.
+
+| GPU reranker blended into | hit@1 | hit@5 | hit@10 | MRR | recall@10 |
+|---|---|---|---|---|---|
+| the language model's order (since ADR 0021) | 0.500 | 0.749 | 0.819 | 0.607 | 0.526 |
+| the semantic stage's order | 0.498 | 0.750 | 0.817 | 0.604 | 0.525 |
+
+- **hit@10 (decides):** -0.25 points, 95% interval [-0.69, +0.19], p = 0.30; 21 issues better, 29 worse. Both limits of the rule hold (loss at most 0.5 points, the interval's loss end under 1 point).
+- **Nothing else moves significantly:** hit@1 -0.19 (p = 0.60), hit@5 +0.13 (p = 0.74), MRR -0.24 (p = 0.23), recall@10 -0.08 (p = 0.64).
+- **What changes on the site:** with the GPU reranker on, a search shows the semantic results, then the GPU's order, and the language model (22 MB of model, a 27 MB runtime, 15 s on a first visit to `django/django`) is downloaded only if the GPU does not answer. With the GPU reranker off, nothing changes.
