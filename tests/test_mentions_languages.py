@@ -102,3 +102,44 @@ def test_module_names_for_other_languages():
         == module_name("django/db/__init__.py")
         == "django.db"
     )
+
+
+def test_the_browser_parses_the_same():
+    import json
+    import os
+    import shutil
+    import subprocess
+    from pathlib import Path
+
+    import pytest
+
+    root = Path(__file__).resolve().parent.parent
+    node = os.environ.get("ODIN_NODE") or shutil.which("node")
+    if not node or not (root / "web/node_modules/web-tree-sitter").exists():
+        pytest.skip("needs Node 24 and `npm ci` in web/")
+    texts = [NODE_TRACE, FIREFOX_TRACE, JAVA_TRACE, GO_TRACE, RUST_TRACE, NODE_TRACE + JAVA_TRACE + GO_TRACE,
+             "See src/theme/toggle.ts and pkg/server.go, not package.json",
+             'File "/x/django/db/models/query.py", line 3, in filter\n    at Foo.bar (src/a.ts:1:2)']  # fmt: skip
+    paths = [
+        "src/main/java/com/example/App.java",
+        "src/components/index.ts",
+        "pkg/server/server.go",
+        "django/db/__init__.py",
+        "lib/a.rs",
+    ]
+    pairs = [("com/example/App.java", "src/main/java/com/example/App.java"), ("App.java", "src/main/java/com/example/App.java"),
+             ("/home/u/web/server/server.go", "server/server.go"), ("src/a.ts", "src/a.ts")]  # fmt: skip
+    out = subprocess.run(
+        [node, str(root / "tests/js/mentions_multi.mjs")],
+        input=json.dumps({"texts": texts, "paths": paths, "pairs": pairs}),
+        capture_output=True, check=True, text=True, encoding="utf-8",
+    ).stdout  # fmt: skip
+    js = json.loads(out)
+    for text, got in zip(texts, js["mentions"], strict=True):
+        m = Mentions.parse(text, multilang=True)
+        assert got["framePaths"] == list(m.frame_paths), text[:40]
+        assert got["frameNames"] == sorted(m.frame_names), text[:40]
+        assert got["pyPaths"] == list(m.py_paths), text[:40]
+        assert (tuple(got["lastFrame"]) if got["lastFrame"] else None) == m.last_frame, text[:40]
+    assert js["modules"] == [module_name(p, multilang=True) for p in paths]
+    assert js["matches"] == [path_matches(a, b, multilang=True) for a, b in pairs]
