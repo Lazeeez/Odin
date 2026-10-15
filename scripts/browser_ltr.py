@@ -192,16 +192,15 @@ def items_of(dataset: str, split: str, exclude: list[str]) -> list[Item]:
 def build(name: str, spec: tuple, snaps: Snapshots) -> list[Item]:
     """Pass 1: candidate pools and features of the instant and semantic stages."""
     path = CACHE / f"items_{name}.pkl"
-    if path.exists():
+    if path.exists() and not LIMIT:
         return pickle.loads(path.read_bytes())
     items, kept, t0 = items_of(*spec), [], time.time()
     if LIMIT:
         items = [
             it
             for repo in sorted({it.repo for it in items})[:LIMIT]
-            for it in items
-            if it.repo == repo
-        ][: 4 * LIMIT]
+            for it in [it for it in items if it.repo == repo][:4]
+        ]
     snaps.r.warmup([Query(it.qid, it.repo, it.commit, "") for it in items])
     for n, it in enumerate(items, 1):
         try:
@@ -221,6 +220,12 @@ def build(name: str, spec: tuple, snaps: Snapshots) -> list[Item]:
     print(
         f"{name}: {len(kept)} of {len(items)} issues built in {time.time() - t0:.0f}s", flush=True
     )
+    if LIMIT or len(kept) < 0.9 * len(items):
+        print(
+            f"  {name}: not cached ({'smoke run' if LIMIT else 'over a tenth of its issues failed'})",
+            flush=True,
+        )
+        return kept
     CACHE.mkdir(parents=True, exist_ok=True)
     path.write_bytes(pickle.dumps(kept))
     return kept
