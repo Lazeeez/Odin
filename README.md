@@ -329,6 +329,27 @@ The page is 41 KB of JavaScript and 13 KB of CSS (gzipped); the map, the game an
 
 **Archive relay.** `proxy/cloudflare-worker.js` passes GitHub's repository archives through, so a repository downloads as one `.tar.gz` instead of one request per file: Django is ready in 3.5 s instead of 13.8 s, transformers in 5.8 s instead of about a minute. It runs in the same Worker as the site, at `/relay` on the same origin, and answers only the site's own pages. With the relay on, the file list and the commit also come from the archive, so loading makes no call to GitHub's API and its limit of 60 requests an hour does not apply ([ADR 0012](docs/decisions/0012-archive-file-list.md)). A build without `VITE_ARCHIVE_PROXY`, or a relay that is down, falls back to listing files through the API and loading them one by one.
 
+## GitHub Action
+
+Odin can comment on new issues in any public repository with the functions most likely to need the fix ([ADR 0028](docs/decisions/0028-github-action.md)). Add `.github/workflows/odin.yml`:
+
+```yaml
+name: odin
+on:
+  issues:
+    types: [opened]
+permissions:
+  contents: read
+  issues: write
+jobs:
+  localize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: Lazeeez/Odin@main
+```
+
+It ranks the repository at the default branch's latest commit with the website's ranker (all six languages, no GPU), comments the top five functions and their files with links, and links to the same search on allfather.dev. A rerun edits its comment. `top` sets how many functions to list. This repository runs it on its own issues.
+
 ## How ground truth is built
 
 For each issue the gold patch is parsed hunk by hunk against the file **as it existed at `base_commit`**, never at HEAD, since later history contains the fix itself.
@@ -419,6 +440,8 @@ docs/decisions/               why things are the way they are
 24. [GitHub API calls through the site's Worker](docs/decisions/0024-github-api-proxy.md)
 25. [Searching code in languages other than Python](docs/decisions/0025-more-languages.md)
 26. [Skipping the browser's language model when the GPU reranker answers](docs/decisions/0026-skip-browser-language-model.md)
+27. [Rust test modules are test code](docs/decisions/0027-rust-test-modules.md)
+28. [Odin as a GitHub Action](docs/decisions/0028-github-action.md)
 
 ## Adding a retriever
 

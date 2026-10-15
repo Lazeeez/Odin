@@ -1,0 +1,39 @@
+name: Odin bug localization
+description: Comments on a new issue with the functions and files most likely to need the fix, ranked by Odin.
+author: Lazeeez
+branding:
+  icon: search
+  color: yellow
+inputs:
+  github-token:
+    description: Token used to read the issue and comment on it (needs issues write).
+    default: ${{ github.token }}
+  top:
+    description: How many functions to list.
+    default: "5"
+runs:
+  using: composite
+  steps:
+    - uses: astral-sh/setup-uv@v10.2.0
+      with:
+        python-version: "3.11"
+        enable-cache: true
+        cache-dependency-glob: ${{ github.action_path }}/uv.lock
+    - uses: actions/cache@v4
+      with:
+        path: |
+          ${{ github.action_path }}/.cache
+          ~/.cache/huggingface
+        key: odin-${{ github.repository }}-${{ github.sha }}
+        restore-keys: odin-${{ github.repository }}-
+    - name: Install Odin
+      shell: bash
+      run: uv sync --locked --project "$GITHUB_ACTION_PATH"
+    - name: Rank and comment
+      if: github.event.issue.pull_request == null
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+        ODIN_TOP: ${{ inputs.top }}
+        ISSUE: ${{ github.event.issue.number }}
+      run: uv run --project "$GITHUB_ACTION_PATH" python "$GITHUB_ACTION_PATH/scripts/odin_action.py" --repo "$GITHUB_REPOSITORY" --issue "$ISSUE" --sha "$GITHUB_SHA"
