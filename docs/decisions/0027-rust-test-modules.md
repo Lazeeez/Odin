@@ -19,3 +19,14 @@ Odin leaves tests out of the search by default, in training, in the answer keys 
 
 - Visitors' cached multi-language repositories are re-parsed once (the cache key changed).
 - Other languages keep tests in separate files, which the path rules already handle.
+
+## Outcome
+
+Measured 2026-10-16 on PACE. Results: [report.json](../../results/browser_ltr_multilang/report.json), with its [provenance](../../results/browser_ltr_multilang/provenance.json).
+
+**The rule holds for every language, so the retrained ranker ships.**
+
+- **Answer keys:** 32 Rust bugs changed (30 in training, 2 in SWE-bench Multilingual), each losing inline test functions from its answer; 3 Multilingual bugs had nothing else to find and leave the function-level set (161 → 158). No other language's keys changed.
+- **Cross-validation, learned ranker against keywords and meaning (function hit@10):** Python 78.4% vs 65.7%, Go 70.2% vs 56.2%, Java 61.5% vs 38.8%, JavaScript 71.0% vs 57.3%, TypeScript 59.0% vs 39.4%, Rust 73.3% vs 54.2% (120 bugs); every gain is 12.7 to 22.7 points with p < 0.0001.
+- **Held out, final in-browser stage, decided nothing:** Lite 69.1% (unchanged), the 30 unseen projects 76.4% (76.3% before), SWE-bench Multilingual 67.1% (64.6%), SWE-PolyBench 70.6% (68.2%).
+- **A run was interrupted on the way.** The first retrain reused cached builds made before the rule changed; the rule shrinks the unit index of any repository containing Rust files, so their stored row positions no longer matched, and the run stopped with an index error on SWE-PolyBench. Its three completed held-out runs are logged; the rerun rebuilt every stale cache and is the result above.

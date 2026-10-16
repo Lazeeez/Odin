@@ -4,82 +4,82 @@
  "depth": 20,
  "cv": {
   "a": {
-   "n": 7845,
-   "mrr": 0.4881,
-   "recall@1": 0.1896,
-   "hit@1": 0.382,
-   "all@1": 0.1249,
-   "recall@5": 0.3959,
-   "hit@5": 0.6317,
-   "all@5": 0.2753,
-   "recall@10": 0.4885,
-   "hit@10": 0.7183,
-   "all@10": 0.3522
+   "n": 7843,
+   "mrr": 0.4878,
+   "recall@1": 0.1901,
+   "hit@1": 0.3831,
+   "all@1": 0.1257,
+   "recall@5": 0.3941,
+   "hit@5": 0.6299,
+   "all@5": 0.2737,
+   "recall@10": 0.4887,
+   "hit@10": 0.7181,
+   "all@10": 0.3515
   },
   "keyword": {
-   "n": 7845,
-   "mrr": 0.37,
-   "recall@1": 0.1308,
-   "hit@1": 0.2701,
-   "all@1": 0.0854,
-   "recall@5": 0.3015,
-   "hit@5": 0.5069,
+   "n": 7843,
+   "mrr": 0.3702,
+   "recall@1": 0.1307,
+   "hit@1": 0.2702,
+   "all@1": 0.0853,
+   "recall@5": 0.3017,
+   "hit@5": 0.5075,
    "all@5": 0.2008,
-   "recall@10": 0.3878,
-   "hit@10": 0.6022,
-   "all@10": 0.2672
+   "recall@10": 0.3881,
+   "hit@10": 0.6024,
+   "all@10": 0.2675
   },
   "b": {
-   "n": 7845,
-   "mrr": 0.4952,
-   "recall@1": 0.1912,
-   "hit@1": 0.3857,
-   "all@1": 0.1261,
-   "recall@5": 0.4023,
-   "hit@5": 0.6442,
-   "all@5": 0.2789,
-   "recall@10": 0.4982,
-   "hit@10": 0.7324,
-   "all@10": 0.3588
+   "n": 7843,
+   "mrr": 0.495,
+   "recall@1": 0.1911,
+   "hit@1": 0.3866,
+   "all@1": 0.125,
+   "recall@5": 0.4013,
+   "hit@5": 0.642,
+   "all@5": 0.2781,
+   "recall@10": 0.498,
+   "hit@10": 0.7326,
+   "all@10": 0.3569
   },
   "c": {
-   "n": 7845,
-   "mrr": 0.502,
-   "recall@1": 0.1938,
-   "hit@1": 0.3925,
-   "all@1": 0.1268,
-   "recall@5": 0.4077,
-   "hit@5": 0.653,
-   "all@5": 0.2825,
+   "n": 7843,
+   "mrr": 0.5005,
+   "recall@1": 0.1933,
+   "hit@1": 0.3895,
+   "all@1": 0.1266,
+   "recall@5": 0.4041,
+   "hit@5": 0.6495,
+   "all@5": 0.2781,
    "recall@10": 0.5029,
-   "hit@10": 0.7393,
-   "all@10": 0.3602
+   "hit@10": 0.7396,
+   "all@10": 0.3585
   },
   "file": {
-   "n": 7845,
-   "mrr": 0.711,
-   "recall@1": 0.4157,
-   "hit@1": 0.6051,
-   "all@1": 0.3233,
-   "recall@5": 0.6803,
-   "hit@5": 0.852,
-   "all@5": 0.5507,
-   "recall@10": 0.7679,
-   "hit@10": 0.908,
-   "all@10": 0.6407
+   "n": 7843,
+   "mrr": 0.7138,
+   "recall@1": 0.4182,
+   "hit@1": 0.6097,
+   "all@1": 0.3244,
+   "recall@5": 0.6807,
+   "hit@5": 0.8524,
+   "all@5": 0.5508,
+   "recall@10": 0.7683,
+   "hit@10": 0.9079,
+   "all@10": 0.6417
   },
   "file_best_function": {
-   "n": 7845,
-   "mrr": 0.7031,
-   "recall@1": 0.4126,
-   "hit@1": 0.5977,
-   "all@1": 0.322,
-   "recall@5": 0.6679,
-   "hit@5": 0.8409,
-   "all@5": 0.5403,
-   "recall@10": 0.7574,
+   "n": 7843,
+   "mrr": 0.7026,
+   "recall@1": 0.4103,
+   "hit@1": 0.5965,
+   "all@1": 0.3196,
+   "recall@5": 0.6684,
+   "hit@5": 0.841,
+   "all@5": 0.5418,
+   "recall@10": 0.7571,
    "hit@10": 0.9007,
-   "all@10": 0.6303
+   "all@10": 0.6281
   }
  },
  "held_out": {
@@ -99,68 +99,68 @@
    },
    "instant": {
     "n": 291,
-    "mrr": 0.4332,
-    "recall@1": 0.2974,
-    "hit@1": 0.3162,
-    "all@1": 0.2818,
-    "recall@5": 0.5723,
-    "hit@5": 0.6048,
-    "all@5": 0.5464,
-    "recall@10": 0.6431,
-    "hit@10": 0.6701,
-    "all@10": 0.6186
+    "mrr": 0.426,
+    "recall@1": 0.2853,
+    "hit@1": 0.3058,
+    "all@1": 0.268,
+    "recall@5": 0.5707,
+    "hit@5": 0.5979,
+    "all@5": 0.5498,
+    "recall@10": 0.638,
+    "hit@10": 0.6632,
+    "all@10": 0.6151
    },
    "semantic": {
     "n": 291,
-    "mrr": 0.4353,
-    "recall@1": 0.2945,
-    "hit@1": 0.3127,
+    "mrr": 0.4351,
+    "recall@1": 0.2956,
+    "hit@1": 0.3162,
     "all@1": 0.2784,
-    "recall@5": 0.5674,
-    "hit@5": 0.5979,
-    "all@5": 0.543,
-    "recall@10": 0.6574,
-    "hit@10": 0.6873,
-    "all@10": 0.6323
+    "recall@5": 0.5686,
+    "hit@5": 0.6048,
+    "all@5": 0.5395,
+    "recall@10": 0.6385,
+    "hit@10": 0.6701,
+    "all@10": 0.6117
    },
    "rerank": {
     "n": 291,
-    "mrr": 0.4322,
-    "recall@1": 0.2773,
+    "mrr": 0.434,
+    "recall@1": 0.2767,
     "hit@1": 0.299,
     "all@1": 0.2577,
-    "recall@5": 0.5922,
-    "hit@5": 0.6254,
-    "all@5": 0.5636,
-    "recall@10": 0.6663,
+    "recall@5": 0.5767,
+    "hit@5": 0.6151,
+    "all@5": 0.543,
+    "recall@10": 0.6612,
     "hit@10": 0.6907,
-    "all@10": 0.6426
+    "all@10": 0.6323
    },
    "files_best_function": {
     "n": 291,
-    "mrr": 0.7168,
-    "recall@1": 0.622,
-    "hit@1": 0.622,
-    "all@1": 0.622,
-    "recall@5": 0.8454,
-    "hit@5": 0.8454,
-    "all@5": 0.8454,
-    "recall@10": 0.8935,
-    "hit@10": 0.8935,
-    "all@10": 0.8935
+    "mrr": 0.7108,
+    "recall@1": 0.6151,
+    "hit@1": 0.6151,
+    "all@1": 0.6151,
+    "recall@5": 0.8385,
+    "hit@5": 0.8385,
+    "all@5": 0.8385,
+    "recall@10": 0.8866,
+    "hit@10": 0.8866,
+    "all@10": 0.8866
    },
    "files": {
     "n": 291,
-    "mrr": 0.7182,
-    "recall@1": 0.622,
-    "hit@1": 0.622,
-    "all@1": 0.622,
+    "mrr": 0.7235,
+    "recall@1": 0.6323,
+    "hit@1": 0.6323,
+    "all@1": 0.6323,
     "recall@5": 0.8454,
     "hit@5": 0.8454,
     "all@5": 0.8454,
-    "recall@10": 0.8935,
-    "hit@10": 0.8935,
-    "all@10": 0.8935
+    "recall@10": 0.89,
+    "hit@10": 0.89,
+    "all@10": 0.89
    }
   },
   "unseen": {
@@ -179,148 +179,148 @@
    },
    "instant": {
     "n": 747,
-    "mrr": 0.5428,
-    "recall@1": 0.1868,
-    "hit@1": 0.4378,
-    "all@1": 0.1071,
-    "recall@5": 0.3945,
-    "hit@5": 0.7001,
-    "all@5": 0.2463,
-    "recall@10": 0.4738,
-    "hit@10": 0.755,
-    "all@10": 0.3079
+    "mrr": 0.5422,
+    "recall@1": 0.1905,
+    "hit@1": 0.4418,
+    "all@1": 0.1098,
+    "recall@5": 0.3906,
+    "hit@5": 0.6908,
+    "all@5": 0.245,
+    "recall@10": 0.4691,
+    "hit@10": 0.747,
+    "all@10": 0.3066
    },
    "semantic": {
     "n": 747,
-    "mrr": 0.5463,
+    "mrr": 0.5437,
     "recall@1": 0.1862,
-    "hit@1": 0.4378,
+    "hit@1": 0.4391,
     "all@1": 0.1058,
-    "recall@5": 0.395,
-    "hit@5": 0.6948,
-    "all@5": 0.2503,
-    "recall@10": 0.4847,
-    "hit@10": 0.7697,
+    "recall@5": 0.3927,
+    "hit@5": 0.6894,
+    "all@5": 0.2463,
+    "recall@10": 0.4826,
+    "hit@10": 0.7657,
     "all@10": 0.3159
    },
    "rerank": {
     "n": 747,
-    "mrr": 0.5549,
-    "recall@1": 0.1937,
-    "hit@1": 0.4498,
-    "all@1": 0.1111,
-    "recall@5": 0.3968,
-    "hit@5": 0.6921,
-    "all@5": 0.2503,
-    "recall@10": 0.4854,
-    "hit@10": 0.7631,
-    "all@10": 0.3199
+    "mrr": 0.5491,
+    "recall@1": 0.1869,
+    "hit@1": 0.4404,
+    "all@1": 0.1044,
+    "recall@5": 0.3939,
+    "hit@5": 0.6867,
+    "all@5": 0.2463,
+    "recall@10": 0.484,
+    "hit@10": 0.7644,
+    "all@10": 0.3173
    },
    "files_best_function": {
     "n": 747,
-    "mrr": 0.7648,
-    "recall@1": 0.4054,
-    "hit@1": 0.6667,
-    "all@1": 0.2771,
-    "recall@5": 0.6649,
-    "hit@5": 0.8916,
-    "all@5": 0.49,
+    "mrr": 0.7656,
+    "recall@1": 0.4078,
+    "hit@1": 0.6707,
+    "all@1": 0.2798,
+    "recall@5": 0.6658,
+    "hit@5": 0.8929,
+    "all@5": 0.4886,
     "recall@10": 0.7512,
-    "hit@10": 0.9371,
+    "hit@10": 0.9384,
     "all@10": 0.577
    },
    "files": {
     "n": 747,
-    "mrr": 0.7752,
-    "recall@1": 0.4173,
-    "hit@1": 0.6827,
-    "all@1": 0.2851,
-    "recall@5": 0.671,
+    "mrr": 0.7737,
+    "recall@1": 0.4165,
+    "hit@1": 0.6801,
+    "all@1": 0.2878,
+    "recall@5": 0.6731,
     "hit@5": 0.8929,
-    "all@5": 0.494,
-    "recall@10": 0.7604,
+    "all@5": 0.498,
+    "recall@10": 0.7625,
     "hit@10": 0.9424,
-    "all@10": 0.5837
+    "all@10": 0.5863
    }
   },
   "multilingual": {
    "keyword": {
     "n": 161,
-    "mrr": 0.3021,
+    "mrr": 0.3076,
     "recall@1": 0.1496,
     "hit@1": 0.2174,
     "all@1": 0.1118,
-    "recall@5": 0.3189,
-    "hit@5": 0.4099,
-    "all@5": 0.2547,
-    "recall@10": 0.4363,
-    "hit@10": 0.5404,
-    "all@10": 0.354
+    "recall@5": 0.3268,
+    "hit@5": 0.4224,
+    "all@5": 0.2609,
+    "recall@10": 0.4535,
+    "hit@10": 0.5528,
+    "all@10": 0.3727
    },
    "instant": {
     "n": 161,
-    "mrr": 0.4214,
-    "recall@1": 0.2189,
-    "hit@1": 0.3168,
-    "all@1": 0.1677,
-    "recall@5": 0.4511,
-    "hit@5": 0.5776,
-    "all@5": 0.3665,
-    "recall@10": 0.5341,
+    "mrr": 0.4341,
+    "recall@1": 0.2262,
+    "hit@1": 0.3292,
+    "all@1": 0.1739,
+    "recall@5": 0.4512,
+    "hit@5": 0.5839,
+    "all@5": 0.3727,
+    "recall@10": 0.5375,
     "hit@10": 0.6584,
     "all@10": 0.441
    },
    "semantic": {
     "n": 161,
-    "mrr": 0.4172,
-    "recall@1": 0.2065,
-    "hit@1": 0.2981,
-    "all@1": 0.1615,
-    "recall@5": 0.4609,
+    "mrr": 0.4372,
+    "recall@1": 0.2284,
+    "hit@1": 0.3292,
+    "all@1": 0.1739,
+    "recall@5": 0.4649,
     "hit@5": 0.5901,
-    "all@5": 0.3727,
-    "recall@10": 0.5461,
-    "hit@10": 0.6708,
-    "all@10": 0.4534
+    "all@5": 0.3851,
+    "recall@10": 0.5468,
+    "hit@10": 0.6646,
+    "all@10": 0.4658
    },
    "rerank": {
     "n": 161,
-    "mrr": 0.4279,
-    "recall@1": 0.2167,
-    "hit@1": 0.3168,
-    "all@1": 0.1677,
-    "recall@5": 0.4658,
+    "mrr": 0.4372,
+    "recall@1": 0.227,
+    "hit@1": 0.3354,
+    "all@1": 0.1739,
+    "recall@5": 0.4686,
     "hit@5": 0.5901,
-    "all@5": 0.3789,
-    "recall@10": 0.5225,
-    "hit@10": 0.646,
-    "all@10": 0.4348
+    "all@5": 0.3851,
+    "recall@10": 0.5482,
+    "hit@10": 0.6708,
+    "all@10": 0.4534
    },
    "files_best_function": {
     "n": 161,
-    "mrr": 0.5599,
-    "recall@1": 0.3605,
-    "hit@1": 0.4224,
-    "all@1": 0.3106,
-    "recall@5": 0.6526,
-    "hit@5": 0.7205,
-    "all@5": 0.6087,
-    "recall@10": 0.7748,
+    "mrr": 0.577,
+    "recall@1": 0.3884,
+    "hit@1": 0.4472,
+    "all@1": 0.3416,
+    "recall@5": 0.6671,
+    "hit@5": 0.7329,
+    "all@5": 0.6211,
+    "recall@10": 0.7771,
     "hit@10": 0.8385,
-    "all@10": 0.7205
+    "all@10": 0.7329
    },
    "files": {
     "n": 161,
-    "mrr": 0.5693,
-    "recall@1": 0.3822,
-    "hit@1": 0.4472,
-    "all@1": 0.3292,
-    "recall@5": 0.6757,
+    "mrr": 0.5714,
+    "recall@1": 0.376,
+    "hit@1": 0.441,
+    "all@1": 0.323,
+    "recall@5": 0.6726,
     "hit@5": 0.7453,
-    "all@5": 0.6273,
-    "recall@10": 0.7593,
-    "hit@10": 0.8199,
-    "all@10": 0.7081
+    "all@5": 0.6211,
+    "recall@10": 0.7719,
+    "hit@10": 0.8323,
+    "all@10": 0.7205
    }
   },
   "polybench": {
@@ -339,66 +339,66 @@
    },
    "instant": {
     "n": 340,
-    "mrr": 0.4896,
-    "recall@1": 0.1824,
-    "hit@1": 0.4,
-    "all@1": 0.1118,
-    "recall@5": 0.3749,
-    "hit@5": 0.5971,
-    "all@5": 0.2529,
-    "recall@10": 0.4683,
-    "hit@10": 0.6882,
-    "all@10": 0.3265
+    "mrr": 0.4898,
+    "recall@1": 0.1799,
+    "hit@1": 0.3971,
+    "all@1": 0.1088,
+    "recall@5": 0.379,
+    "hit@5": 0.6,
+    "all@5": 0.2559,
+    "recall@10": 0.4642,
+    "hit@10": 0.6794,
+    "all@10": 0.3235
    },
    "semantic": {
     "n": 340,
-    "mrr": 0.4929,
-    "recall@1": 0.1779,
-    "hit@1": 0.3971,
+    "mrr": 0.4948,
+    "recall@1": 0.1794,
+    "hit@1": 0.4029,
     "all@1": 0.1059,
-    "recall@5": 0.3926,
-    "hit@5": 0.6176,
-    "all@5": 0.2647,
-    "recall@10": 0.4803,
-    "hit@10": 0.6853,
-    "all@10": 0.3324
+    "recall@5": 0.3802,
+    "hit@5": 0.6,
+    "all@5": 0.2529,
+    "recall@10": 0.4761,
+    "hit@10": 0.6882,
+    "all@10": 0.3265
    },
    "rerank": {
     "n": 340,
-    "mrr": 0.4974,
-    "recall@1": 0.175,
-    "hit@1": 0.3971,
-    "all@1": 0.1029,
-    "recall@5": 0.3958,
-    "hit@5": 0.6324,
-    "all@5": 0.2647,
-    "recall@10": 0.4718,
-    "hit@10": 0.6824,
-    "all@10": 0.3235
+    "mrr": 0.4932,
+    "recall@1": 0.1702,
+    "hit@1": 0.3882,
+    "all@1": 0.1,
+    "recall@5": 0.3869,
+    "hit@5": 0.6176,
+    "all@5": 0.2559,
+    "recall@10": 0.4786,
+    "hit@10": 0.7059,
+    "all@10": 0.3294
    },
    "files_best_function": {
     "n": 340,
-    "mrr": 0.6062,
-    "recall@1": 0.3179,
-    "hit@1": 0.5118,
+    "mrr": 0.6031,
+    "recall@1": 0.3173,
+    "hit@1": 0.5088,
     "all@1": 0.2294,
-    "recall@5": 0.5472,
-    "hit@5": 0.7294,
+    "recall@5": 0.5439,
+    "hit@5": 0.7235,
     "all@5": 0.4235,
-    "recall@10": 0.6548,
+    "recall@10": 0.6518,
     "hit@10": 0.8176,
-    "all@10": 0.5235
+    "all@10": 0.5118
    },
    "files": {
     "n": 340,
-    "mrr": 0.6029,
-    "recall@1": 0.3052,
-    "hit@1": 0.4941,
-    "all@1": 0.2176,
-    "recall@5": 0.5625,
+    "mrr": 0.6105,
+    "recall@1": 0.3189,
+    "hit@1": 0.5147,
+    "all@1": 0.2265,
+    "recall@5": 0.5606,
     "hit@5": 0.7412,
     "all@5": 0.4294,
-    "recall@10": 0.663,
+    "recall@10": 0.6616,
     "hit@10": 0.8206,
     "all@10": 0.5235
    }
@@ -410,16 +410,16 @@
    "projects": 14,
    "learned": {
     "n": 816,
-    "mrr": 0.4582,
-    "recall@1": 0.1439,
-    "hit@1": 0.3505,
-    "all@1": 0.0858,
-    "recall@5": 0.3213,
-    "hit@5": 0.6029,
+    "mrr": 0.4621,
+    "recall@1": 0.1427,
+    "hit@1": 0.3456,
+    "all@1": 0.0846,
+    "recall@5": 0.3263,
+    "hit@5": 0.6189,
     "all@5": 0.201,
-    "recall@10": 0.41,
-    "hit@10": 0.6961,
-    "all@10": 0.2586
+    "recall@10": 0.4127,
+    "hit@10": 0.7022,
+    "all@10": 0.2647
    },
    "keyword_and_meaning": {
     "n": 816,
@@ -435,10 +435,10 @@
     "all@10": 0.1998
    },
    "hit@10_gain": {
-    "delta": 0.1336,
+    "delta": 0.1397,
     "ci95": [
-     0.1042,
-     0.1642
+     0.1115,
+     0.1691
     ],
     "p": 0.0
    },
@@ -449,16 +449,16 @@
    "projects": 11,
    "learned": {
     "n": 768,
-    "mrr": 0.3825,
-    "recall@1": 0.1064,
-    "hit@1": 0.2839,
-    "all@1": 0.0482,
-    "recall@5": 0.305,
-    "hit@5": 0.5169,
-    "all@5": 0.1901,
-    "recall@10": 0.4192,
-    "hit@10": 0.6237,
-    "all@10": 0.2891
+    "mrr": 0.3769,
+    "recall@1": 0.1033,
+    "hit@1": 0.2786,
+    "all@1": 0.0469,
+    "recall@5": 0.2892,
+    "hit@5": 0.5026,
+    "all@5": 0.1745,
+    "recall@10": 0.4123,
+    "hit@10": 0.6146,
+    "all@10": 0.2812
    },
    "keyword_and_meaning": {
     "n": 768,
@@ -474,10 +474,10 @@
     "all@10": 0.1185
    },
    "hit@10_gain": {
-    "delta": 0.2357,
+    "delta": 0.2266,
     "ci95": [
-     0.2018,
-     0.2708
+     0.1927,
+     0.2604
     ],
     "p": 0.0
    },
@@ -488,16 +488,16 @@
    "projects": 18,
    "learned": {
     "n": 438,
-    "mrr": 0.434,
-    "recall@1": 0.2217,
+    "mrr": 0.4389,
+    "recall@1": 0.2207,
     "hit@1": 0.3219,
-    "all@1": 0.1735,
-    "recall@5": 0.4433,
+    "all@1": 0.1712,
+    "recall@5": 0.4402,
     "hit@5": 0.589,
-    "all@5": 0.3516,
-    "recall@10": 0.5502,
-    "hit@10": 0.6963,
-    "all@10": 0.4384
+    "all@5": 0.3493,
+    "recall@10": 0.552,
+    "hit@10": 0.71,
+    "all@10": 0.4269
    },
    "keyword_and_meaning": {
     "n": 438,
@@ -513,10 +513,10 @@
     "all@10": 0.3311
    },
    "hit@10_gain": {
-    "delta": 0.1233,
+    "delta": 0.137,
     "ci95": [
-     0.0822,
-     0.1644
+     0.0959,
+     0.1781
     ],
     "p": 0.0
    },
@@ -527,16 +527,16 @@
    "projects": 131,
    "learned": {
     "n": 5115,
-    "mrr": 0.5512,
-    "recall@1": 0.2229,
-    "hit@1": 0.4393,
-    "all@1": 0.1484,
-    "recall@5": 0.45,
-    "hit@5": 0.7065,
-    "all@5": 0.3146,
-    "recall@10": 0.5439,
-    "hit@10": 0.7865,
-    "all@10": 0.3928
+    "mrr": 0.5477,
+    "recall@1": 0.2221,
+    "hit@1": 0.4356,
+    "all@1": 0.148,
+    "recall@5": 0.4456,
+    "hit@5": 0.6999,
+    "all@5": 0.3101,
+    "recall@10": 0.5421,
+    "hit@10": 0.7842,
+    "all@10": 0.3896
    },
    "keyword_and_meaning": {
     "n": 5115,
@@ -552,49 +552,49 @@
     "all@10": 0.2874
    },
    "hit@10_gain": {
-    "delta": 0.1294,
+    "delta": 0.1271,
     "ci95": [
-     0.1187,
-     0.1406
+     0.1165,
+     0.1378
     ],
     "p": 0.0
    },
    "learned_ranker_used": true
   },
   "rust": {
-   "issues": 122,
+   "issues": 120,
    "projects": 10,
    "learned": {
-    "n": 122,
-    "mrr": 0.458,
-    "recall@1": 0.0857,
-    "hit@1": 0.3279,
-    "all@1": 0.0492,
-    "recall@5": 0.2481,
-    "hit@5": 0.6557,
-    "all@5": 0.1557,
-    "recall@10": 0.3159,
-    "hit@10": 0.7377,
-    "all@10": 0.1885
+    "n": 120,
+    "mrr": 0.4772,
+    "recall@1": 0.1039,
+    "hit@1": 0.3583,
+    "all@1": 0.0583,
+    "recall@5": 0.237,
+    "hit@5": 0.65,
+    "all@5": 0.1417,
+    "recall@10": 0.3205,
+    "hit@10": 0.7333,
+    "all@10": 0.1917
    },
    "keyword_and_meaning": {
-    "n": 122,
-    "mrr": 0.3011,
-    "recall@1": 0.0703,
-    "hit@1": 0.2295,
-    "all@1": 0.0492,
-    "recall@5": 0.1501,
-    "hit@5": 0.4098,
-    "all@5": 0.0902,
-    "recall@10": 0.1864,
-    "hit@10": 0.5246,
-    "all@10": 0.0984
+    "n": 120,
+    "mrr": 0.319,
+    "recall@1": 0.0733,
+    "hit@1": 0.2417,
+    "all@1": 0.05,
+    "recall@5": 0.1595,
+    "hit@5": 0.4333,
+    "all@5": 0.0917,
+    "recall@10": 0.2037,
+    "hit@10": 0.5417,
+    "all@10": 0.1083
    },
    "hit@10_gain": {
-    "delta": 0.2131,
+    "delta": 0.1917,
     "ci95": [
-     0.1311,
-     0.2951
+     0.1167,
+     0.275
     ],
     "p": 0.0
    },
@@ -605,16 +605,16 @@
    "projects": 18,
    "learned": {
     "n": 586,
-    "mrr": 0.3496,
-    "recall@1": 0.1255,
+    "mrr": 0.3544,
+    "recall@1": 0.1289,
     "hit@1": 0.2509,
-    "all@1": 0.0802,
-    "recall@5": 0.2993,
-    "hit@5": 0.4812,
-    "all@5": 0.2116,
-    "recall@10": 0.3886,
-    "hit@10": 0.5717,
-    "all@10": 0.2884
+    "all@1": 0.0836,
+    "recall@5": 0.307,
+    "hit@5": 0.4898,
+    "all@5": 0.2167,
+    "recall@10": 0.4054,
+    "hit@10": 0.5904,
+    "all@10": 0.302
    },
    "keyword_and_meaning": {
     "n": 586,
@@ -630,10 +630,10 @@
     "all@10": 0.186
    },
    "hit@10_gain": {
-    "delta": 0.1775,
+    "delta": 0.1962,
     "ci95": [
-     0.1416,
-     0.2133
+     0.1604,
+     0.2321
     ],
     "p": 0.0
    },
@@ -692,7 +692,7 @@
   {
    "qid": "beego__beego-4757",
    "language": "go",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -710,7 +710,7 @@
   {
    "qid": "beego__beego-4285",
    "language": "go",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -764,7 +764,7 @@
   {
    "qid": "beego__beego-4539",
    "language": "go",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -1022,7 +1022,7 @@
   {
    "qid": "cli__cli-991",
    "language": "go",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -1082,7 +1082,7 @@
   {
    "qid": "cli__cli-4513",
    "language": "go",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -1136,7 +1136,7 @@
   {
    "qid": "cli__cli-4066",
    "language": "go",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -1334,7 +1334,7 @@
   {
    "qid": "cli__cli-6273",
    "language": "go",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -1352,7 +1352,7 @@
   {
    "qid": "cli__cli-10329",
    "language": "go",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -1400,7 +1400,7 @@
   {
    "qid": "cli__cli-6160",
    "language": "go",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -1652,7 +1652,7 @@
   {
    "qid": "concourse__concourse-6923",
    "language": "go",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -1808,7 +1808,7 @@
   {
    "qid": "fatedier__frp-3334",
    "language": "go",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -1874,7 +1874,7 @@
   {
    "qid": "go-gorm__gorm-2330",
    "language": "go",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -2066,7 +2066,7 @@
   {
    "qid": "istio__istio-26122",
    "language": "go",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -2108,7 +2108,7 @@
   {
    "qid": "istio__istio-36563",
    "language": "go",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -2234,7 +2234,7 @@
   {
    "qid": "istio__istio-33456",
    "language": "go",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -2540,7 +2540,7 @@
   {
    "qid": "istio__istio-14256",
    "language": "go",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -2588,7 +2588,7 @@
   {
    "qid": "istio__istio-15253",
    "language": "go",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -2774,7 +2774,7 @@
   {
    "qid": "istio__istio-28173",
    "language": "go",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -2792,7 +2792,7 @@
   {
    "qid": "istio__istio-52818",
    "language": "go",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -3092,7 +3092,7 @@
   {
    "qid": "istio__istio-26126",
    "language": "go",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -3128,7 +3128,7 @@
   {
    "qid": "istio__istio-51492",
    "language": "go",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -3158,7 +3158,7 @@
   {
    "qid": "istio__istio-52288",
    "language": "go",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -3242,7 +3242,7 @@
   {
    "qid": "istio__istio-14448",
    "language": "go",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -3362,7 +3362,7 @@
   {
    "qid": "istio__istio-26085",
    "language": "go",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -3500,7 +3500,7 @@
   {
    "qid": "istio__istio-15262",
    "language": "go",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -3734,7 +3734,7 @@
   {
    "qid": "jesseduffield__lazygit-3174",
    "language": "go",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -4664,7 +4664,7 @@
   {
    "qid": "nektos__act-840",
    "language": "go",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -4796,7 +4796,7 @@
   {
    "qid": "syncthing__syncthing-7734",
    "language": "go",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -4934,7 +4934,7 @@
   {
    "qid": "syncthing__syncthing-5769",
    "language": "go",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -4988,7 +4988,7 @@
   {
    "qid": "syncthing__syncthing-5671",
    "language": "go",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -5138,7 +5138,7 @@
   {
    "qid": "syncthing__syncthing-7518",
    "language": "go",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -5204,7 +5204,7 @@
   {
    "qid": "syncthing__syncthing-6971",
    "language": "go",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -5384,7 +5384,7 @@
   {
    "qid": "syncthing__syncthing-7876",
    "language": "go",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -5570,7 +5570,7 @@
   {
    "qid": "Graylog2__graylog2-server-14252",
    "language": "java",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -5708,7 +5708,7 @@
   {
    "qid": "OpenRefine__OpenRefine-5804",
    "language": "java",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -5768,7 +5768,7 @@
   {
    "qid": "OpenRefine__OpenRefine-5655",
    "language": "java",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -6314,13 +6314,13 @@
   {
    "qid": "checkstyle__checkstyle-8626",
    "language": "java",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
    "qid": "checkstyle__checkstyle-8622",
    "language": "java",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -6392,7 +6392,7 @@
   {
    "qid": "checkstyle__checkstyle-11256",
    "language": "java",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -6410,7 +6410,7 @@
   {
    "qid": "checkstyle__checkstyle-6581",
    "language": "java",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -6494,7 +6494,7 @@
   {
    "qid": "checkstyle__checkstyle-15166",
    "language": "java",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -6566,7 +6566,7 @@
   {
    "qid": "checkstyle__checkstyle-8815",
    "language": "java",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -6806,13 +6806,13 @@
   {
    "qid": "checkstyle__checkstyle-7404",
    "language": "java",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
    "qid": "checkstyle__checkstyle-14024",
    "language": "java",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -6890,7 +6890,7 @@
   {
    "qid": "checkstyle__checkstyle-11326",
    "language": "java",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -7022,7 +7022,7 @@
   {
    "qid": "checkstyle__checkstyle-8766",
    "language": "java",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -7328,7 +7328,7 @@
   {
    "qid": "checkstyle__checkstyle-14594",
    "language": "java",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -7352,7 +7352,7 @@
   {
    "qid": "checkstyle__checkstyle-8751",
    "language": "java",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -7442,7 +7442,7 @@
   {
    "qid": "checkstyle__checkstyle-8625",
    "language": "java",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -7502,7 +7502,7 @@
   {
    "qid": "checkstyle__checkstyle-7178",
    "language": "java",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -7520,7 +7520,7 @@
   {
    "qid": "checkstyle__checkstyle-8717",
    "language": "java",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -7574,7 +7574,7 @@
   {
    "qid": "checkstyle__checkstyle-12151",
    "language": "java",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -7586,7 +7586,7 @@
   {
    "qid": "checkstyle__checkstyle-8739",
    "language": "java",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -7598,7 +7598,7 @@
   {
    "qid": "checkstyle__checkstyle-15341",
    "language": "java",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -7748,7 +7748,7 @@
   {
    "qid": "checkstyle__checkstyle-8000",
    "language": "java",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -7814,13 +7814,13 @@
   {
    "qid": "checkstyle__checkstyle-8599",
    "language": "java",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
    "qid": "checkstyle__checkstyle-6443",
    "language": "java",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -7958,7 +7958,7 @@
   {
    "qid": "checkstyle__checkstyle-8690",
    "language": "java",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -8132,7 +8132,7 @@
   {
    "qid": "checkstyle__checkstyle-6898",
    "language": "java",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -8264,7 +8264,7 @@
   {
    "qid": "checkstyle__checkstyle-15175",
    "language": "java",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -8312,7 +8312,7 @@
   {
    "qid": "checkstyle__checkstyle-8744",
    "language": "java",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -8888,7 +8888,7 @@
   {
    "qid": "checkstyle__checkstyle-7973",
    "language": "java",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -9074,7 +9074,7 @@
   {
    "qid": "checkstyle__checkstyle-8587",
    "language": "java",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -9212,7 +9212,7 @@
   {
    "qid": "checkstyle__checkstyle-10839",
    "language": "java",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -9290,7 +9290,7 @@
   {
    "qid": "checkstyle__checkstyle-8125",
    "language": "java",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -9314,7 +9314,7 @@
   {
    "qid": "checkstyle__checkstyle-6878",
    "language": "java",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -9338,7 +9338,7 @@
   {
    "qid": "checkstyle__checkstyle-8731",
    "language": "java",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -9386,7 +9386,7 @@
   {
    "qid": "checkstyle__checkstyle-7167",
    "language": "java",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -9434,13 +9434,13 @@
   {
    "qid": "checkstyle__checkstyle-15168",
    "language": "java",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
    "qid": "checkstyle__checkstyle-15154",
    "language": "java",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -9674,7 +9674,7 @@
   {
    "qid": "junit-team__junit5-3277",
    "language": "java",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -9836,7 +9836,7 @@
   {
    "qid": "spotbugs__spotbugs-2234",
    "language": "java",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -10154,7 +10154,7 @@
   {
    "qid": "Automattic__mongoose-15163",
    "language": "javascript",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -10178,7 +10178,7 @@
   {
    "qid": "Automattic__mongoose-14590",
    "language": "javascript",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -10298,7 +10298,7 @@
   {
    "qid": "Automattic__mongoose-13984",
    "language": "javascript",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -10568,7 +10568,7 @@
   {
    "qid": "Automattic__mongoose-13018",
    "language": "javascript",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -10760,7 +10760,7 @@
   {
    "qid": "Automattic__mongoose-13298",
    "language": "javascript",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -10862,7 +10862,7 @@
   {
    "qid": "Automattic__mongoose-15099",
    "language": "javascript",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -11030,7 +11030,7 @@
   {
    "qid": "Automattic__mongoose-14681",
    "language": "javascript",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -11174,7 +11174,7 @@
   {
    "qid": "Automattic__mongoose-13959",
    "language": "javascript",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -11288,7 +11288,7 @@
   {
    "qid": "Automattic__mongoose-14343",
    "language": "javascript",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -11360,7 +11360,7 @@
   {
    "qid": "Automattic__mongoose-14986",
    "language": "javascript",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -11492,7 +11492,7 @@
   {
    "qid": "Automattic__mongoose-14801",
    "language": "javascript",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -11750,7 +11750,7 @@
   {
    "qid": "Automattic__wp-calypso-46669",
    "language": "javascript",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -11852,7 +11852,7 @@
   {
    "qid": "Automattic__wp-calypso-61175",
    "language": "javascript",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -11864,7 +11864,7 @@
   {
    "qid": "Automattic__wp-calypso-72733",
    "language": "javascript",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -11882,7 +11882,7 @@
   {
    "qid": "KaTeX__KaTeX-2991",
    "language": "javascript",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -11912,7 +11912,7 @@
   {
    "qid": "KaTeX__KaTeX-1388",
    "language": "javascript",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -12170,7 +12170,7 @@
   {
    "qid": "caolan__async-1306",
    "language": "javascript",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -12632,7 +12632,7 @@
   {
    "qid": "tj__commander.js-864",
    "language": "javascript",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -12668,7 +12668,7 @@
   {
    "qid": "tj__commander.js-1302",
    "language": "javascript",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -12734,7 +12734,7 @@
   {
    "qid": "tj__commander.js-778",
    "language": "javascript",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -13370,7 +13370,7 @@
   {
    "qid": "django__django-7188",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -13406,7 +13406,7 @@
   {
    "qid": "django__django-16670",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -13508,7 +13508,7 @@
   {
    "qid": "django__django-16032",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -13550,7 +13550,7 @@
   {
    "qid": "django__django-14935",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -13604,13 +13604,13 @@
   {
    "qid": "django__django-10554",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
    "qid": "django__django-15102",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -13844,7 +13844,7 @@
   {
    "qid": "django__django-16600",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -14018,7 +14018,7 @@
   {
    "qid": "django__django-11281",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -14108,7 +14108,7 @@
   {
    "qid": "django__django-11356",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -14894,7 +14894,7 @@
   {
    "qid": "django__django-11260",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -15116,7 +15116,7 @@
   {
    "qid": "django__django-12821",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -15332,7 +15332,7 @@
   {
    "qid": "django__django-14727",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -15566,13 +15566,13 @@
   {
    "qid": "django__django-15503",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
    "qid": "django__django-12928",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -15590,7 +15590,7 @@
   {
    "qid": "django__django-11194",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -15680,7 +15680,7 @@
   {
    "qid": "django__django-11559",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -15698,7 +15698,7 @@
   {
    "qid": "django__django-11555",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -16040,7 +16040,7 @@
   {
    "qid": "django__django-12957",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -16244,7 +16244,7 @@
   {
    "qid": "django__django-14372",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -16346,13 +16346,13 @@
   {
    "qid": "django__django-15421",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
    "qid": "django__django-15375",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -16382,7 +16382,7 @@
   {
    "qid": "django__django-11205",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -16550,7 +16550,7 @@
   {
    "qid": "django__django-11062",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -17150,7 +17150,7 @@
   {
    "qid": "django__django-11423",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -17330,7 +17330,7 @@
   {
    "qid": "django__django-12313",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -17408,7 +17408,7 @@
   {
    "qid": "django__django-16111",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -17426,7 +17426,7 @@
   {
    "qid": "django__django-17084",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -17564,7 +17564,7 @@
   {
    "qid": "django__django-11584",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -18758,7 +18758,7 @@
   {
    "qid": "psf__requests-2153",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -18920,7 +18920,7 @@
   {
    "qid": "pydata__xarray-4684",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -19148,7 +19148,7 @@
   {
    "qid": "pydata__xarray-2922",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -19892,7 +19892,7 @@
   {
    "qid": "pytest-dev__pytest-10552",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -20588,13 +20588,13 @@
   {
    "qid": "scikit-learn__scikit-learn-13013",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
    "qid": "scikit-learn__scikit-learn-25744",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -20618,7 +20618,7 @@
   {
    "qid": "scikit-learn__scikit-learn-10777",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -21080,7 +21080,7 @@
   {
    "qid": "scikit-learn__scikit-learn-11346",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -21254,7 +21254,7 @@
   {
    "qid": "scikit-learn__scikit-learn-15495",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -21698,7 +21698,7 @@
   {
    "qid": "sphinx-doc__sphinx-9171",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -21788,13 +21788,13 @@
   {
    "qid": "sphinx-doc__sphinx-10191",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
    "qid": "sphinx-doc__sphinx-11266",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -21842,7 +21842,7 @@
   {
    "qid": "sphinx-doc__sphinx-10449",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -22142,7 +22142,7 @@
   {
    "qid": "sphinx-doc__sphinx-7374",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -22166,7 +22166,7 @@
   {
    "qid": "sphinx-doc__sphinx-9386",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -22532,7 +22532,7 @@
   {
    "qid": "sphinx-doc__sphinx-10807",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -23702,7 +23702,7 @@
   {
    "qid": "sympy__sympy-17251",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -23714,7 +23714,7 @@
   {
    "qid": "sympy__sympy-11919",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -24392,7 +24392,7 @@
   {
    "qid": "sympy__sympy-15948",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -24428,7 +24428,7 @@
   {
    "qid": "12rambau__sepal_ui-807",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -24452,7 +24452,7 @@
   {
    "qid": "12rambau__sepal_ui-571",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -24536,7 +24536,7 @@
   {
    "qid": "12rambau__sepal_ui-419",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -24746,7 +24746,7 @@
   {
    "qid": "Azure__WALinuxAgent-1865",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -24902,7 +24902,7 @@
   {
    "qid": "Azure__azure-cli-4047",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -24980,7 +24980,7 @@
   {
    "qid": "BAMWelDX__weldx-523",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -25220,7 +25220,7 @@
   {
    "qid": "CORE-GATECH-GROUP__serpent-tools-85",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -25490,7 +25490,7 @@
   {
    "qid": "Duke-GCB__DukeDSClient-230",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -26000,13 +26000,13 @@
   {
    "qid": "IAMconsortium__pyam-454",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
    "qid": "MatterMiners__tardis-317",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -26138,7 +26138,7 @@
   {
    "qid": "OpenMined__PySyft-216",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -26168,7 +26168,7 @@
   {
    "qid": "OpenMined__PySyft-286",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -26678,7 +26678,7 @@
   {
    "qid": "PrefectHQ__prefect-3643",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -26708,7 +26708,7 @@
   {
    "qid": "PrefectHQ__prefect-3923",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -26822,7 +26822,7 @@
   {
    "qid": "PyCQA__pyflakes-754",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -27062,7 +27062,7 @@
   {
    "qid": "StingraySoftware__stingray-620",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -27098,7 +27098,7 @@
   {
    "qid": "Textualize__textual-3988",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -27452,7 +27452,7 @@
   {
    "qid": "XKNX__xknx-485",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -27500,7 +27500,7 @@
   {
    "qid": "XKNX__xknx-482",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -27566,7 +27566,7 @@
   {
    "qid": "XKNX__xknx-667",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -27824,7 +27824,7 @@
   {
    "qid": "altair-viz__altair-1433",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -27884,7 +27884,7 @@
   {
    "qid": "altair-viz__altair-1852",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -27980,7 +27980,7 @@
   {
    "qid": "asottile__pyupgrade-127",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -28934,7 +28934,7 @@
   {
    "qid": "burnash__gspread-1475",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -28946,7 +28946,7 @@
   {
    "qid": "burnash__gspread-1030",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -28976,7 +28976,7 @@
   {
    "qid": "burnash__gspread-1202",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -29054,7 +29054,7 @@
   {
    "qid": "burnash__gspread-1095",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -29138,7 +29138,7 @@
   {
    "qid": "canonical__charmcraft-1968",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -29204,7 +29204,7 @@
   {
    "qid": "canonical__charmcraft-1744",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -29870,7 +29870,7 @@
   {
    "qid": "conan-io__conan-14185",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -30080,7 +30080,7 @@
   {
    "qid": "cwacek__python-jsonschema-objects-190",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -30362,7 +30362,7 @@
   {
    "qid": "dask__distributed-5488",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -30500,7 +30500,7 @@
   {
    "qid": "datalad__datalad-5345",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -30590,7 +30590,7 @@
   {
    "qid": "datalad__datalad-6213",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -30848,7 +30848,7 @@
   {
    "qid": "docker__docker-py-1130",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -30914,7 +30914,7 @@
   {
    "qid": "dpkp__kafka-python-1025",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -31166,7 +31166,7 @@
   {
    "qid": "dr-prodigy__python-holidays-1061",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -31232,7 +31232,7 @@
   {
    "qid": "dwavesystems__dwave-cloud-client-576",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -32090,7 +32090,7 @@
   {
    "qid": "facelessuser__pymdown-extensions-2245",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -32180,7 +32180,7 @@
   {
    "qid": "facelessuser__soupsieve-88",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -32222,7 +32222,7 @@
   {
    "qid": "facelessuser__soupsieve-96",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -32240,7 +32240,7 @@
   {
    "qid": "facelessuser__soupsieve-166",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -33110,7 +33110,7 @@
   {
    "qid": "getsentry__responses-480",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -33230,7 +33230,7 @@
   {
    "qid": "getsentry__sentry-python-3461",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -33242,7 +33242,7 @@
   {
    "qid": "getsentry__sentry-python-3501",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -33344,7 +33344,7 @@
   {
    "qid": "google__cloud-forensics-utils-444",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -33506,7 +33506,7 @@
   {
    "qid": "google__mobly-445",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -33698,7 +33698,7 @@
   {
    "qid": "googleapis__python-bigquery-728",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -33908,7 +33908,7 @@
   {
    "qid": "hylang__hy-2412",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -33956,7 +33956,7 @@
   {
    "qid": "hylang__hy-2250",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -34022,13 +34022,13 @@
   {
    "qid": "hylang__hy-2262",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
    "qid": "hylang__hy-1906",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -34322,7 +34322,7 @@
   {
    "qid": "jackdewinter__pymarkdown-1104",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -34442,7 +34442,7 @@
   {
    "qid": "joblib__joblib-370",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -34526,7 +34526,7 @@
   {
    "qid": "joblib__joblib-725",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -34730,7 +34730,7 @@
   {
    "qid": "joke2k__faker-1569",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -35264,7 +35264,7 @@
   {
    "qid": "mit-ll-responsible-ai__hydra-zen-355",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -35300,7 +35300,7 @@
   {
    "qid": "mit-ll-responsible-ai__hydra-zen-266",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -35552,7 +35552,7 @@
   {
    "qid": "mkdocs__mkdocs-3258",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -36014,7 +36014,7 @@
   {
    "qid": "mwouts__jupytext-405",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -36248,7 +36248,7 @@
   {
    "qid": "omni-us__jsonargparse-603",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -36320,7 +36320,7 @@
   {
    "qid": "omni-us__jsonargparse-559",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -36422,7 +36422,7 @@
   {
    "qid": "omni-us__jsonargparse-197",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -36512,7 +36512,7 @@
   {
    "qid": "omry__omegaconf-162",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -36530,7 +36530,7 @@
   {
    "qid": "omry__omegaconf-96",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -36566,7 +36566,7 @@
   {
    "qid": "omry__omegaconf-57",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -36632,7 +36632,7 @@
   {
    "qid": "pandas-dev__pandas-60906",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -37166,7 +37166,7 @@
   {
    "qid": "planetlabs__planet-client-python-695",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -37898,7 +37898,7 @@
   {
    "qid": "pydap__pydap-395",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -38318,7 +38318,7 @@
   {
    "qid": "pypa__pip-11779",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -38390,7 +38390,7 @@
   {
    "qid": "pypa__pip-9708",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -39092,7 +39092,7 @@
   {
    "qid": "reata__sqllineage-521",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -39170,7 +39170,7 @@
   {
    "qid": "reata__sqllineage-397",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -39392,7 +39392,7 @@
   {
    "qid": "reframe-hpc__reframe-2887",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -39602,7 +39602,7 @@
   {
    "qid": "repobee__repobee-505",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -39980,7 +39980,7 @@
   {
    "qid": "scipp__plopp-445",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -40682,7 +40682,7 @@
   {
    "qid": "statsmodels__statsmodels-8831",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -40754,7 +40754,7 @@
   {
    "qid": "streamlink__streamlink-5504",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -41036,7 +41036,7 @@
   {
    "qid": "sunpy__sunpy-4788",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -41624,7 +41624,7 @@
   {
    "qid": "tox-dev__tox-1869",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -41804,7 +41804,7 @@
   {
    "qid": "ucfopen__canvasapi-320",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -41840,7 +41840,7 @@
   {
    "qid": "ucfopen__canvasapi-509",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -41864,7 +41864,7 @@
   {
    "qid": "ucfopen__canvasapi-434",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -41978,13 +41978,13 @@
   {
    "qid": "wemake-services__wemake-python-styleguide-3173",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
    "qid": "wemake-services__wemake-python-styleguide-2409",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -42062,7 +42062,7 @@
   {
    "qid": "wemake-services__wemake-python-styleguide-1916",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -42314,7 +42314,7 @@
   {
    "qid": "xonsh__xonsh-5366",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -42326,7 +42326,7 @@
   {
    "qid": "xonsh__xonsh-3272",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -42752,7 +42752,7 @@
   {
    "qid": "zalando-stups__senza-332",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -42884,7 +42884,7 @@
   {
    "qid": "zarr-developers__VirtualiZarr-303",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -43280,7 +43280,7 @@
   {
    "qid": "zopefoundation__zope.schema-67",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -43304,7 +43304,7 @@
   {
    "qid": "zopefoundation__zope.schema-50",
    "language": "python",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -43460,7 +43460,7 @@
   {
    "qid": "zulip__zulip-terminal-1385",
    "language": "python",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -43719,7 +43719,7 @@
    "qid": "clap-rs__clap-2664",
    "language": "rust",
    "learned_hit@10": 1.0,
-   "keyword_and_meaning_hit@10": 0.0
+   "keyword_and_meaning_hit@10": 1.0
   },
   {
    "qid": "clap-rs__clap-1716",
@@ -43796,7 +43796,7 @@
   {
    "qid": "clap-rs__clap-2110",
    "language": "rust",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -43860,12 +43860,6 @@
    "keyword_and_meaning_hit@10": 0.0
   },
   {
-   "qid": "clap-rs__clap-1511",
-   "language": "rust",
-   "learned_hit@10": 0.0,
-   "keyword_and_meaning_hit@10": 0.0
-  },
-  {
    "qid": "clap-rs__clap-2775",
    "language": "rust",
    "learned_hit@10": 0.0,
@@ -43886,7 +43880,7 @@
   {
    "qid": "clap-rs__clap-2111",
    "language": "rust",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -43928,7 +43922,7 @@
   {
    "qid": "clap-rs__clap-1974",
    "language": "rust",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -43976,7 +43970,7 @@
   {
    "qid": "helix-editor__helix-6160",
    "language": "rust",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -44160,12 +44154,6 @@
    "keyword_and_meaning_hit@10": 1.0
   },
   {
-   "qid": "tokio-rs__tracing-1345",
-   "language": "rust",
-   "learned_hit@10": 0.0,
-   "keyword_and_meaning_hit@10": 0.0
-  },
-  {
    "qid": "tokio-rs__tracing-2091",
    "language": "rust",
    "learned_hit@10": 1.0,
@@ -44258,7 +44246,7 @@
   {
    "qid": "Automattic__wp-calypso-69934",
    "language": "typescript",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -44408,7 +44396,7 @@
   {
    "qid": "Graylog2__graylog2-server-14865",
    "language": "typescript",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -44426,7 +44414,7 @@
   {
    "qid": "Kong__insomnia-8027",
    "language": "typescript",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -44738,7 +44726,7 @@
   {
    "qid": "colinhacks__zod-1048",
    "language": "typescript",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -44780,7 +44768,7 @@
   {
    "qid": "colinhacks__zod-657",
    "language": "typescript",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -44924,7 +44912,7 @@
   {
    "qid": "google__zx-1077",
    "language": "typescript",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -45002,7 +44990,7 @@
   {
    "qid": "microsoft__TypeScript-41805",
    "language": "typescript",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -45050,7 +45038,7 @@
   {
    "qid": "microsoft__TypeScript-46818",
    "language": "typescript",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -45092,7 +45080,7 @@
   {
    "qid": "microsoft__TypeScript-45814",
    "language": "typescript",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -45104,7 +45092,7 @@
   {
    "qid": "microsoft__TypeScript-47403",
    "language": "typescript",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 1.0
   },
   {
@@ -45278,7 +45266,7 @@
   {
    "qid": "microsoft__TypeScript-45695",
    "language": "typescript",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -45482,13 +45470,13 @@
   {
    "qid": "microsoft__TypeScript-54121",
    "language": "typescript",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
    "qid": "microsoft__TypeScript-41539",
    "language": "typescript",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -45572,7 +45560,7 @@
   {
    "qid": "microsoft__TypeScript-44219",
    "language": "typescript",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -45620,7 +45608,7 @@
   {
    "qid": "microsoft__TypeScript-43914",
    "language": "typescript",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -45632,7 +45620,7 @@
   {
    "qid": "microsoft__TypeScript-46645",
    "language": "typescript",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -45728,7 +45716,7 @@
   {
    "qid": "microsoft__TypeScript-47791",
    "language": "typescript",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -45908,7 +45896,7 @@
   {
    "qid": "microsoft__TypeScript-53742",
    "language": "typescript",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -46214,7 +46202,7 @@
   {
    "qid": "microsoft__TypeScript-48464",
    "language": "typescript",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -46244,7 +46232,7 @@
   {
    "qid": "microsoft__TypeScript-60801",
    "language": "typescript",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -46418,7 +46406,7 @@
   {
    "qid": "microsoft__TypeScript-46792",
    "language": "typescript",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -46658,7 +46646,7 @@
   {
    "qid": "nuxt__nuxt-30381",
    "language": "typescript",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -47036,7 +47024,7 @@
   {
    "qid": "remix-run__react-router-11071",
    "language": "typescript",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -47174,7 +47162,7 @@
   {
    "qid": "remix-run__react-router-7874",
    "language": "typescript",
-   "learned_hit@10": 1.0,
+   "learned_hit@10": 0.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -47408,7 +47396,7 @@
   {
    "qid": "remix-run__react-router-7571",
    "language": "typescript",
-   "learned_hit@10": 0.0,
+   "learned_hit@10": 1.0,
    "keyword_and_meaning_hit@10": 0.0
   },
   {
@@ -47719,16 +47707,16 @@
     "projects": 12,
     "learned": {
      "n": 291,
-     "mrr": 0.4322,
-     "recall@1": 0.2773,
+     "mrr": 0.434,
+     "recall@1": 0.2767,
      "hit@1": 0.299,
      "all@1": 0.2577,
-     "recall@5": 0.5922,
-     "hit@5": 0.6254,
-     "all@5": 0.5636,
-     "recall@10": 0.6663,
+     "recall@5": 0.5767,
+     "hit@5": 0.6151,
+     "all@5": 0.543,
+     "recall@10": 0.6612,
      "hit@10": 0.6907,
-     "all@10": 0.6426
+     "all@10": 0.6323
     },
     "keyword_and_meaning": {
      "n": 291,
@@ -47760,16 +47748,16 @@
     "projects": 30,
     "learned": {
      "n": 747,
-     "mrr": 0.5549,
-     "recall@1": 0.1937,
-     "hit@1": 0.4498,
-     "all@1": 0.1111,
-     "recall@5": 0.3968,
-     "hit@5": 0.6921,
-     "all@5": 0.2503,
-     "recall@10": 0.4854,
-     "hit@10": 0.7631,
-     "all@10": 0.3199
+     "mrr": 0.5491,
+     "recall@1": 0.1869,
+     "hit@1": 0.4404,
+     "all@1": 0.1044,
+     "recall@5": 0.3939,
+     "hit@5": 0.6867,
+     "all@5": 0.2463,
+     "recall@10": 0.484,
+     "hit@10": 0.7644,
+     "all@10": 0.3173
     },
     "keyword_and_meaning": {
      "n": 747,
@@ -47785,10 +47773,10 @@
      "all@10": 0.2436
     },
     "hit@10_gain": {
-     "delta": 0.1044,
+     "delta": 0.1058,
      "ci95": [
-      0.0776,
-      0.1325
+      0.079,
+      0.1339
      ],
      "p": 0.0
     },
@@ -47801,16 +47789,16 @@
     "projects": 5,
     "learned": {
      "n": 37,
-     "mrr": 0.3579,
-     "recall@1": 0.2014,
-     "hit@1": 0.2432,
-     "all@1": 0.1892,
-     "recall@5": 0.4568,
-     "hit@5": 0.5405,
+     "mrr": 0.3952,
+     "recall@1": 0.2419,
+     "hit@1": 0.2973,
+     "all@1": 0.2162,
+     "recall@5": 0.4514,
+     "hit@5": 0.5135,
      "all@5": 0.4054,
-     "recall@10": 0.5218,
-     "hit@10": 0.6216,
-     "all@10": 0.4595
+     "recall@10": 0.5725,
+     "hit@10": 0.6486,
+     "all@10": 0.5135
     },
     "keyword_and_meaning": {
      "n": 37,
@@ -47826,12 +47814,12 @@
      "all@10": 0.3514
     },
     "hit@10_gain": {
-     "delta": 0.1622,
+     "delta": 0.1892,
      "ci95": [
-      0.027,
-      0.2973
+      0.0541,
+      0.3514
      ],
-     "p": 0.026
+     "p": 0.0124
     },
     "learned_ranker_used": true
    },
@@ -47840,16 +47828,16 @@
     "projects": 6,
     "learned": {
      "n": 43,
-     "mrr": 0.5179,
-     "recall@1": 0.2481,
-     "hit@1": 0.3953,
+     "mrr": 0.5312,
+     "recall@1": 0.2597,
+     "hit@1": 0.4186,
      "all@1": 0.1628,
-     "recall@5": 0.5271,
-     "hit@5": 0.6977,
-     "all@5": 0.3953,
-     "recall@10": 0.5957,
-     "hit@10": 0.7674,
-     "all@10": 0.4884
+     "recall@5": 0.5678,
+     "hit@5": 0.7442,
+     "all@5": 0.4419,
+     "recall@10": 0.6461,
+     "hit@10": 0.814,
+     "all@10": 0.5116
     },
     "keyword_and_meaning": {
      "n": 43,
@@ -47865,28 +47853,28 @@
      "all@10": 0.3488
     },
     "hit@10_gain": {
-     "delta": 0.093,
+     "delta": 0.1395,
      "ci95": [
-      0.0,
-      0.2093
+      0.0233,
+      0.2558
      ],
-     "p": 0.1322
+     "p": 0.0304
     },
-    "learned_ranker_used": false
+    "learned_ranker_used": true
    },
    "javascript": {
     "issues": 26,
     "projects": 4,
     "learned": {
      "n": 26,
-     "mrr": 0.3429,
+     "mrr": 0.3221,
      "recall@1": 0.1615,
      "hit@1": 0.1923,
      "all@1": 0.1538,
-     "recall@5": 0.4705,
-     "hit@5": 0.5385,
-     "all@5": 0.4231,
-     "recall@10": 0.5167,
+     "recall@5": 0.4244,
+     "hit@5": 0.5,
+     "all@5": 0.3846,
+     "recall@10": 0.509,
      "hit@10": 0.5769,
      "all@10": 0.4615
     },
@@ -47918,37 +47906,37 @@
     "projects": 7,
     "learned": {
      "n": 41,
-     "mrr": 0.4565,
-     "recall@1": 0.1968,
-     "hit@1": 0.3659,
+     "mrr": 0.4767,
+     "recall@1": 0.2007,
+     "hit@1": 0.3902,
      "all@1": 0.122,
-     "recall@5": 0.4256,
+     "recall@5": 0.428,
      "hit@5": 0.5854,
      "all@5": 0.3171,
-     "recall@10": 0.488,
-     "hit@10": 0.6341,
+     "recall@10": 0.4953,
+     "hit@10": 0.6585,
      "all@10": 0.3659
     },
     "keyword_and_meaning": {
      "n": 41,
-     "mrr": 0.2431,
+     "mrr": 0.2573,
      "recall@1": 0.0711,
      "hit@1": 0.1463,
      "all@1": 0.0244,
-     "recall@5": 0.2472,
-     "hit@5": 0.3902,
-     "all@5": 0.1707,
-     "recall@10": 0.3737,
-     "hit@10": 0.4878,
-     "all@10": 0.2927
+     "recall@5": 0.2651,
+     "hit@5": 0.4146,
+     "all@5": 0.1951,
+     "recall@10": 0.4217,
+     "hit@10": 0.5366,
+     "all@10": 0.3415
     },
     "hit@10_gain": {
-     "delta": 0.1463,
+     "delta": 0.122,
      "ci95": [
       -0.0244,
-      0.2927
+      0.2683
      ],
-     "p": 0.0986
+     "p": 0.1126
     },
     "learned_ranker_used": false
    },
@@ -47957,9 +47945,9 @@
     "projects": 4,
     "learned": {
      "n": 14,
-     "mrr": 0.4107,
-     "recall@1": 0.3214,
-     "hit@1": 0.3571,
+     "mrr": 0.3571,
+     "recall@1": 0.2857,
+     "hit@1": 0.2857,
      "all@1": 0.2857,
      "recall@5": 0.4107,
      "hit@5": 0.5,
@@ -47998,15 +47986,15 @@
     "projects": 6,
     "learned": {
      "n": 125,
-     "mrr": 0.5228,
-     "recall@1": 0.152,
-     "hit@1": 0.44,
-     "all@1": 0.064,
-     "recall@5": 0.3339,
-     "hit@5": 0.648,
-     "all@5": 0.184,
-     "recall@10": 0.3963,
-     "hit@10": 0.672,
+     "mrr": 0.5221,
+     "recall@1": 0.1429,
+     "hit@1": 0.424,
+     "all@1": 0.056,
+     "recall@5": 0.3248,
+     "hit@5": 0.632,
+     "all@5": 0.176,
+     "recall@10": 0.4067,
+     "hit@10": 0.712,
      "all@10": 0.216
     },
     "keyword_and_meaning": {
@@ -48023,10 +48011,10 @@
      "all@10": 0.152
     },
     "hit@10_gain": {
-     "delta": 0.12,
+     "delta": 0.16,
      "ci95": [
-      0.064,
-      0.184
+      0.096,
+      0.224
      ],
      "p": 0.0
     },
@@ -48037,16 +48025,16 @@
     "projects": 4,
     "learned": {
      "n": 115,
-     "mrr": 0.5261,
-     "recall@1": 0.2163,
-     "hit@1": 0.3739,
+     "mrr": 0.5154,
+     "recall@1": 0.2065,
+     "hit@1": 0.3565,
      "all@1": 0.1478,
      "recall@5": 0.5233,
-     "hit@5": 0.713,
+     "hit@5": 0.7043,
      "all@5": 0.4,
-     "recall@10": 0.6062,
-     "hit@10": 0.7739,
-     "all@10": 0.4783
+     "recall@10": 0.62,
+     "hit@10": 0.7913,
+     "all@10": 0.5043
     },
     "keyword_and_meaning": {
      "n": 115,
@@ -48062,10 +48050,10 @@
      "all@10": 0.3652
     },
     "hit@10_gain": {
-     "delta": 0.2174,
+     "delta": 0.2348,
      "ci95": [
-      0.1304,
-      0.3043
+      0.1565,
+      0.313
      ],
      "p": 0.0
     },
@@ -48076,16 +48064,16 @@
     "projects": 5,
     "learned": {
      "n": 100,
-     "mrr": 0.4328,
-     "recall@1": 0.1562,
-     "hit@1": 0.37,
+     "mrr": 0.4318,
+     "recall@1": 0.1626,
+     "hit@1": 0.38,
      "all@1": 0.1,
-     "recall@5": 0.3264,
-     "hit@5": 0.52,
-     "all@5": 0.21,
-     "recall@10": 0.4116,
-     "hit@10": 0.59,
-     "all@10": 0.28
+     "recall@5": 0.3078,
+     "hit@5": 0.5,
+     "all@5": 0.19,
+     "recall@10": 0.4059,
+     "hit@10": 0.6,
+     "all@10": 0.27
     },
     "keyword_and_meaning": {
      "n": 100,
@@ -48101,12 +48089,12 @@
      "all@10": 0.2
     },
     "hit@10_gain": {
-     "delta": 0.15,
+     "delta": 0.16,
      "ci95": [
-      0.07,
+      0.08,
       0.24
      ],
-     "p": 0.0006
+     "p": 0.0
     },
     "learned_ranker_used": true
    }
@@ -48837,7 +48825,7 @@
    {
     "qid": "matplotlib__matplotlib-23299",
     "language": "python",
-    "learned_hit@10": 0.0,
+    "learned_hit@10": 1.0,
     "keyword_and_meaning_hit@10": 0.0
    },
    {
@@ -49785,7 +49773,7 @@
    {
     "qid": "sympy__sympy-16988",
     "language": "python",
-    "learned_hit@10": 1.0,
+    "learned_hit@10": 0.0,
     "keyword_and_meaning_hit@10": 0.0
    },
    {
@@ -49949,7 +49937,7 @@
    {
     "qid": "GenericMappingTools__pygmt-1329",
     "language": "python",
-    "learned_hit@10": 1.0,
+    "learned_hit@10": 0.0,
     "keyword_and_meaning_hit@10": 1.0
    },
    {
@@ -49961,7 +49949,7 @@
    {
     "qid": "GenericMappingTools__pygmt-1934",
     "language": "python",
-    "learned_hit@10": 0.0,
+    "learned_hit@10": 1.0,
     "keyword_and_meaning_hit@10": 0.0
    },
    {
@@ -49985,7 +49973,7 @@
    {
     "qid": "GenericMappingTools__pygmt-1382",
     "language": "python",
-    "learned_hit@10": 1.0,
+    "learned_hit@10": 0.0,
     "keyword_and_meaning_hit@10": 0.0
    },
    {
@@ -50507,7 +50495,7 @@
    {
     "qid": "arviz-devs__arviz-588",
     "language": "python",
-    "learned_hit@10": 1.0,
+    "learned_hit@10": 0.0,
     "keyword_and_meaning_hit@10": 0.0
    },
    {
@@ -52145,7 +52133,7 @@
    {
     "qid": "lincc-frameworks__nested-pandas-123",
     "language": "python",
-    "learned_hit@10": 1.0,
+    "learned_hit@10": 0.0,
     "keyword_and_meaning_hit@10": 0.0
    },
    {
@@ -52355,7 +52343,7 @@
    {
     "qid": "matrix-org__synapse-4621",
     "language": "python",
-    "learned_hit@10": 0.0,
+    "learned_hit@10": 1.0,
     "keyword_and_meaning_hit@10": 0.0
    },
    {
@@ -52385,7 +52373,7 @@
    {
     "qid": "matrix-org__synapse-13365",
     "language": "python",
-    "learned_hit@10": 1.0,
+    "learned_hit@10": 0.0,
     "keyword_and_meaning_hit@10": 0.0
    },
    {
@@ -52517,7 +52505,7 @@
    {
     "qid": "neogeny__TatSu-265",
     "language": "python",
-    "learned_hit@10": 0.0,
+    "learned_hit@10": 1.0,
     "keyword_and_meaning_hit@10": 0.0
    },
    {
@@ -52613,7 +52601,7 @@
    {
     "qid": "nilearn__nilearn-5084",
     "language": "python",
-    "learned_hit@10": 0.0,
+    "learned_hit@10": 1.0,
     "keyword_and_meaning_hit@10": 1.0
    },
    {
@@ -52673,7 +52661,7 @@
    {
     "qid": "nilearn__nilearn-4796",
     "language": "python",
-    "learned_hit@10": 1.0,
+    "learned_hit@10": 0.0,
     "keyword_and_meaning_hit@10": 0.0
    },
    {
@@ -52967,7 +52955,7 @@
    {
     "qid": "pdm-project__pdm-1566",
     "language": "python",
-    "learned_hit@10": 0.0,
+    "learned_hit@10": 1.0,
     "keyword_and_meaning_hit@10": 0.0
    },
    {
@@ -53027,7 +53015,7 @@
    {
     "qid": "pdm-project__pdm-1766",
     "language": "python",
-    "learned_hit@10": 0.0,
+    "learned_hit@10": 1.0,
     "keyword_and_meaning_hit@10": 0.0
    },
    {
@@ -53423,13 +53411,13 @@
    {
     "qid": "pydicom__pynetdicom-404",
     "language": "python",
-    "learned_hit@10": 0.0,
+    "learned_hit@10": 1.0,
     "keyword_and_meaning_hit@10": 1.0
    },
    {
     "qid": "pydicom__pynetdicom-362",
     "language": "python",
-    "learned_hit@10": 1.0,
+    "learned_hit@10": 0.0,
     "keyword_and_meaning_hit@10": 0.0
    },
    {
@@ -53471,7 +53459,7 @@
    {
     "qid": "pydicom__pynetdicom-766",
     "language": "python",
-    "learned_hit@10": 0.0,
+    "learned_hit@10": 1.0,
     "keyword_and_meaning_hit@10": 0.0
    },
    {
@@ -54403,7 +54391,7 @@
    {
     "qid": "caddyserver__caddy-5995",
     "language": "go",
-    "learned_hit@10": 0.0,
+    "learned_hit@10": 1.0,
     "keyword_and_meaning_hit@10": 0.0
    },
    {
@@ -54475,7 +54463,7 @@
    {
     "qid": "gohugoio__hugo-12343",
     "language": "go",
-    "learned_hit@10": 0.0,
+    "learned_hit@10": 1.0,
     "keyword_and_meaning_hit@10": 0.0
    },
    {
@@ -54523,7 +54511,7 @@
    {
     "qid": "hashicorp__terraform-34900",
     "language": "go",
-    "learned_hit@10": 1.0,
+    "learned_hit@10": 0.0,
     "keyword_and_meaning_hit@10": 0.0
    },
    {
@@ -54709,7 +54697,7 @@
    {
     "qid": "javaparser__javaparser-4561",
     "language": "java",
-    "learned_hit@10": 0.0,
+    "learned_hit@10": 1.0,
     "keyword_and_meaning_hit@10": 0.0
    },
    {
@@ -54781,7 +54769,7 @@
    {
     "qid": "projectlombok__lombok-3312",
     "language": "java",
-    "learned_hit@10": 0.0,
+    "learned_hit@10": 1.0,
     "keyword_and_meaning_hit@10": 0.0
    },
    {
@@ -55118,7 +55106,7 @@
     "qid": "tokio-rs__axum-1119",
     "language": "rust",
     "learned_hit@10": 1.0,
-    "keyword_and_meaning_hit@10": 0.0
+    "keyword_and_meaning_hit@10": 1.0
    },
    {
     "qid": "tokio-rs__axum-682",
@@ -55142,7 +55130,7 @@
     "qid": "tokio-rs__axum-691",
     "language": "rust",
     "learned_hit@10": 1.0,
-    "keyword_and_meaning_hit@10": 0.0
+    "keyword_and_meaning_hit@10": 1.0
    },
    {
     "qid": "tokio-rs__axum-1934",
@@ -55153,7 +55141,7 @@
    {
     "qid": "tokio-rs__tokio-6551",
     "language": "rust",
-    "learned_hit@10": 0.0,
+    "learned_hit@10": 1.0,
     "keyword_and_meaning_hit@10": 1.0
    },
    {
@@ -55335,7 +55323,7 @@
    {
     "qid": "apache__dubbo-4521",
     "language": "java",
-    "learned_hit@10": 0.0,
+    "learned_hit@10": 1.0,
     "keyword_and_meaning_hit@10": 0.0
    },
    {
@@ -55521,7 +55509,7 @@
    {
     "qid": "apache__rocketmq-7455",
     "language": "java",
-    "learned_hit@10": 0.0,
+    "learned_hit@10": 1.0,
     "keyword_and_meaning_hit@10": 0.0
    },
    {
@@ -55539,7 +55527,7 @@
    {
     "qid": "apache__rocketmq-6455",
     "language": "java",
-    "learned_hit@10": 0.0,
+    "learned_hit@10": 1.0,
     "keyword_and_meaning_hit@10": 0.0
    },
    {
@@ -55725,7 +55713,7 @@
    {
     "qid": "google__gson-1832",
     "language": "java",
-    "learned_hit@10": 0.0,
+    "learned_hit@10": 1.0,
     "keyword_and_meaning_hit@10": 0.0
    },
    {
@@ -55863,7 +55851,7 @@
    {
     "qid": "trinodb__trino-1512",
     "language": "java",
-    "learned_hit@10": 0.0,
+    "learned_hit@10": 1.0,
     "keyword_and_meaning_hit@10": 1.0
    },
    {
@@ -56523,7 +56511,7 @@
    {
     "qid": "sveltejs__svelte-6395",
     "language": "javascript",
-    "learned_hit@10": 0.0,
+    "learned_hit@10": 1.0,
     "keyword_and_meaning_hit@10": 1.0
    },
    {
@@ -56745,7 +56733,7 @@
    {
     "qid": "sveltejs__svelte-2092",
     "language": "javascript",
-    "learned_hit@10": 0.0,
+    "learned_hit@10": 1.0,
     "keyword_and_meaning_hit@10": 1.0
    },
    {
@@ -56961,7 +56949,7 @@
    {
     "qid": "microsoft__vscode-159031",
     "language": "typescript",
-    "learned_hit@10": 0.0,
+    "learned_hit@10": 1.0,
     "keyword_and_meaning_hit@10": 0.0
    },
    {
@@ -56979,7 +56967,7 @@
    {
     "qid": "microsoft__vscode-146962",
     "language": "typescript",
-    "learned_hit@10": 0.0,
+    "learned_hit@10": 1.0,
     "keyword_and_meaning_hit@10": 0.0
    },
    {
@@ -57075,7 +57063,7 @@
    {
     "qid": "mui__material-ui-34207",
     "language": "typescript",
-    "learned_hit@10": 0.0,
+    "learned_hit@10": 1.0,
     "keyword_and_meaning_hit@10": 1.0
    },
    {
@@ -57165,7 +57153,7 @@
    {
     "qid": "mui__material-ui-20133",
     "language": "typescript",
-    "learned_hit@10": 1.0,
+    "learned_hit@10": 0.0,
     "keyword_and_meaning_hit@10": 0.0
    },
    {
@@ -57183,7 +57171,7 @@
    {
     "qid": "mui__material-ui-17691",
     "language": "typescript",
-    "learned_hit@10": 1.0,
+    "learned_hit@10": 0.0,
     "keyword_and_meaning_hit@10": 0.0
    },
    {
@@ -57355,5 +57343,24 @@
     "keyword_and_meaning_hit@10": 1.0
    }
   ]
+ },
+ "provenance": {
+  "timestamp": "2026-10-16T07:04:16+00:00",
+  "git_commit": "0e65150937951be53ad58655756450c3ebe884d2",
+  "git_dirty": true,
+  "python": "3.11.17",
+  "platform": "Linux-5.14.0-687.49.1.el9_8.x86_64-x86_64-with-glibc2.34",
+  "packages": {
+   "numpy": "2.4.6",
+   "scipy": "1.17.1",
+   "tree-sitter": "0.26.0",
+   "lightgbm": "4.7.0",
+   "torch": "2.14.0+cu130",
+   "sentence-transformers": "6.1.0"
+  },
+  "models": {
+   "results/browser_ltr_multilang/ranker.json": "df8659ea9d945865",
+   "results/browser_ltr_multilang/static-model.bin": "4ae4f6c918918ffa"
+  }
  }
 }
