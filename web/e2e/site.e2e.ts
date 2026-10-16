@@ -63,6 +63,8 @@ test("search: load a repository, describe a bug, get the right function", async 
   await expect(page.locator("#search-app ol.hits .qual").first()).toHaveText("load_config");
   await expect(page.locator("#search-app .why .reason").first()).toBeVisible();
   await expect(page.locator(".confidence")).toContainText(/(High|Medium|Low) confidence · \d+% chance/);
+  await page.locator("#demo-query").fill("load_config fails");
+  await expect(page.locator(".confidence")).toContainText("Too short to estimate");
   await expect(page).toHaveURL(/#\/search\?repo=odin-e2e%2Ffixture&q=/);
 
   // A traceback points at the function where it ended.

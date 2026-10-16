@@ -53,7 +53,9 @@ def rank(
         scores = predict_many(ranker["semantic"], X)
         ranked = [fn.ids[rows[i]] for i in bl.order(scores)]
         sure = None
-        if CONFIDENCE.exists():
+        from odin.rank.confidence import MIN_CHARS
+
+        if CONFIDENCE.exists() and len(text.strip()) >= MIN_CHARS:
             from odin.rank.confidence import confidence_features, predict_confidence
 
             model = json.loads(CONFIDENCE.read_text(encoding="utf-8"))

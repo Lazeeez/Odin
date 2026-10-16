@@ -14,6 +14,10 @@ export interface Scored {
 
 export type Band = "high" | "medium" | "low";
 
+export const MIN_CHARS = 50;
+
+export const measurable = (text: string): boolean => Array.from(text.trim()).length >= MIN_CHARS;
+
 export function confidenceFeatures(candidates: readonly Scored[], featureNames: readonly string[], text: string): number[] {
   const chars = Array.from(text).length;
   if (!candidates.length) return [0, 0, 0, 0, 0, 0, 0, 0, 0, Math.log1p(chars)];

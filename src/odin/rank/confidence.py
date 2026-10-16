@@ -4,6 +4,8 @@ import numpy as np
 
 from odin.rank.browser import FEATURES
 
+MIN_CHARS = 50
+
 CONFIDENCE_FEATURES = [
     "top_score",
     "gap_1_2",

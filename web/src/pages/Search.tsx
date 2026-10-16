@@ -10,7 +10,7 @@ import { feedbackEnabled, newSession, type QuerySource, recordSearch, recordVote
 import { type Results, useSearchWorker } from "../hooks/useSearchWorker.ts";
 import { highlightCode, matchedTerms } from "../lib/highlight.ts";
 import { shareCard } from "../lib/shareCard.ts";
-import { band } from "../engine/confidence.ts";
+import { band, measurable } from "../engine/confidence.ts";
 import { href, replaceHash } from "../lib/router.ts";
 import { useLazy } from "../lib/lazy.ts";
 import { load, save } from "../lib/storage.ts";
@@ -624,7 +624,9 @@ export function Search({ active, request }: { active: boolean; request: URLSearc
           <div class="result-meta">
             <p class="tokens" role="status" aria-live="polite">{semanticStatus.includes("…") && <Seer size="sm" />} {semanticStatus}</p>
             {w.server && <p class="tokens" role="status" aria-live="polite">{w.server.endsWith("…") && <Seer size="sm" />} {w.server}</p>}
-            {w.results?.confidence != null && <Confidence p={w.results.confidence} gpu={w.results.stage === "server"} />}
+            {w.results?.confidence != null && (measurable(query)
+              ? <Confidence p={w.results.confidence} gpu={w.results.stage === "server"} />
+              : <p class="confidence low"><b>Too short to estimate</b> · reports this brief are outside what the confidence estimate was measured on. Adding the error message, a stack trace or what you expected to happen usually helps.</p>)}
             {w.results && (
               <p class="tokens">
                 {(w.results.stage === "instant" || w.results.stage === "semantic") && `${w.results.stage === "semantic" ? "Semantic" : "Instant"} ranking of ${info.units.toLocaleString()} functions in ${w.results.ms.toFixed(0)} ms · `}
