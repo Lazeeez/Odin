@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "preact/hooks";
 import { Footer, Nav } from "./components/Nav.tsx";
 import { type Lite, type Summary, getJSON } from "./lib/data.ts";
 import { useLazy } from "./lib/lazy.ts";
+import { scrollHints } from "./lib/scrollHints.ts";
 import { type Page, useRoute } from "./lib/router.ts";
 import { Benchmarks } from "./pages/Benchmarks.tsx";
 import { CaseStudy } from "./pages/CaseStudy.tsx";
@@ -47,6 +48,8 @@ export function App() {
       removeEventListener("odin:palette", open);
     };
   }, []);
+
+  useEffect(() => scrollHints(), []);
 
   useEffect(() => {
     getJSON<Summary>("data/summary.json").then(setSummary, () => setFailed(true));

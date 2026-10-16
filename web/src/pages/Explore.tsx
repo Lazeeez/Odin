@@ -38,7 +38,11 @@ export function Explore({ summary, linked, failed, mode: asked, set }: {
   return (
     <div class="container">
       <PageHero kicker="Explore" title="Watch Odin hunt real bugs">
-        <p>Per-issue rankings from the evaluation runs, scored against the maintainers' patch: every stage's top 10 for 300 SWE-bench Lite issues (Python, the full GPU pipeline), and for 501 bugs in JavaScript, TypeScript, Go, Java and Rust (the website's own pipeline). The same data behind the benchmark numbers, one issue at a time.</p>
+        <p>
+          Per-issue rankings from the evaluation runs, scored against the maintainers' patch: every stage's top 10 for 300 SWE-bench Lite
+          issues (Python, the full GPU pipeline){hasLanguages ? ", and for 501 bugs in JavaScript, TypeScript, Go, Java and Rust (the website's own pipeline)" : ""}.
+          The same data behind the benchmark numbers, one issue at a time.
+        </p>
       </PageHero>
       <ol class="how-strip">
         {HOW.map(([icon, title, text], i) => (

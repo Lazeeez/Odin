@@ -15,7 +15,7 @@ function BrowserComparison({ e, full, depth }: { e: BrowserEval; full?: number; 
     { label: "Instant ranking", value: e.instant["hit@10"], detail: "keyword and mention signals, milliseconds" },
     { label: "+ semantic index", value: e.semantic["hit@10"], detail: "every function embedded in the background", emphasis: !e.rerank },
     ...(e.rerank ? [{ label: `+ language-model rerank of the top ${depth}`, value: e.rerank["hit@10"], emphasis: true }] : []),
-    ...(full != null ? [{ label: "Full pipeline (GPU server)", value: full, detail: "larger models, git history, LLM reranker" }] : []),
+    ...(full != null ? [{ label: "Full research pipeline (GPU)", value: full, detail: "larger models, git history, LLM reranker" }] : []),
   ];
   return <Bars label="Function in the top 10, by in-browser stage" format={pct} rows={rows} />;
 }
@@ -137,7 +137,7 @@ export function Benchmarks({ summary, lite, failed }: { summary: Summary | null;
 }
 
 const LANGUAGE_NAMES: Record<string, string> = { go: "Go", java: "Java", javascript: "JavaScript", rust: "Rust", typescript: "TypeScript" };
-const SET_NAMES: Record<string, string> = { multilingual: "SWE-bench Multilingual", polybench: "SWE-PolyBench" };
+const SET_NAMES: Record<string, string> = { multilingual: "Multilingual", polybench: "PolyBench" };
 
 function Languages({ sets }: { sets: Record<string, Record<string, LanguageEval>> }) {
   const rows = Object.entries(sets).flatMap(([set, langs]) =>
@@ -147,24 +147,27 @@ function Languages({ sets }: { sets: Record<string, Record<string, LanguageEval>
       <p class="kicker">In your browser</p>
       <h2>In five more languages</h2>
       <p class="card-lede">
-        Bugs from two public test sets, in projects the rankers never trained on, scored once. Odin's learned ranker against ranking by
+        Bugs from two public test sets, SWE-bench Multilingual and SWE-PolyBench, in projects the rankers never trained on, scored once. Odin's learned ranker against ranking by
         keywords and meaning alone, the simpler signal the site would fall back to.
       </p>
       <div class="table-wrap" tabIndex={0} role="region" aria-label="Accuracy by language">
         <table>
-          <thead><tr><th>Language</th><th>Test set</th><th>Bugs</th><th>Odin</th><th>Keywords and meaning</th><th>Change</th><th>p</th></tr></thead>
+          <thead><tr><th>Language</th><th class="phone-hide-col">Test set</th><th class="phone-hide-col">Bugs</th><th>Odin</th><th class="wrap">Keywords and meaning</th><th>Change</th><th class="phone-hide-col">p</th></tr></thead>
           <tbody>
             {rows.map(({ set, lang, e }) => {
               const g = e["hit@10_gain"];
               return (
                 <tr key={`${set}:${lang}`}>
-                  <td>{LANGUAGE_NAMES[lang]}</td>
-                  <td>{SET_NAMES[set] ?? set}</td>
-                  <td class="num">{e.issues}</td>
+                  <td class="label-cell">
+                    {LANGUAGE_NAMES[lang]}
+                    <span class="phone-only">{SET_NAMES[set] ?? set} · {e.issues} bugs</span>
+                  </td>
+                  <td class="phone-hide-col">{SET_NAMES[set] ?? set}</td>
+                  <td class="num phone-hide-col">{e.issues}</td>
                   <td class="num">{pct(e.learned["hit@10"])}</td>
                   <td class="num">{pct(e.keyword_and_meaning["hit@10"])}</td>
                   <td class={`num${g.p < 0.05 && g.delta > 0 ? " sig" : ""}`}>{g.delta >= 0 ? "+" : ""}{(g.delta * 100).toFixed(1)}</td>
-                  <td class="num">{g.p < 0.001 ? "<0.001" : g.p.toFixed(3)}</td>
+                  <td class="num phone-hide-col">{g.p < 0.001 ? "<0.001" : g.p.toFixed(3)}</td>
                 </tr>
               );
             })}
@@ -194,12 +197,12 @@ function Gpu({ g }: { g: GpuReranker }) {
         {(gain.ci95[1] * 100).toFixed(1)}, p {gain.p_value < 0.001 ? "< 0.001" : `= ${gain.p_value.toFixed(3)}`}).
       </p>
       <div class="table-wrap" tabIndex={0} role="region" aria-label="The GPU reranker's effect">
-        <table>
+        <table class="label-first">
           <thead><tr><th>Ranking</th><th>hit@1</th><th>hit@5</th><th>hit@10</th><th>MRR</th></tr></thead>
           <tbody>
             {rows.map(([label, m]) => (
               <tr key={label}>
-                <td style={{ whiteSpace: "normal" }}>{label}</td>
+                <td>{label}</td>
                 <td class="num">{pct(m["hit@1"])}</td>
                 <td class="num">{pct(m["hit@5"])}</td>
                 <td class="num">{pct(m["hit@10"])}</td>

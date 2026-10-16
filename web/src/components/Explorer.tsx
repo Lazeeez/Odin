@@ -68,6 +68,13 @@ function verdict(first: number | null, last: number | null, best: { name: string
   return `A miss: no stage put the ${unit} in its top 10. Some bugs are hard to find from the report alone.`;
 }
 
+const withoutName = (blurb: string, name: string) => {
+  const prefix = `${name}:`;
+  if (!blurb.startsWith(prefix)) return blurb;
+  const rest = blurb.slice(prefix.length).trim();
+  return rest.charAt(0).toUpperCase() + rest.slice(1);
+};
+
 const rr = (rank: number | null) => (rank ? 1 / rank : 0).toFixed(3);
 
 /** Ten slots, best on the left; a gold diamond wherever the real fix is. */
@@ -89,7 +96,7 @@ function ClimbRow({ stage, list, gold, open, onToggle, file }: {
       <button type="button" class="climb-head" aria-expanded={open} onClick={onToggle}>
         <span class="climb-name">
           <b>{plainName(stage.id, stage.label)}</b>
-          <span dangerouslySetInnerHTML={{ __html: inlineCode(stage.blurb) }} />
+          <span dangerouslySetInnerHTML={{ __html: inlineCode(withoutName(stage.blurb, plainName(stage.id, stage.label))) }} />
         </span>
         <Ladder list={list} gold={gold} />
         <span class={`climb-rank${r ? "" : " miss"}`}>{r ? `#${r}` : "not in top 10"}</span>

@@ -149,7 +149,7 @@ function HitRow({ hit, rank, info, terms, open, onToggle, rating }: {
         onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onToggle(); } }}>
         <span class="rank">{rank}</span>
         <span class="hit-main">
-          <span class="qual">{hit.qualname}</span>
+          <span class="qual">{hit.qualname.split(".").map((part, i) => <>{i > 0 && <>.<wbr /></>}{part}</>)}</span>
           <span class="path">{hit.path}:{hit.line}</span>
         </span>
         <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" /></svg>
@@ -569,7 +569,7 @@ export function Search({ active, request }: { active: boolean; request: URLSearc
             )}
             {!info.partial && w.semanticIndex && (
               <span class="muted" title="Every function embedded with a static code model, for search by meaning">
-                {w.semanticIndex.state === "building" ? <Seer size="sm" text="building the semantic index…" /> : w.semanticIndex.state === "ready" ? `· semantic index ready in ${duration(w.semanticIndex.ms)}` : "· semantic index unavailable"}
+                {w.semanticIndex.state === "building" ? <Seer size="sm" text="building the semantic index…" /> : w.semanticIndex.state === "ready" ? `semantic index ready in ${duration(w.semanticIndex.ms)}` : "semantic index unavailable"}
               </span>
             )}
             {info.notes.map((n) => <span class="note" key={n}>{n}</span>)}
