@@ -10,6 +10,7 @@ const web = resolve(dirname(fileURLToPath(import.meta.url)), "../../web");
 const load = (p) => import(pathToFileURL(resolve(web, p)).href);
 const { BM25 } = await load("src/engine/bm25.ts");
 const { rankFiles, rankUnits, signals } = await load("src/engine/rank.ts");
+const { confidenceFeatures } = await load("src/engine/confidence.ts");
 
 const { units, queries, model, sims, multilang = false } = JSON.parse(readFileSync(0, "utf8"));
 const index = new BM25(units.map((u) => ({ ...u, id: `${u.path}::${u.qualname}` })));
@@ -20,6 +21,7 @@ const out = queries.map((q, i) => {
   const sig = signals(index, q, sim, multilang);
   const semantic = rankUnits(index, model, model.semantic, sig);
   const files = rankFiles(index, model.file, model.semantic, sig, semantic);
-  return { instant: rows(instant.candidates), semantic: rows([...semantic.candidates]), files: rows(files) };
+  const confidence = confidenceFeatures(semantic.candidates, model.semantic.features, q);
+  return { instant: rows(instant.candidates), semantic: rows([...semantic.candidates]), files: rows(files), confidence };
 });
 process.stdout.write(JSON.stringify(out));

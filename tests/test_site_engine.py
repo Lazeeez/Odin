@@ -230,6 +230,7 @@ def _rank_parity(units: list[dict], queries: list[str], multilang: bool) -> None
     import numpy as np
 
     from odin.rank.browser import FEATURES, FILE_FEATURES, SEMANTIC, extract, file_features, predict
+    from odin.rank.confidence import confidence_features
     from odin.rank.features import issue_fields
     from odin.rank.mentions import Mentions
 
@@ -292,6 +293,9 @@ def _rank_parity(units: list[dict], queries: list[str], multilang: bool) -> None
         rows_b, XB = extract(fn, lex, tlex, clex, m, names, sim[0], sim[1])
         same(got["semantic"], [fn.ids[r] for r in rows_b], XB, "semantic")
         unit_scores = np.array([predict(model["semantic"], x) for x in XB])
+        np.testing.assert_allclose(
+            got["confidence"], confidence_features(unit_scores, XB, len(q)), rtol=1e-5, atol=1e-5
+        )
         frows, XF = file_features(fn, lex, tlex, clex, sim[0], sim[1], m, rows_b, XB, unit_scores)
         same(got["files"], [fn.files[f] for f in frows], XF, "file")
         covered.update(f for i, f in enumerate(FEATURES) if X[:, i].any())
@@ -374,4 +378,9 @@ def test_vectorized_tree_scores_match_the_reference():
         width = len(model[stage]["features"])
         X = rng.normal(0, 2, (300, width)).astype(np.float32)
         X[::7, ::3] = 0
-        np.testing.assert_allclose(predict_many(model[stage], X), [predict(model[stage], x) for x in X], rtol=1e-9, atol=1e-9)
+        np.testing.assert_allclose(
+            predict_many(model[stage], X),
+            [predict(model[stage], x) for x in X],
+            rtol=1e-9,
+            atol=1e-9,
+        )
