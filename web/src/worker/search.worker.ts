@@ -9,6 +9,7 @@ import { type Candidate, explain, type FileCandidate, type RankerModel, rankFile
 import { issueFields } from "../engine/mentions.ts";
 import { type Embed, SEMANTIC, unitText } from "../engine/semantic.ts";
 import { blend, SERVER, ServerUnavailable, serverScores } from "../engine/server.ts";
+import { confidence, confidenceFeatures, type ConfidenceModel } from "../engine/confidence.ts";
 import { embedText, parseStaticModel, type StaticModel } from "../engine/static.ts";
 import type { Unit } from "../engine/types.ts";
 import rankerUrl from "../assets/ranker.json?url";
@@ -24,6 +25,14 @@ const ORT_RUNTIME = "https://unpkg.com/onnxruntime-web@1.31.0-dev.20260914-8d855
 const post = (msg: FromWorker) => self.postMessage(msg);
 // Set at build time when the archive relay is deployed (see proxy/cloudflare-worker.js).
 const ARCHIVE_PROXY = import.meta.env.VITE_ARCHIVE_PROXY?.replace(/\/+$/, "");
+const CONFIDENCE_URL = Object.values(import.meta.glob("../assets/confidence.json", { query: "?url", import: "default", eager: true }))[0] as string | undefined;
+let confidenceModel: Promise<ConfidenceModel | null> | null = null;
+const confidenceOf = async (candidates: Candidate[], features: string[], query: string): Promise<number | undefined> => {
+  if (!CONFIDENCE_URL || !candidates.length) return undefined;
+  confidenceModel ??= fetch(CONFIDENCE_URL).then((r) => (r.ok ? (r.json() as Promise<ConfidenceModel>) : null)).catch(() => null);
+  const model = await confidenceModel;
+  return model ? confidence(model, confidenceFeatures(candidates, features, query)) : undefined;
+};
 let rerankServer = import.meta.env.VITE_RERANK_SERVER?.replace(/\/+$/, "") || null;
 const BATCH = 16; // texts per embedding call
 
@@ -330,14 +339,16 @@ async function search(id: number, query: string, semantic: boolean, server: bool
   const sig = signals(index, query, semanticStage ? sim : undefined, !!model.meta.multilang);
   const ranked = rankUnits(index, model, stage, sig);
   const files = semanticStage && model.file ? rankFiles(index, model.file, stage, sig, ranked).slice(0, 10).map(wireFile) : undefined;
+  const sure = semanticStage ? await confidenceOf(ranked.candidates, semanticStage.features, query) : undefined;
+  if (id !== state.latest) return;
   post({
     type: "results", id, stage: semanticStage ? "semantic" : "instant", hits: explained(stage, ranked.candidates, k),
-    files, terms: ranked.terms, ms: performance.now() - t0,
+    files, terms: ranked.terms, ms: performance.now() - t0, confidence: sure,
   });
   // The rerank stage was trained on the semantic stage's candidates.
   if (!semantic || !model.rerank || !semanticStage || ranked.candidates.length < 2) return;
   const gpu = server && rerankServer ? askServer(id, query, ranked.candidates) : null;
-  if (gpu && SERVER.skipLanguageModel && ((await serverStage(id, gpu, stage, ranked.candidates, files, ranked.terms, k)) || id !== state.latest)) return;
+  if (gpu && SERVER.skipLanguageModel && ((await serverStage(id, gpu, stage, ranked.candidates, files, ranked.terms, k, sure)) || id !== state.latest)) return;
   let final = ranked.candidates;
   let finalStage: Stage = stage;
   try {
@@ -363,7 +374,7 @@ async function search(id: number, query: string, semantic: boolean, server: bool
     if (id !== state.latest) return;
     post({
       type: "results", id, stage: "rerank", hits: explained(model.rerank, hits, k), files, terms: ranked.terms,
-      ms: performance.now() - t1, computed: units.computed, stored: units.stored,
+      ms: performance.now() - t1, computed: units.computed, stored: units.stored, confidence: sure,
     });
     final = hits;
     finalStage = model.rerank;
@@ -371,7 +382,7 @@ async function search(id: number, query: string, semantic: boolean, server: bool
     if (err instanceof Superseded) return;
     post({ type: "semantic-error", id, message: err instanceof Error ? err.message : String(err) });
   }
-  if (gpu && !SERVER.skipLanguageModel && id === state.latest) await serverStage(id, gpu, finalStage, final, files, ranked.terms, k);
+  if (gpu && !SERVER.skipLanguageModel && id === state.latest) await serverStage(id, gpu, finalStage, final, files, ranked.terms, k, sure);
 }
 
 interface ServerJob {
@@ -398,7 +409,7 @@ function askServer(id: number, query: string, candidates: Candidate[]): ServerJo
   return job;
 }
 
-async function serverStage(id: number, job: ServerJob, stage: Stage, order: Candidate[], files: WireFile[] | undefined, terms: string[], k: number): Promise<boolean> {
+async function serverStage(id: number, job: ServerJob, stage: Stage, order: Candidate[], files: WireFile[] | undefined, terms: string[], k: number, sure?: number): Promise<boolean> {
   try {
     const byRow = await job.scores;
     if (id !== state.latest) return false;
@@ -413,7 +424,7 @@ async function serverStage(id: number, job: ServerJob, stage: Stage, order: Cand
       const was = prior.get(blended[i].row);
       if (was != null && was !== i + 1) h.before = was;
     });
-    post({ type: "results", id, stage: "server", hits, files, terms, ms: performance.now() - job.sent });
+    post({ type: "results", id, stage: "server", hits, files, terms, ms: performance.now() - job.sent, confidence: sure });
     return true;
   } catch (err) {
     if (err instanceof Superseded || id !== state.latest || job.controller.signal.aborted) return false;

@@ -21,6 +21,7 @@ export interface Results {
   ms: number;
   computed?: number;
   stored?: number;
+  confidence?: number;
 }
 
 /** Everything the page needs from the background search worker, as reactive state. */

@@ -61,7 +61,7 @@ export type FromWorker =
   | { type: "loaded"; info: RepoInfo }
   | { type: "partial"; info: RepoInfo }
   | { type: "error"; message: string; cancelled: boolean }
-  | { type: "results"; id: number; stage: RankStage; hits: WireHit[]; files?: WireFile[]; terms: string[]; ms: number; computed?: number; stored?: number }
+  | { type: "results"; id: number; stage: RankStage; hits: WireHit[]; files?: WireFile[]; terms: string[]; ms: number; computed?: number; stored?: number; confidence?: number }
   | { type: "semantic-index"; state: "building" | "ready" | "failed"; units: number; ms: number }
   | { type: "stages"; rerank: boolean; file: boolean }
   | { type: "semantic-start"; id: number }

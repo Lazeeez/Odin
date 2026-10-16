@@ -10,6 +10,7 @@ import { feedbackEnabled, newSession, type QuerySource, recordSearch, recordVote
 import { type Results, useSearchWorker } from "../hooks/useSearchWorker.ts";
 import { highlightCode, matchedTerms } from "../lib/highlight.ts";
 import { shareCard } from "../lib/shareCard.ts";
+import { band } from "../engine/confidence.ts";
 import { href, replaceHash } from "../lib/router.ts";
 import { useLazy } from "../lib/lazy.ts";
 import { load, save } from "../lib/storage.ts";
@@ -623,6 +624,7 @@ export function Search({ active, request }: { active: boolean; request: URLSearc
           <div class="result-meta">
             <p class="tokens" role="status" aria-live="polite">{semanticStatus.includes("…") && <Seer size="sm" />} {semanticStatus}</p>
             {w.server && <p class="tokens" role="status" aria-live="polite">{w.server.endsWith("…") && <Seer size="sm" />} {w.server}</p>}
+            {w.results?.confidence != null && <Confidence p={w.results.confidence} gpu={w.results.stage === "server"} />}
             {w.results && (
               <p class="tokens">
                 {(w.results.stage === "instant" || w.results.stage === "semantic") && `${w.results.stage === "semantic" ? "Semantic" : "Instant"} ranking of ${info.units.toLocaleString()} functions in ${w.results.ms.toFixed(0)} ms · `}
@@ -645,5 +647,21 @@ export function Search({ active, request }: { active: boolean; request: URLSearc
         </>
       )}
     </div>
+  );
+}
+
+const BAND_TEXT = {
+  high: "High confidence",
+  medium: "Medium confidence",
+  low: "Low confidence",
+} as const;
+
+function Confidence({ p, gpu }: { p: number; gpu: boolean }) {
+  const b = band(p);
+  return (
+    <p class={`confidence ${b}`} title="How often a function the fix changes was in the browser's top 10 when Odin was this sure, measured on 7,845 bugs it was not trained on (ADR 0029)">
+      <b>{BAND_TEXT[b]}</b> · {Math.round(p * 100)}% chance a function the fix changes is in the top 10{gpu ? " (estimated before the GPU reranker, which usually does a little better)" : ""}.
+      {b === "low" && " Adding the stack trace, an error message or the name of a function the report is about usually helps."}
+    </p>
   );
 }
