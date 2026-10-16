@@ -1,109 +1,297 @@
 {
- "generated": "2026-10-15T03:20:41+00:00",
+ "generated": "2026-10-16T08:42:23+00:00",
  "adr": "docs/decisions/0023-live-accuracy.md",
  "last_30_days": {
-  "bugs": 80,
-  "projects": 13,
+  "bugs": 160,
+  "projects": 25,
   "function": {
-   "mrr": 0.3954,
-   "hit@1": 0.275,
-   "recall@10": 0.5023,
-   "hit@10": 0.6625,
+   "mrr": 0.4222,
+   "hit@1": 0.3,
+   "recall@10": 0.4963,
+   "hit@10": 0.6875,
    "hit@10_ci95": [
-    0.5625,
-    0.7625
+    0.6125,
+    0.7562
    ]
   },
   "file": {
-   "hit@10": 0.9,
+   "hit@10": 0.9062,
    "hit@10_ci95": [
-    0.8375,
-    0.9625
+    0.8562,
+    0.95
    ]
   },
   "merged": [
    "2026-10-08",
-   "2026-10-12"
+   "2026-10-14"
   ]
  },
  "all_time": {
-  "bugs": 80,
-  "projects": 13,
+  "bugs": 160,
+  "projects": 25,
   "function": {
-   "mrr": 0.3954,
-   "hit@1": 0.275,
-   "recall@10": 0.5023,
-   "hit@10": 0.6625,
+   "mrr": 0.4222,
+   "hit@1": 0.3,
+   "recall@10": 0.4963,
+   "hit@10": 0.6875,
    "hit@10_ci95": [
-    0.5625,
-    0.7625
+    0.6125,
+    0.7562
    ]
   },
   "file": {
-   "hit@10": 0.9,
+   "hit@10": 0.9062,
    "hit@10_ci95": [
-    0.8375,
-    0.9625
+    0.8562,
+    0.95
    ]
   },
   "merged": [
    "2026-10-08",
-   "2026-10-12"
+   "2026-10-14"
   ]
  },
  "all_time_trained_projects": {
-  "bugs": 58,
-  "projects": 7,
+  "bugs": 94,
+  "projects": 10,
   "function": {
-   "mrr": 0.3911,
-   "hit@1": 0.2931,
-   "recall@10": 0.4878,
-   "hit@10": 0.6034,
+   "mrr": 0.4166,
+   "hit@1": 0.3085,
+   "recall@10": 0.4842,
+   "hit@10": 0.6277,
    "hit@10_ci95": [
-    0.4828,
-    0.7241
+    0.5213,
+    0.7234
    ]
   },
   "file": {
-   "hit@10": 0.9138,
+   "hit@10": 0.9255,
    "hit@10_ci95": [
-    0.8276,
-    0.9828
+    0.8723,
+    0.9787
    ]
   },
   "merged": [
    "2026-10-08",
-   "2026-10-12"
+   "2026-10-14"
   ]
  },
  "all_time_new_projects": {
-  "bugs": 22,
-  "projects": 6,
+  "bugs": 66,
+  "projects": 15,
   "function": {
-   "mrr": 0.4068,
-   "hit@1": 0.2273,
-   "recall@10": 0.5404,
-   "hit@10": 0.8182,
+   "mrr": 0.4302,
+   "hit@1": 0.2879,
+   "recall@10": 0.5134,
+   "hit@10": 0.7727,
    "hit@10_ci95": [
-    0.6364,
-    0.9545
+    0.6667,
+    0.8636
    ]
   },
   "file": {
-   "hit@10": 0.8636,
+   "hit@10": 0.8788,
    "hit@10_ci95": [
-    0.6818,
-    1.0
+    0.7879,
+    0.9545
    ]
   },
   "merged": [
    "2026-10-08",
-   "2026-10-12"
+   "2026-10-14"
   ]
  },
+ "last_30_days_by_language": {
+  "go": {
+   "bugs": 16,
+   "projects": 3,
+   "function": {
+    "mrr": 0.5449,
+    "hit@1": 0.375,
+    "recall@10": 0.4374,
+    "hit@10": 0.875,
+    "hit@10_ci95": [
+     0.6875,
+     1.0
+    ]
+   },
+   "file": {
+    "hit@10": 1.0,
+    "hit@10_ci95": [
+     1.0,
+     1.0
+    ]
+   },
+   "merged": [
+    "2026-10-09",
+    "2026-10-14"
+   ]
+  },
+  "java": {
+   "bugs": 1,
+   "projects": 1,
+   "function": {
+    "mrr": 0.1667,
+    "hit@1": 0.0,
+    "recall@10": 1.0,
+    "hit@10": 1.0,
+    "hit@10_ci95": [
+     1.0,
+     1.0
+    ]
+   },
+   "file": {
+    "hit@10": 1.0,
+    "hit@10_ci95": [
+     1.0,
+     1.0
+    ]
+   },
+   "merged": [
+    "2026-10-09",
+    "2026-10-09"
+   ]
+  },
+  "javascript": {
+   "bugs": 3,
+   "projects": 2,
+   "function": {
+    "mrr": 0.7083,
+    "hit@1": 0.6667,
+    "recall@10": 0.8333,
+    "hit@10": 1.0,
+    "hit@10_ci95": [
+     1.0,
+     1.0
+    ]
+   },
+   "file": {
+    "hit@10": 1.0,
+    "hit@10_ci95": [
+     1.0,
+     1.0
+    ]
+   },
+   "merged": [
+    "2026-10-10",
+    "2026-10-13"
+   ]
+  },
+  "python": {
+   "bugs": 128,
+   "projects": 16,
+   "function": {
+    "mrr": 0.4077,
+    "hit@1": 0.2891,
+    "recall@10": 0.4826,
+    "hit@10": 0.6562,
+    "hit@10_ci95": [
+     0.5703,
+     0.7422
+    ]
+   },
+   "file": {
+    "hit@10": 0.9062,
+    "hit@10_ci95": [
+     0.8516,
+     0.9531
+    ]
+   },
+   "merged": [
+    "2026-10-08",
+    "2026-10-14"
+   ]
+  },
+  "typescript": {
+   "bugs": 12,
+   "projects": 4,
+   "function": {
+    "mrr": 0.3634,
+    "hit@1": 0.25,
+    "recall@10": 0.5944,
+    "hit@10": 0.6667,
+    "hit@10_ci95": [
+     0.4167,
+     0.9167
+    ]
+   },
+   "file": {
+    "hit@10": 0.75,
+    "hit@10_ci95": [
+     0.5,
+     1.0
+    ]
+   },
+   "merged": [
+    "2026-10-09",
+    "2026-10-14"
+   ]
+  }
+ },
+ "history": [
+  {
+   "date": "2026-10-15",
+   "scored": 80,
+   "last_30_days": {
+    "bugs": 160,
+    "projects": 25,
+    "function": {
+     "mrr": 0.4222,
+     "hit@1": 0.3,
+     "recall@10": 0.4963,
+     "hit@10": 0.6875,
+     "hit@10_ci95": [
+      0.6125,
+      0.7562
+     ]
+    },
+    "file": {
+     "hit@10": 0.9062,
+     "hit@10_ci95": [
+      0.8562,
+      0.95
+     ]
+    },
+    "merged": [
+     "2026-10-08",
+     "2026-10-14"
+    ]
+   }
+  },
+  {
+   "date": "2026-10-16",
+   "scored": 80,
+   "last_30_days": {
+    "bugs": 160,
+    "projects": 25,
+    "function": {
+     "mrr": 0.4222,
+     "hit@1": 0.3,
+     "recall@10": 0.4963,
+     "hit@10": 0.6875,
+     "hit@10_ci95": [
+      0.6125,
+      0.7562
+     ]
+    },
+    "file": {
+     "hit@10": 0.9062,
+     "hit@10_ci95": [
+      0.8562,
+      0.95
+     ]
+    },
+    "merged": [
+     "2026-10-08",
+     "2026-10-14"
+    ]
+   }
+  }
+ ],
  "skipped": {
-  "error": 7,
-  "the closed number is a pull request, not an issue": 19,
-  "the fix changes no function or class outside tests": 23
+  "error": 10,
+  "issue opened after the pull request": 2,
+  "the closed number is a pull request, not an issue": 22,
+  "the fix changes no function or class outside tests": 40
  }
 }
