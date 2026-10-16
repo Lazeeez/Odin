@@ -1,0 +1,103 @@
+{
+ "adr": "docs/decisions/0029-confidence.md",
+ "lite": {
+  "issues": 291,
+  "base_rate": 0.6701030927835051,
+  "brier": 0.20953726824926955,
+  "ece": 0.10903801055852322,
+  "auc": 0.6933226495726496,
+  "bands": {
+   "high": {
+    "issues": 145,
+    "top10_rate": 0.7931034482758621
+   },
+   "medium": {
+    "issues": 131,
+    "top10_rate": 0.5648854961832062
+   },
+   "low": {
+    "issues": 15,
+    "top10_rate": 0.4
+   }
+  }
+ },
+ "unseen": {
+  "issues": 747,
+  "base_rate": 0.7657295850066934,
+  "brier": 0.1565317870800512,
+  "ece": 0.03120364015432657,
+  "auc": 0.7438961038961039,
+  "bands": {
+   "high": {
+    "issues": 435,
+    "top10_rate": 0.8804597701149425
+   },
+   "medium": {
+    "issues": 277,
+    "top10_rate": 0.631768953068592
+   },
+   "low": {
+    "issues": 35,
+    "top10_rate": 0.4
+   }
+  }
+ },
+ "multilingual": {
+  "issues": 161,
+  "base_rate": 0.6645962732919255,
+  "brier": 0.19416612969852923,
+  "ece": 0.08359488581108653,
+  "auc": 0.7320872274143302,
+  "bands": {
+   "high": {
+    "issues": 58,
+    "top10_rate": 0.8448275862068966
+   },
+   "medium": {
+    "issues": 88,
+    "top10_rate": 0.6136363636363636
+   },
+   "low": {
+    "issues": 15,
+    "top10_rate": 0.26666666666666666
+   }
+  }
+ },
+ "polybench": {
+  "issues": 340,
+  "base_rate": 0.6882352941176471,
+  "brier": 0.19349532121762067,
+  "ece": 0.026664699869627016,
+  "auc": 0.6899693597806805,
+  "bands": {
+   "high": {
+    "issues": 114,
+    "top10_rate": 0.8333333333333334
+   },
+   "medium": {
+    "issues": 189,
+    "top10_rate": 0.656084656084656
+   },
+   "low": {
+    "issues": 37,
+    "top10_rate": 0.40540540540540543
+   }
+  }
+ },
+ "provenance": {
+  "timestamp": "2026-10-16T07:55:14+00:00",
+  "git_commit": "10f9543a2321b3c5bcd78ed3cff5899b43cee582",
+  "git_dirty": true,
+  "python": "3.11.16",
+  "platform": "Windows-10-10.0.26200-SP0",
+  "packages": {
+   "numpy": "2.4.6",
+   "scipy": "1.17.1",
+   "tree-sitter": "0.26.0",
+   "lightgbm": "4.7.0",
+   "torch": "2.14.0+cu130",
+   "sentence-transformers": "6.1.0"
+  },
+  "models": {}
+ }
+}

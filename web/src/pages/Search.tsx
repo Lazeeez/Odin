@@ -659,7 +659,7 @@ const BAND_TEXT = {
 function Confidence({ p, gpu }: { p: number; gpu: boolean }) {
   const b = band(p);
   return (
-    <p class={`confidence ${b}`} title="How often a function the fix changes was in the browser's top 10 when Odin was this sure, measured on 7,845 bugs it was not trained on (ADR 0029)">
+    <p class={`confidence ${b}`} title="Measured on 7,843 bugs from projects the estimate never saw: when it says high, the fix was in the top 10 about 9 times in 10; medium, about 2 in 3; low, about 2 in 5 (ADR 0029)">
       <b>{BAND_TEXT[b]}</b> · {Math.round(p * 100)}% chance a function the fix changes is in the top 10{gpu ? " (estimated before the GPU reranker, which usually does a little better)" : ""}.
       {b === "low" && " Adding the stack trace, an error message or the name of a function the report is about usually helps."}
     </p>

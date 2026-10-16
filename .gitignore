@@ -22,6 +22,7 @@ results/*
 !results/live/
 !results/website-rerank/
 !results/browser_ltr_multilang/
+!results/confidence/
 results/browser_ltr_multilang/static-model.bin
 results/browser_ltr_multilang/explore/
 results/odin-max/work/
