@@ -21,7 +21,7 @@ const DECISIONS: [string, string, string][] = [
     "The website runs a TypeScript port of the Python engine in Web Workers. Parity tests run both on the same code and require identical units, keyword scores and ranker inputs, so the browser inherits the measured accuracy.",
     "0009-in-browser-search.md"],
   ["A GPU only where it pays",
-    "The full pipeline's reranker runs on a GPU server for the website only after a test, fixed in advance, showed +2.6 points; a second test then showed the browser's own language model could be skipped, saving 50 MB and about 15 s.",
+    "The full pipeline's reranker runs on a GPU server for the website only after a test, fixed in advance, showed +2.6 points; a second test showed the browser's own language model could then be skipped, saving 50 MB and about 15 s. Scored once on held-out data, it adds 6.5 points on SWE-bench Lite and 2.7 on unseen projects.",
     "0021-website-server-reranker.md"],
   ["Six languages, each earning its ranker",
     "JavaScript, TypeScript, Go, Java and Rust were added with a rule written before training: the learned ranker is used for a language only if it beats keywords and meaning by 2 points in cross-validation. All six passed, by 12 to 24.",
@@ -76,12 +76,18 @@ export function CaseStudy({ summary, lite }: { summary: Summary | null; lite: Li
         <h2>On bugs it never trained on.</h2>
         <div class="tiles four">
           <Tile label="Full pipeline, SWE-bench Lite" value={fn ? fn["hit@10"] : null} note={fn ? `function in the top 10, ${fn.n} issues` : ""} />
-          <Tile label="In the browser, 30 unseen projects" value={unseen} note={lite ? `${lite.held_out.unseen.keyword.n} bugs, Python` : ""} />
+          {gpu?.held_out?.unseen ? (
+            <Tile label="The website, 30 unseen projects" value={gpu.held_out.unseen.with_reranker["hit@10"]}
+              note={`${gpu.held_out.unseen.issues} bugs, Python, with the GPU reranker; ${Math.round(gpu.held_out.unseen.website["hit@10"] * 1000) / 10}% without`} />
+          ) : (
+            <Tile label="In the browser, 30 unseen projects" value={unseen} note={lite ? `${lite.held_out.unseen.keyword.n} bugs, Python` : ""} />
+          )}
           <Tile label="In the browser, five more languages" value={multi ? bestBrowserStage(multi)["hit@10"] : null} note={multi ? `${multi.keyword.n} bugs, SWE-bench Multilingual` : ""} />
           {liveWindow && liveWindow.bugs >= LIVE_MIN_BUGS && liveWindow.function ? (
             <Tile label="Live, bugs fixed this month" value={liveWindow.function["hit@10"]} note={`${liveWindow.bugs} bugs from ${liveWindow.projects} projects`} />
           ) : (
-            <Tile label="GPU reranker on top" value={gpu ? gpu.with_reranker["hit@10"] : null} note={gpu ? `vs ${Math.round(gpu.website["hit@10"] * 1000) / 10}% without, ${gpu.issues.toLocaleString()} bugs, cross-validated` : ""} />
+            <Tile label="With the GPU reranker, unseen projects" value={gpu?.held_out?.unseen ? gpu.held_out.unseen.with_reranker["hit@10"] : gpu ? gpu.with_reranker["hit@10"] : null}
+              note={gpu?.held_out?.unseen ? `vs ${Math.round(gpu.held_out.unseen.website["hit@10"] * 1000) / 10}% without, ${gpu.held_out.unseen.issues} bugs, held out` : ""} />
           )}
         </div>
         <p class="note">

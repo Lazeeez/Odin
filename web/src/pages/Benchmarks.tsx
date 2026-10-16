@@ -212,10 +212,32 @@ function Gpu({ g }: { g: GpuReranker }) {
           </tbody>
         </table>
       </div>
-      <p class="note">
-        Cross-validated on training projects, not a held-out test: scoring this configuration once on SWE-bench Lite and the 30 unseen
-        projects is still to come. See ADR 0021 and ADR 0026 in the repository.
-      </p>
+      <p class="note">Cross-validated on training projects. See ADR 0021 and ADR 0026 in the repository.</p>
+      {g.held_out && (
+        <>
+          <h3 class="subhead">Held out, scored once</h3>
+          <div class="table-wrap" tabIndex={0} role="region" aria-label="The GPU reranker on held-out sets">
+            <table class="label-first">
+              <thead><tr><th>Bugs</th><th>Without the GPU</th><th>With it</th><th>Change</th><th class="phone-hide-col">95% interval</th></tr></thead>
+              <tbody>
+                {Object.entries(g.held_out).map(([set, h]) => {
+                  const d = h["hit@10_gain"];
+                  return (
+                    <tr key={set}>
+                      <td>{set === "lite" ? "SWE-bench Lite" : "30 unseen projects"} <span class="muted">({h.issues})</span></td>
+                      <td class="num">{pct(h.website["hit@10"])}</td>
+                      <td class="num">{pct(h.with_reranker["hit@10"])}</td>
+                      <td class={`num${d.p_value < 0.05 && d.delta > 0 ? " sig" : ""}`}>{d.delta >= 0 ? "+" : ""}{(d.delta * 100).toFixed(1)}</td>
+                      <td class="num phone-hide-col">{(d.ci95[0] * 100).toFixed(1)} to {(d.ci95[1] * 100).toFixed(1)}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+          <p class="note">Function in the top 10, what the site runs (the GPU reranker blended into the browser's semantic ranking), on projects nothing was trained on.</p>
+        </>
+      )}
     </section>
   );
 }

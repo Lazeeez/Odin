@@ -85,6 +85,7 @@ export interface GpuReranker {
   without_language_model: Metrics;
   "hit@10_gain": { delta: number; ci95: [number, number]; p_value: number };
   "skip_hit@10": { delta: number; ci95: [number, number]; p_value: number };
+  held_out?: Record<string, { issues: number; website: Metrics; with_reranker: Metrics; "hit@10_gain": { delta: number; ci95: [number, number]; p_value: number } }>;
 }
 
 export interface LanguageEval {
