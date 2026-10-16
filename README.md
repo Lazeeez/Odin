@@ -50,25 +50,25 @@ The full cascade takes 0.44 seconds per issue on an NVIDIA L40S (median 0.40), a
 
 ### In the browser, on projects it never saw
 
-The website runs a lighter pipeline in the browser (no git history) with rankers trained on 7,845 issues from 192 projects: 5,115 Python issues from 131 projects, and 2,730 from 61 projects in JavaScript, TypeScript, Go, Java and Rust ([ADR 0025](docs/decisions/0025-more-languages.md)). It is scored on 30 projects kept out of training entirely, the situation of every repository a visitor pastes: 747 bugs, the 785 sampled minus the 38 with no function or class target ([ADR 0011](docs/decisions/0011-website-at-scale.md)):
+The website runs a lighter pipeline in the browser (no git history) with rankers trained on 7,843 issues from 192 projects: 5,115 Python issues from 131 projects, and 2,728 from 61 projects in JavaScript, TypeScript, Go, Java and Rust ([ADR 0025](docs/decisions/0025-more-languages.md)). It is scored on 30 projects kept out of training entirely, the situation of every repository a visitor pastes: 747 bugs, the 785 sampled minus the 38 with no function or class target ([ADR 0011](docs/decisions/0011-website-at-scale.md)):
 
 | In-browser stage | hit@1 | hit@10 | MRR |
 |---|---|---|---|
 | keyword search only | 32.9% | 66.0% | 0.435 |
-| instant learned ranking | 43.8% | 75.5% | 0.543 |
-| + static-embedding semantic index | 43.8% | **77.0%** | 0.546 |
-| + MiniLM rerank of the top 20 | 45.0% | 76.3% | **0.555** |
-| **file ranker** (the file that must change) | 68.3% | **94.2%** | 0.775 |
+| instant learned ranking | 44.2% | 74.7% | 0.542 |
+| + static-embedding semantic index | 43.9% | **76.6%** | 0.544 |
+| + MiniLM rerank of the top 20 | 44.0% | 76.4% | **0.549** |
+| **file ranker** (the file that must change) | 68.0% | **94.2%** | 0.774 |
 
-Against the Python-only ranker these replace (77.2% function hit@10 after either stage, 94.4% for files), adding five languages moved Python by under a point; that ranker's per-issue results were not kept, so the change is not tested for significance. On SWE-bench Lite (291 issues) the browser pipeline reaches 69.1% function hit@10 against the GPU pipeline's 79.4%.
+Against the Python-only ranker these replace (77.2% function hit@10 after either stage, 94.4% for files), adding five languages and the Rust rule of [ADR 0027](docs/decisions/0027-rust-test-modules.md) moved Python by under a point (76.6% and 76.4%, 94.2%); that ranker's per-issue results were not kept, so the change is not tested for significance. On SWE-bench Lite (291 issues) the browser pipeline reaches 69.1% function hit@10 against the GPU pipeline's 79.4%.
 
 ### The website's GPU reranker
 
-The site can send the bug report and its top 50 functions to a GPU server (Modal), where the research pipeline's fine-tuned reranker (two LoRA adapters on Qwen3-Reranker-0.6B) scores them, and blend the scores into the browser's order. Measured before it was built, out of fold on 3,174 bugs from 119 projects the reranker never trained on ([ADR 0021](docs/decisions/0021-website-server-reranker.md)): function hit@10 79.3% → 81.9% (+2.6 points, 95% interval [1.8, 3.4], p < 0.001) and hit@1 44.3% → 50.0%. With it, the browser's own language model adds nothing measurable (hit@10 81.9% with it, 81.7% without, p = 0.30), so the site skips that 50 MB download whenever the GPU answers ([ADR 0026](docs/decisions/0026-skip-browser-language-model.md)). Scoring this configuration once on Lite and the 30 unseen projects is the last step of ADR 0021 and has not run yet.
+The site can send the bug report and its top 50 functions to a GPU server (Modal), where the research pipeline's fine-tuned reranker (two LoRA adapters on Qwen3-Reranker-0.6B) scores them, and blend the scores into the browser's order. Measured before it was built, out of fold on 3,174 bugs from 119 projects the reranker never trained on ([ADR 0021](docs/decisions/0021-website-server-reranker.md)): function hit@10 79.3% → 81.9% (+2.6 points, 95% interval [1.8, 3.4], p < 0.001) and hit@1 44.3% → 50.0%. With it, the browser's own language model adds nothing measurable (hit@10 81.9% with it, 81.7% without, p = 0.30), so the site skips that 50 MB download whenever the GPU answers ([ADR 0026](docs/decisions/0026-skip-browser-language-model.md)). Scored once on held-out data with the site's final configuration: function hit@10 67.0% → 73.5% on Lite (+6.5 points, 95% interval [3.4, 10.0], p < 0.001) and 76.6% → 79.3% on the 30 unseen projects (+2.7, [1.1, 4.3], p = 0.002).
 
 ### Live, on bugs fixed this week
 
-A nightly job collects bugs that popular Python projects fixed in the past week, runs the website's pipeline at the commit before each fix, and scores where the changed function ranked ([ADR 0023](docs/decisions/0023-live-accuracy.md), [results/live/](results/live/)). The first night, 2026-10-15, with the Python-only ranker: 80 bugs from 13 projects, function hit@10 66.3% [56.3, 76.3], file hit@10 90.0%. The job is paused until the repository's GitHub Actions minutes renew.
+A nightly job collects bugs that popular projects in all six languages fixed in the past week, runs the website's pipeline at the commit before each fix, and scores where the changed function ranked ([ADR 0023](docs/decisions/0023-live-accuracy.md), [results/live/](results/live/)). The first night, 2026-10-15, with the Python-only ranker: 80 bugs from 13 projects, function hit@10 66.3% [56.3, 76.3], file hit@10 90.0%. Since 2026-10-16 it also covers JavaScript, TypeScript, Go, Java and Rust projects and reports each language.
 
 ### In the browser, in other languages
 
@@ -76,14 +76,14 @@ The same rankers on bugs in other languages, from two public test sets and proje
 
 | Language | Test set | Bugs | Odin | Keywords and meaning | Change |
 |---|---|---|---|---|---|
-| Go | SWE-bench Multilingual | 37 | 62.2% | 46.0% | +16.2 (p = 0.026) |
-| Java | SWE-bench Multilingual | 43 | 76.7% | 67.4% | +9.3 (p = 0.13) |
-| JavaScript | SWE-bench Multilingual | 26 | 57.7% | 50.0% | +7.7 (p = 0.44) |
-| Rust | SWE-bench Multilingual | 41 | 63.4% | 48.8% | +14.6 (p = 0.099) |
+| Go | SWE-bench Multilingual | 37 | 64.9% | 46.0% | +18.9 (p = 0.012) |
+| Java | SWE-bench Multilingual | 43 | 81.4% | 67.4% | +14.0 (p = 0.030) |
+| JavaScript | SWE-bench Multilingual | 26 | 57.7% | 50.0% | +7.7 (p = 0.443) |
+| Rust | SWE-bench Multilingual | 41 | 65.8% | 53.7% | +12.2 (p = 0.113) |
 | TypeScript | SWE-bench Multilingual | 14 | 50.0% | 21.4% | +28.6 (p = 0.016) |
-| Java | SWE-PolyBench | 125 | 67.2% | 55.2% | +12.0 (p < 0.001) |
-| JavaScript | SWE-PolyBench | 115 | 77.4% | 55.6% | +21.7 (p < 0.001) |
-| TypeScript | SWE-PolyBench | 100 | 59.0% | 44.0% | +15.0 (p < 0.001) |
+| Java | SWE-PolyBench | 125 | 71.2% | 55.2% | +16.0 (p < 0.001) |
+| JavaScript | SWE-PolyBench | 115 | 79.1% | 55.6% | +23.5 (p < 0.001) |
+| TypeScript | SWE-PolyBench | 100 | 60.0% | 44.0% | +16.0 (p < 0.001) |
 
 ### Every retriever
 
@@ -259,7 +259,7 @@ flowchart LR
 - **Ground truth** comes from the gold patch, mapped onto a Tree-sitter parse of each file *as it existed at `base_commit`* (details below).
 - **Unseen projects for the website.** The browser's rankers are cross-validated with whole projects as folds, and scored on 30 SWE-rebench projects that appear in no training fold, so the reported numbers are what a visitor's new repository gets.
 - **Held-out tuning.** Anything with a knob is tuned off Lite: fusion and expansion on SWE-bench Verified minus Lite (407 issues, `odin tune`), learned rankers on SWE-bench test minus Lite (1,941 issues, `odin ltr`, 5-fold CV grouped by query), and the reranker's depth and weights on 250 issues held out from its training (`odin ce-tune`), with the selection rule written down before looking.
-- **How often Lite has been looked at.** No number here was trained or tuned on Lite, but Lite is not untouched: it has been scored 86 times, and [results/test-evals.log](results/test-evals.log) lists each one with what was decided from it. Most are one run per reported row. The exceptions: the early browser pipeline was scored on Lite at several rerank depths and with two stage-2 models (its settings were chosen on dev data and cross-validation, but Lite was looked at each time), and the distilled reranker was rejected on a Lite result, a decision taken on the test set, in the conservative direction. Every later evaluation appends to the log.
+- **How often Lite has been looked at.** No number here was trained or tuned on Lite, but Lite is not untouched: it has been scored 90 times, and [results/test-evals.log](results/test-evals.log) lists each one with what was decided from it. Most are one run per reported row. The exceptions: the early browser pipeline was scored on Lite at several rerank depths and with two stage-2 models (its settings were chosen on dev data and cross-validation, but Lite was looked at each time), and the distilled reranker was rejected on a Lite result, a decision taken on the test set, in the conservative direction. Every later evaluation appends to the log.
 - **A sealed holdout for what comes next.** 324 issues created on or after 2025-09-01, after the cascade's models were published, from 189 projects that appear in no training, dev or test data here; 311 of them have a function-level target. Nothing has been evaluated on it. Only three final configurations ever will be, each once per level, and `odin eval` refuses anything else ([ADR 0013](docs/decisions/0013-sealed-holdout.md)).
 - **No leakage through features.** Git history uses only strict ancestors of the base commit (`git rev-list`). Earlier-issue features only see issues opened at least 30 days before the query. Both boundaries have tests.
 - **Reproducibility.** Cached features and trained models carry a fingerprint of the source code that produced them, and a model refuses to load against different feature code. Every result file records the git commit, library versions, model hashes and command line.
@@ -320,7 +320,7 @@ Retrievers: `random`, `oracle`, `bm25-naive`, `bm25-code`, `bm25-code-notests`, 
 `web/` is the product site: **TypeScript + Vite + Preact**, deployed to [allfather.dev](https://allfather.dev/) as a Cloudflare Worker with static assets ([docs/deploy.md](docs/deploy.md)). Searching runs in the visitor's browser; the only work done elsewhere is the optional GPU reranker. Pages are hash routes, so any static host works: Home, `#/search`, `#/how-it-works`, `#/benchmarks` and `#/explore/<issue>`; older `?repo=` and `#issue=` links redirect.
 
 - **Search any public repository in Python, JavaScript, TypeScript, Go, Java or Rust.** It accepts `owner/name`, https or ssh URLs, and links to a branch, a folder (the search is then limited to it), a file, an issue or a pull request. Over the browser budget (6,000 files, 60 MB) it keeps the project's own code and drops docs, examples and vendored code first; committed virtualenvs are skipped. A Web Worker lists the repository through GitHub's API and downloads its source files (or one `.tar.gz` through an optional CORS relay, `proxy/`), parser threads split them into functions with Tree-sitter compiled to WebAssembly, and a code-aware BM25 index is built. Large repositories are searchable while they load. A learned ranker (LambdaMART, exported as JSON trees) orders candidates using what the issue names: traceback frames, quoted identifiers, module paths and title matches. In the background, a static code-embedding model (Model2Vec potion-code-16M, int8, 16.8 MB) embeds every function in seconds, a second ranker adds meaning to the evidence, and the fine-tuned reranker on a GPU server re-reads the top 50; when it is off or does not answer, a small language model in the browser (MiniLM, WebGPU or WebAssembly) reranks the top 20 instead. A file ranker orders whole files. Parsed repositories are cached in IndexedDB by git tree hash, embeddings by content hash; the main thread never blocks.
-- **Measured on projects it never saw.** `scripts/browser_ltr.py` trains the browser's rankers on 7,845 issues from 192 projects (SWE-bench minus Lite, 120 projects sampled from SWE-rebench, and 61 projects in five other languages from Multi-SWE-RL), choosing settings by project-grouped cross-validation, then scores this exact pipeline once on held-out data. On 747 bugs from 30 projects kept out of training entirely, a function the fix changed is in the top 10 for 77.0% (hit@10; keyword search alone 66.0%), and the file ranker finds the file in the top 10 for 94.2%. A parity test runs the TypeScript features, tokenizer and embeddings against the Python ones, value for value. See [ADR 0011](docs/decisions/0011-website-at-scale.md).
+- **Measured on projects it never saw.** `scripts/browser_ltr.py` trains the browser's rankers on 7,843 issues from 192 projects (SWE-bench minus Lite, 120 projects sampled from SWE-rebench, and 61 projects in five other languages from Multi-SWE-RL), choosing settings by project-grouped cross-validation, then scores this exact pipeline once on held-out data. On 747 bugs from 30 projects kept out of training entirely, a function the fix changed is in the top 10 for 76.6% (hit@10; keyword search alone 66.0%), and the file ranker finds the file in the top 10 for 94.2%. A parity test runs the TypeScript features, tokenizer and embeddings against the Python ones, value for value. See [ADR 0011](docs/decisions/0011-website-at-scale.md).
 - **Replayed results of the full pipeline.** Stage-by-stage metrics with confidence intervals, significance tests, per-project tables, and an explorer that tells each of the 300 Lite issues as a story: the report, the answer key, and where every stage ranked the fix. Explorer views are deep-linkable (`#/explore/django__django-11019`); *Beat Odin* (`#/explore?mode=game`) lets visitors guess the fixed file against Odin's pick.
 - **UX.** Real open issues from the loaded repository as one-click queries; "Why #1?" bars showing what each kind of evidence added to a result's score; when a result's file last changed; a map of the repository with the results lit; an "Odin this" bookmarklet that opens any GitHub issue in Odin; a command palette (Ctrl+K); Functions/Files views, syntax-highlighted code, shareable `#/search?repo=&q=` links, cancel, recent repositories, `/` to focus, and a light/dark toggle (light by default).
 

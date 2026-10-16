@@ -1,0 +1,185 @@
+{
+ "setting": [
+  50,
+  1.0
+ ],
+ "adr": "docs/decisions/0021-website-server-reranker.md",
+ "lite": {
+  "issues": 291,
+  "website": {
+   "n": 291,
+   "mrr": 0.4351,
+   "recall@1": 0.2956,
+   "hit@1": 0.3162,
+   "all@1": 0.2784,
+   "recall@5": 0.5686,
+   "hit@5": 0.6048,
+   "all@5": 0.5395,
+   "recall@10": 0.6385,
+   "hit@10": 0.6701,
+   "all@10": 0.6117
+  },
+  "with_gpu_reranker": {
+   "n": 291,
+   "mrr": 0.4945,
+   "recall@1": 0.3406,
+   "hit@1": 0.3746,
+   "all@1": 0.3127,
+   "recall@5": 0.6322,
+   "hit@5": 0.6667,
+   "all@5": 0.6014,
+   "recall@10": 0.7104,
+   "hit@10": 0.7354,
+   "all@10": 0.6838
+  },
+  "paired": {
+   "hit@10": {
+    "delta": 0.0653,
+    "ci95": [
+     0.0344,
+     0.0997
+    ],
+    "p_value": 0.0,
+    "wins": 21,
+    "losses": 2
+   },
+   "hit@1": {
+    "delta": 0.0584,
+    "ci95": [
+     0.0137,
+     0.1031
+    ],
+    "p_value": 0.0134,
+    "wins": 31,
+    "losses": 14
+   },
+   "hit@5": {
+    "delta": 0.0619,
+    "ci95": [
+     0.0241,
+     0.0997
+    ],
+    "p_value": 0.002,
+    "wins": 26,
+    "losses": 8
+   },
+   "mrr": {
+    "delta": 0.0594,
+    "ci95": [
+     0.03,
+     0.0894
+    ],
+    "p_value": 0.0002,
+    "wins": 81,
+    "losses": 35
+   },
+   "recall@10": {
+    "delta": 0.0719,
+    "ci95": [
+     0.0412,
+     0.1045
+    ],
+    "p_value": 0.0,
+    "wins": 27,
+    "losses": 4
+   }
+  }
+ },
+ "unseen": {
+  "issues": 747,
+  "website": {
+   "n": 747,
+   "mrr": 0.5437,
+   "recall@1": 0.1862,
+   "hit@1": 0.4391,
+   "all@1": 0.1058,
+   "recall@5": 0.3927,
+   "hit@5": 0.6894,
+   "all@5": 0.2463,
+   "recall@10": 0.4826,
+   "hit@10": 0.7657,
+   "all@10": 0.3159
+  },
+  "with_gpu_reranker": {
+   "n": 747,
+   "mrr": 0.6061,
+   "recall@1": 0.2171,
+   "hit@1": 0.5127,
+   "all@1": 0.1232,
+   "recall@5": 0.4182,
+   "hit@5": 0.7349,
+   "all@5": 0.2637,
+   "recall@10": 0.503,
+   "hit@10": 0.7925,
+   "all@10": 0.328
+  },
+  "paired": {
+   "hit@10": {
+    "delta": 0.0268,
+    "ci95": [
+     0.0107,
+     0.0428
+    ],
+    "p_value": 0.0024,
+    "wins": 30,
+    "losses": 10
+   },
+   "hit@1": {
+    "delta": 0.0736,
+    "ci95": [
+     0.0455,
+     0.1017
+    ],
+    "p_value": 0.0,
+    "wins": 90,
+    "losses": 35
+   },
+   "hit@5": {
+    "delta": 0.0455,
+    "ci95": [
+     0.0241,
+     0.0669
+    ],
+    "p_value": 0.0,
+    "wins": 51,
+    "losses": 17
+   },
+   "mrr": {
+    "delta": 0.0624,
+    "ci95": [
+     0.0442,
+     0.0809
+    ],
+    "p_value": 0.0,
+    "wins": 180,
+    "losses": 87
+   },
+   "recall@10": {
+    "delta": 0.0204,
+    "ci95": [
+     0.008,
+     0.0332
+    ],
+    "p_value": 0.0016,
+    "wins": 108,
+    "losses": 59
+   }
+  }
+ },
+ "provenance": {
+  "timestamp": "2026-10-16T07:55:44+00:00",
+  "git_commit": "3e3b555ea087a545adf704ef2770b06985c10ffc",
+  "git_dirty": true,
+  "python": "3.11.16",
+  "platform": "Windows-10-10.0.26200-SP0",
+  "packages": {
+   "numpy": "2.4.6",
+   "scipy": "1.17.1",
+   "tree-sitter": "0.26.0",
+   "lightgbm": "4.7.0",
+   "torch": "2.14.0+cu130",
+   "sentence-transformers": "6.1.0"
+  },
+  "models": {}
+ }
+}

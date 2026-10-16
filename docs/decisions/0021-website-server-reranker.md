@@ -87,3 +87,14 @@ Written before the candidate lists were built. Since ADR 0021's outcome the site
 - **Ranker:** the multi-language ranker that ships after ADR 0027's retrain, applied to the same cached candidates the training run scored.
 - **Compared:** the website without the GPU (the semantic stage's order) and with it (the reranker's two adapters blended into that order's top 50, K = 50, w = 1, as chosen in this ADR's test).
 - **Reported:** function hit@1, hit@5, hit@10, MRR and recall@10 for both, and the paired bootstrap of the difference per set. Nothing is decided from it: the server is already built and its setting fixed. Both runs are logged in `results/test-evals.log`.
+
+## The held-out run, 2026-10-16
+
+Result: [heldout_heldout.json](../../results/website-rerank/heldout_heldout.json), scored once as defined above with the ranker that shipped after ADR 0027, and logged in `results/test-evals.log`. Nothing was decided from it.
+
+| Function level | Issues | Website without the GPU (hit@10) | With the GPU reranker | hit@10 change | hit@1 change |
+|---|---|---|---|---|---|
+| SWE-bench Lite | 291 | 67.0% | 73.5% | +6.5 points, 95% interval [3.4, 10.0], p < 0.001; 21 issues better, 2 worse | +5.8, [1.4, 10.3], p = 0.013 |
+| The 30 unseen projects | 747 | 76.6% | 79.3% | +2.7 points, [1.1, 4.3], p = 0.002; 30 better, 10 worse | +7.4, [4.6, 10.2], p < 0.001 |
+
+The cross-validated gain (+2.6 points) holds on projects nothing was trained on, and is larger on Lite.

@@ -109,3 +109,5 @@ undated | lite | hybrid-notests | function | results/hybrid-notests_function_lit
 2026-10-16 | unseen | confidence (ADR 0029) | calibration | results/confidence/held_out.json | scored once with the shipped confidence model; nothing decided
 2026-10-16 | multilingual | confidence (ADR 0029) | calibration | results/confidence/held_out.json | scored once with the shipped confidence model; nothing decided
 2026-10-16 | polybench | confidence (ADR 0029) | calibration | results/confidence/held_out.json | scored once with the shipped confidence model; nothing decided
+2026-10-16 | lite | website + GPU reranker | function | results/website-rerank/heldout_heldout.json | ADR 0021's single held-out run of the configuration the site ships; nothing decided
+2026-10-16 | unseen | website + GPU reranker | function | results/website-rerank/heldout_heldout.json | ADR 0021's single held-out run of the configuration the site ships; nothing decided
