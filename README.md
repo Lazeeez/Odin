@@ -460,7 +460,7 @@ Implement `retrieve(query, level, k) -> list[str]`, returning file paths for `le
 | 7 | Fine-tuned cross-encoder reranking, shared-prefix KV cache | done (ADR 0007) |
 | 9 | In-browser rankers trained on 131 projects, static-embedding semantic index | done (ADR 0010, 0011) |
 | 10 | The fine-tuned reranker for the website on a GPU server | done (ADR 0021, 0026); one held-out scoring run left |
-| 11 | Website in JavaScript, TypeScript, Go, Java and Rust | done (ADR 0025, phase 1); C, C++, Ruby, PHP, C# next |
+| 11 | Website in JavaScript, TypeScript, Go, Java and Rust | done (ADR 0025); no further languages planned |
 | 12 | Live accuracy on bugs fixed each week | running (ADR 0023) |
 | 8 | LLM listwise reranking of the top 10 (needs an API model) | next |
 | 5 | Persistent on-disk index, incremental updates | planned |
