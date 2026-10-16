@@ -1,13 +1,20 @@
 # Odin
 
-Bug localization over any git commit: structural chunking, code-aware BM25 and content-addressed code embeddings for recall, then a learned LambdaMART ranker and a fine-tuned LLM cross-encoder for precision, all measured against real bug fixes.
+[![CI](https://github.com/Lazeeez/Odin/actions/workflows/ci.yml/badge.svg)](https://github.com/Lazeeez/Odin/actions/workflows/ci.yml)
+[![Parity](https://github.com/Lazeeez/Odin/actions/workflows/parity.yml/badge.svg)](https://github.com/Lazeeez/Odin/actions/workflows/parity.yml)
+[![Live accuracy](https://github.com/Lazeeez/Odin/actions/workflows/live.yml/badge.svg)](https://github.com/Lazeeez/Odin/actions/workflows/live.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Website](https://img.shields.io/badge/try_it-allfather.dev-d9a93a.svg)](https://allfather.dev/)
 
-The question this project answers: **given a bug report, can we find the code that has to change?** Every design decision is scored on SWE-bench issues, where the ground truth is the set of functions the maintainers' actual fix touched, and every claimed improvement comes with a paired significance test.
+**Given a bug report, find the code that has to change.** Odin ranks every function in a repository against the report: code-aware keyword search and code embeddings for recall, then learned ranking and a fine-tuned language model for precision. Every design decision is scored on real bug fixes, where the answer key is the set of functions the maintainers' actual fix changed, and every claimed improvement comes with a paired significance test.
 
-It ships two ways:
+It ships three ways:
 
-- **A research pipeline** (`src/odin`, Python): the full cascade on a GPU, evaluated on SWE-bench Lite.
 - **A website** for any public repository in Python, JavaScript, TypeScript, Go, Java or Rust: **[allfather.dev](https://allfather.dev/)**. Paste a repository and a bug report; parsing, indexing, embedding and ranking happen on your device, and an optional GPU server re-reads the top 50 with the research pipeline's fine-tuned reranker.
+- **A GitHub Action** that comments on new issues with the functions most likely to need the fix ([set-up](#github-action)).
+- **A research pipeline** (`src/odin`, Python): the full cascade on a GPU, evaluated on SWE-bench Lite against published systems.
+
+Two-minute version: the **[case study](https://allfather.dev/#/case-study)**. Every decision, including the ones that didn't work, is in [docs/decisions](docs/decisions/).
 
 ## Headline results
 
