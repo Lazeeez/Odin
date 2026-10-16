@@ -1,4 +1,5 @@
 import { useEffect, useState } from "preact/hooks";
+import { REPO_URL } from "../lib/links.ts";
 import { type Page, href } from "../lib/router.ts";
 import { save } from "../lib/storage.ts";
 import { Emblem } from "./Emblem.tsx";
@@ -31,7 +32,7 @@ function ThemeToggle() {
 
 export const Logo = () => <Emblem />;
 
-const LINKS: [Page, string][] = [["search", "Search"], ["how", "How it works"], ["benchmarks", "Benchmarks"], ["explore", "Explore"]];
+const LINKS: [Page, string][] = [["search", "Search"], ["how", "How it works"], ["benchmarks", "Benchmarks"], ["explore", "Explore"], ["case", "Case study"]];
 
 export function Nav({ page }: { page: Page }) {
   const [open, setOpen] = useState(false);
@@ -70,7 +71,7 @@ export function Footer() {
         </nav>
       </div>
       <p class="footer-note muted small">
-        Evaluated on <a href="https://www.swebench.com" target="_blank" rel="noopener">SWE-bench</a>.
+        Evaluated on <a href="https://www.swebench.com" target="_blank" rel="noopener">SWE-bench</a>. <a href={REPO_URL} target="_blank" rel="noopener">Source on GitHub</a>.
       </p>
     </footer>
   );

@@ -583,6 +583,11 @@ table.heat th, table.heat td { padding: 9px 10px; }
 .trend .dot { fill: var(--accent); stroke: var(--card); stroke-width: 2; pointer-events: none; }
 .trend .hit-area { fill: transparent; cursor: default; }
 .trend-table summary { cursor: pointer; color: var(--ink-2); font-size: 14px; margin: 8px 0; }
+.case-list { padding-left: 1.2em; display: grid; gap: 14px; max-width: 72ch; }
+.case-list h3 { margin: 0 0 4px; font-size: 18px; }
+.case-list p { margin: 0; color: var(--ink-2); }
+.case-list.plain li { color: var(--ink-2); }
+.case-links { display: flex; flex-wrap: wrap; gap: 12px; }
 .confidence { font-size: 14px; color: var(--ink-2); margin: 4px 0 0; }
 .confidence b { color: var(--ink); }
 .confidence.high b { color: var(--good); }

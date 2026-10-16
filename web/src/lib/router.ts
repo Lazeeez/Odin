@@ -2,7 +2,7 @@
 // is the page. Tiny on purpose: five pages do not need a routing library.
 import { useEffect, useMemo, useState } from "preact/hooks";
 
-export type Page = "home" | "search" | "benchmarks" | "explore" | "how";
+export type Page = "home" | "search" | "benchmarks" | "explore" | "how" | "case";
 
 export interface Route {
   page: Page;
@@ -11,7 +11,7 @@ export interface Route {
   query: URLSearchParams;
 }
 
-const PATHS: Record<Page, string> = { home: "", search: "search", benchmarks: "benchmarks", explore: "explore", how: "how-it-works" };
+const PATHS: Record<Page, string> = { home: "", search: "search", benchmarks: "benchmarks", explore: "explore", how: "how-it-works", case: "case-study" };
 const PAGES = Object.fromEntries(Object.entries(PATHS).map(([page, path]) => [path, page])) as Record<string, Page>;
 
 export function parseHash(hash: string): Route {

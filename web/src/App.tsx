@@ -4,6 +4,7 @@ import { type Lite, type Summary, getJSON } from "./lib/data.ts";
 import { useLazy } from "./lib/lazy.ts";
 import { type Page, useRoute } from "./lib/router.ts";
 import { Benchmarks } from "./pages/Benchmarks.tsx";
+import { CaseStudy } from "./pages/CaseStudy.tsx";
 import { Explore } from "./pages/Explore.tsx";
 import { Home } from "./pages/Home.tsx";
 import { HowItWorks } from "./pages/HowItWorks.tsx";
@@ -15,6 +16,7 @@ const TITLES: Record<Page, string> = {
   benchmarks: "Benchmarks · Odin",
   explore: "Explore real bugs · Odin",
   how: "How it works · Odin",
+  case: "Case study · Odin",
 };
 
 export function App() {
@@ -73,6 +75,7 @@ export function App() {
         {page === "benchmarks" && <Benchmarks summary={summary} lite={lite} failed={failed} />}
         {page === "explore" && <Explore summary={summary} linked={route.param} failed={failed} mode={route.query.get("mode")} set={route.query.get("set")} />}
         {page === "how" && <HowItWorks summary={summary} />}
+        {page === "case" && <CaseStudy summary={summary} lite={lite} />}
       </main>
       <Footer />
       {palette && Palette && <Palette onClose={() => setPalette(false)} />}

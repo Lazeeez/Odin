@@ -23,7 +23,7 @@ const allowed = (env, request, origin) => {
   return !list.length || list.includes(origin) || sameSite;
 };
 
-const PAGES = /^\/(search|benchmarks|explore|how-it-works)(\/[^]*)?$/;
+const PAGES = /^\/(search|benchmarks|explore|how-it-works|case-study)(\/[^]*)?$/;
 
 const sitePath = (url, prefix) => {
   if (!prefix || url.pathname.startsWith(`${prefix}/`) || url.pathname.startsWith("/api/") || url.pathname.startsWith("/gh/") || url.pathname.startsWith("/rerank")) return null;

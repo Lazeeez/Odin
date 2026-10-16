@@ -29,6 +29,7 @@ test("pages route and set their titles", async ({ page }) => {
     ["How it works", /^How it works/, ".pipeline .stage"],
     ["Explore", /^Explore/, "#explorer .bug-title"],
     ["Search", /^Search/, "#repo-input"],
+    ["Case study", /^Case study/, ".case-list li"],
   ] as const) {
     await page.locator("#site-menu a", { hasText: link }).click();
     await expect(page).toHaveTitle(title);
